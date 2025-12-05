@@ -28,6 +28,7 @@ These features are considered **unfinished** and should only be used on developm
 [//]: # "PLEASE KEEP THE LIST SORTED ALPHABETICALLY"
 
 - ALERT_REPORT_TABS
+- DATE_RANGE_TIMESHIFTS_ENABLED
 - ENABLE_ADVANCED_DATA_TYPES
 - PRESTO_EXPAND_DATA
 - SHARE_QUERIES_VIA_KV_STORE
@@ -49,7 +50,6 @@ These features are **finished** but currently being tested. They are usable, but
 - ENABLE_SUPERSET_META_DB: [(docs)](https://superset.apache.org/docs/configuration/databases/#querying-across-databases)
 - ESTIMATE_QUERY_COST
 - GLOBAL_ASYNC_QUERIES [(docs)](https://github.com/apache/superset/blob/master/CONTRIBUTING.md#async-chart-queries)
-- HORIZONTAL_FILTER_BAR
 - IMPERSONATE_WITH_EMAIL_PREFIX
 - PLAYWRIGHT_REPORTS_AND_THUMBNAILS
 - RLS_IN_SQLLAB

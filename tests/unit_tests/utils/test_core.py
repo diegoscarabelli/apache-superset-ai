@@ -24,6 +24,10 @@ import pandas as pd
 import pytest
 from flask import current_app
 from pandas.api.types import is_datetime64_dtype
+<<<<<<< HEAD
+=======
+from pytest_mock import MockerFixture
+>>>>>>> 6.0.0rc4
 
 from superset.exceptions import SupersetException
 from superset.utils.core import (
@@ -33,7 +37,13 @@ from superset.utils.core import (
     generic_find_constraint_name,
     generic_find_fk_constraint_name,
     get_datasource_full_name,
+<<<<<<< HEAD
     get_stacktrace,
+=======
+    get_query_source_from_request,
+    get_stacktrace,
+    get_user_agent,
+>>>>>>> 6.0.0rc4
     is_test,
     merge_extra_filters,
     merge_request_params,
@@ -41,8 +51,10 @@ from superset.utils.core import (
     parse_boolean_string,
     parse_js_uri_path_item,
     QueryObjectFilterClause,
+    QuerySource,
     remove_extra_adhoc_filters,
 )
+from tests.conftest import with_config
 
 ADHOC_FILTER: QueryObjectFilterClause = {
     "col": "foo",
@@ -596,6 +608,63 @@ def test_get_datasource_full_name():
     )
 
 
+<<<<<<< HEAD
+=======
+@pytest.mark.parametrize(
+    "referrer,expected",
+    [
+        (None, None),
+        ("https://mysuperset.com/abc", None),
+        ("https://mysuperset.com/superset/dashboard/", QuerySource.DASHBOARD),
+        ("https://mysuperset.com/explore/", QuerySource.CHART),
+        ("https://mysuperset.com/sqllab/", QuerySource.SQL_LAB),
+    ],
+)
+def test_get_query_source_from_request(
+    referrer: str | None,
+    expected: QuerySource | None,
+    mocker: MockerFixture,
+    app_context: None,
+) -> None:
+    if referrer:
+        # Use has_request_context to mock request when not in a request context
+        with mocker.patch("flask.has_request_context", return_value=True):
+            request_mock = mocker.MagicMock()
+            request_mock.referrer = referrer
+            mocker.patch("superset.utils.core.request", request_mock)
+            assert get_query_source_from_request() == expected
+    else:
+        # When no referrer, test without request context
+        with mocker.patch("flask.has_request_context", return_value=False):
+            assert get_query_source_from_request() == expected
+
+
+@with_config({"USER_AGENT_FUNC": None})
+def test_get_user_agent(mocker: MockerFixture, app_context: None) -> None:
+    database_mock = mocker.MagicMock()
+    database_mock.database_name = "mydb"
+
+    assert get_user_agent(database_mock, QuerySource.DASHBOARD) == "Apache Superset", (
+        "The default user agent should be returned"
+    )
+
+
+@with_config(
+    {
+        "USER_AGENT_FUNC": lambda database,
+        source: f"{database.database_name} {source.name}"
+    }
+)
+def test_get_user_agent_custom(mocker: MockerFixture, app_context: None) -> None:
+    database_mock = mocker.MagicMock()
+    database_mock.database_name = "mydb"
+
+    assert get_user_agent(database_mock, QuerySource.DASHBOARD) == "mydb DASHBOARD", (
+        "the custom user agent function result should have been returned"
+    )
+
+
+>>>>>>> 6.0.0rc4
 def test_merge_extra_filters():
     # does nothing if no extra filters
     form_data = {"A": 1, "B": 2, "c": "test"}

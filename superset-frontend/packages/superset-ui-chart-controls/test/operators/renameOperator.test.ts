@@ -65,6 +65,20 @@ test('should skip renameOperator if series does not exist', () => {
   ).toEqual(undefined);
 });
 
+test('should skip renameOperator if series does not exist and a single time shift exists', () => {
+  expect(
+    renameOperator(
+      { ...formData, ...{ time_compare: ['1 year ago'] } },
+      {
+        ...queryObject,
+        ...{
+          columns: [],
+        },
+      },
+    ),
+  ).toEqual(undefined);
+});
+
 test('should skip renameOperator if does not exist x_axis and is_timeseries', () => {
   expect(
     renameOperator(
@@ -93,6 +107,29 @@ test('should add renameOperator', () => {
   });
 });
 
+<<<<<<< HEAD
+=======
+test('should add renameOperator if a metric exists and multiple time shift', () => {
+  expect(
+    renameOperator(
+      {
+        ...formData,
+        ...{ time_compare: ['1 year ago', '2 years ago'] },
+      },
+      {
+        ...queryObject,
+        ...{
+          columns: [],
+        },
+      },
+    ),
+  ).toEqual({
+    operation: 'rename',
+    options: { columns: { 'count(*)': null }, inplace: true, level: 0 },
+  });
+});
+
+>>>>>>> 6.0.0rc4
 test('should add renameOperator if exists derived metrics', () => {
   [
     ComparisonType.Difference,
@@ -123,6 +160,47 @@ test('should add renameOperator if exists derived metrics', () => {
         level: 0,
       },
     });
+<<<<<<< HEAD
+=======
+  });
+});
+
+test('should add renameOperator if isTimeComparisonValue without columns', () => {
+  [
+    ComparisonType.Difference,
+    ComparisonType.Ratio,
+    ComparisonType.Percentage,
+  ].forEach(type => {
+    expect(
+      renameOperator(
+        {
+          ...formData,
+          ...{
+            comparison_type: type,
+            time_compare: ['1 year ago'],
+          },
+        },
+        {
+          ...queryObject,
+          ...{
+            columns: [],
+            metrics: ['sum(val)', 'avg(val2)'],
+          },
+        },
+      ),
+    ).toEqual({
+      operation: 'rename',
+      options: {
+        columns: {
+          [`${type}__avg(val2)__avg(val2)__1 year ago`]:
+            'avg(val2), 1 year ago',
+          [`${type}__sum(val)__sum(val)__1 year ago`]: 'sum(val), 1 year ago',
+        },
+        inplace: true,
+        level: 0,
+      },
+    });
+>>>>>>> 6.0.0rc4
   });
 });
 
@@ -176,7 +254,6 @@ test('should add renameOperator if exist "actual value" time comparison', () => 
     operation: 'rename',
     options: {
       columns: {
-        'count(*)': null,
         'count(*)__1 year ago': '1 year ago',
         'count(*)__1 year later': '1 year later',
       },

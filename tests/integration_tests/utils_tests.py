@@ -27,14 +27,17 @@ from tests.integration_tests.fixtures.birth_names_dashboard import (
     load_birth_names_data,  # noqa: F401
 )
 
+<<<<<<< HEAD
+=======
+from flask import current_app, Flask, g  # noqa: F401
+>>>>>>> 6.0.0rc4
 import pandas as pd
 import pytest
-from flask import Flask, g  # noqa: F401
 import marshmallow
 from sqlalchemy.exc import ArgumentError  # noqa: F401
 
 import tests.integration_tests.test_app  # noqa: F401
-from superset import app, db, security_manager
+from superset import db, security_manager
 from superset.constants import NO_TIME_RANGE
 from superset.exceptions import CertificateException, SupersetException  # noqa: F401
 from superset.models.core import Database, Log
@@ -289,7 +292,7 @@ class TestUtils(SupersetTestCase):
         assert slc is None
 
     def test_get_form_data_request_args(self) -> None:
-        with app.test_request_context(
+        with current_app.test_request_context(
             query_string={"form_data": json.dumps({"foo": "bar"})}
         ):
             form_data, slc = get_form_data()
@@ -297,7 +300,9 @@ class TestUtils(SupersetTestCase):
             assert slc is None
 
     def test_get_form_data_request_form(self) -> None:
-        with app.test_request_context(data={"form_data": json.dumps({"foo": "bar"})}):
+        with current_app.test_request_context(
+            data={"form_data": json.dumps({"foo": "bar"})}
+        ):
             form_data, slc = get_form_data()
             assert form_data == {"foo": "bar"}
             assert slc is None
@@ -305,7 +310,7 @@ class TestUtils(SupersetTestCase):
     def test_get_form_data_request_form_with_queries(self) -> None:
         # the CSV export uses for requests, even when sending requests to
         # /api/v1/chart/data
-        with app.test_request_context(
+        with current_app.test_request_context(
             data={
                 "form_data": json.dumps({"queries": [{"url_params": {"foo": "bar"}}]})
             }
@@ -315,7 +320,7 @@ class TestUtils(SupersetTestCase):
             assert slc is None
 
     def test_get_form_data_request_args_and_form(self) -> None:
-        with app.test_request_context(
+        with current_app.test_request_context(
             data={"form_data": json.dumps({"foo": "bar"})},
             query_string={"form_data": json.dumps({"baz": "bar"})},
         ):
@@ -324,7 +329,7 @@ class TestUtils(SupersetTestCase):
             assert slc is None
 
     def test_get_form_data_globals(self) -> None:
-        with app.test_request_context():
+        with current_app.test_request_context():
             g.form_data = {"foo": "bar"}
             form_data, slc = get_form_data()
             delattr(g, "form_data")
@@ -332,7 +337,7 @@ class TestUtils(SupersetTestCase):
             assert slc is None
 
     def test_get_form_data_corrupted_json(self) -> None:
-        with app.test_request_context(
+        with current_app.test_request_context(
             data={"form_data": "{x: '2324'}"},
             query_string={"form_data": '{"baz": "bar"'},
         ):

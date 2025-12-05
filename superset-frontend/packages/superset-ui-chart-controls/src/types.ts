@@ -69,7 +69,7 @@ export interface Dataset {
   columns: ColumnMeta[];
   metrics: Metric[];
   column_formats: Record<string, string>;
-  currency_formats: Record<string, Currency>;
+  currency_formats?: Record<string, Currency>;
   verbose_map: Record<string, string>;
   main_dttm_col: string;
   // eg. ['["ds", true]', 'ds [asc]']
@@ -90,6 +90,10 @@ export interface Dataset {
   database?: Record<string, unknown>;
   normalize_columns?: boolean;
   always_filter_main_dttm?: boolean;
+<<<<<<< HEAD
+=======
+  extra?: object | string;
+>>>>>>> 6.0.0rc4
 }
 
 export interface ControlPanelState {
@@ -161,6 +165,7 @@ export type InternalControlType =
   | 'DatasourceControl'
   | 'DateFilterControl'
   | 'FixedOrMetricControl'
+  | 'ColorBreakpointsControl'
   | 'HiddenControl'
   | 'SelectAsyncControl'
   | 'SelectControl'
@@ -301,7 +306,7 @@ export interface FilterOption<T extends SelectOption> {
   data: T;
 }
 
-// Ref: superset-frontend/src/components/Select/SupersetStyledSelect.tsx
+// Ref: superset-frontend/@superset-ui/core/components/Select/SupersetStyledSelect.tsx
 export interface SelectControlConfig<
   O extends SelectOption = SelectOption,
   T extends SelectControlType = SelectControlType,

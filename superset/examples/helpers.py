@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 """Helpers for loading Superset example datasets.
+<<<<<<< HEAD
 
 All Superset example data files (CSV, JSON, etc.) are fetched via the
 jsDelivr CDN instead of raw.githubusercontent.com to avoid GitHub API
@@ -44,11 +45,60 @@ from __future__ import annotations
 
 import os
 from typing import Any
+=======
+>>>>>>> 6.0.0rc4
 
-from superset import app, db
+All Superset example data files (CSV, JSON, etc.) are fetched via the
+jsDelivr CDN instead of raw.githubusercontent.com to avoid GitHub API
+rate limits (60 anonymous requests/hour/IP).
+
+jsDelivr is a multi‑CDN front for public GitHub repos and supports
+arbitrary paths including nested folders. It doesn’t use the GitHub REST API
+and advertises unlimited bandwidth for open-source use.
+
+Example URL::
+
+    https://cdn.jsdelivr.net/gh/apache-superset/examples-data@master/datasets/examples/slack/messages.csv
+
+Environment knobs
+-----------------
+``SUPERSET_EXAMPLES_DATA_REF``  (default: ``master``)
+    Tag / branch / SHA to pin so builds remain reproducible.
+
+``SUPERSET_EXAMPLES_BASE_URL``
+    Override the base completely if you want to host the files elsewhere
+    (internal mirror, S3 bucket, ASF downloads, …).  **Include any query
+    string required by your hosting (e.g. ``?raw=true`` if you point back
+    to a GitHub *blob* URL).**
+"""
+
+from __future__ import annotations
+
+import os
+import time
+from typing import Any
+from urllib.error import HTTPError
+
+import pandas as pd
+from flask import current_app
+
+from superset import db
 from superset.connectors.sqla.models import SqlaTable
 from superset.models.slice import Slice
 from superset.utils import json
+
+<<<<<<< HEAD
+# ---------------------------------------------------------------------------
+# Public sample‑data mirror configuration
+# ---------------------------------------------------------------------------
+BASE_COMMIT: str = os.getenv("SUPERSET_EXAMPLES_DATA_REF", "master")
+BASE_URL: str = os.getenv(
+    "SUPERSET_EXAMPLES_BASE_URL",
+    f"https://cdn.jsdelivr.net/gh/apache-superset/examples-data@{BASE_COMMIT}/",
+)
+
+=======
+EXAMPLES_PROTOCOL = "examples://"
 
 # ---------------------------------------------------------------------------
 # Public sample‑data mirror configuration
@@ -59,6 +109,7 @@ BASE_URL: str = os.getenv(
     f"https://cdn.jsdelivr.net/gh/apache-superset/examples-data@{BASE_COMMIT}/",
 )
 
+>>>>>>> 6.0.0rc4
 # Slices assembled into a 'Misc Chart' dashboard
 misc_dash_slices: set[str] = set()
 
@@ -74,7 +125,11 @@ def get_table_connector_registry() -> Any:
 
 def get_examples_folder() -> str:
     """Return local path to the examples folder (when vendored)."""
+<<<<<<< HEAD
     return os.path.join(app.config["BASE_DIR"], "examples")
+=======
+    return os.path.join(current_app.config["BASE_DIR"], "examples")
+>>>>>>> 6.0.0rc4
 
 
 def update_slice_ids(pos: dict[Any, Any]) -> list[Slice]:
@@ -119,3 +174,48 @@ def get_example_url(filepath: str) -> str:
     paths like ``datasets/examples/slack/messages.csv``.
     """
     return f"{BASE_URL}{filepath}"
+<<<<<<< HEAD
+=======
+
+
+def normalize_example_data_url(url: str) -> str:
+    """Convert example data URLs to use the configured CDN.
+
+    Transforms examples:// URLs to the configured CDN URL.
+    Non-example URLs are returned unchanged.
+    """
+    if url.startswith(EXAMPLES_PROTOCOL):
+        relative_path = url[len(EXAMPLES_PROTOCOL) :]
+        return get_example_url(relative_path)
+
+    # Not an examples URL, return unchanged
+    return url
+
+
+def read_example_data(
+    filepath: str,
+    max_attempts: int = 5,
+    wait_seconds: float = 60,
+    **kwargs: Any,
+) -> pd.DataFrame:
+    """Load CSV or JSON from example data mirror with retry/backoff."""
+    url = normalize_example_data_url(filepath)
+    is_json = filepath.endswith(".json") or filepath.endswith(".json.gz")
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            if is_json:
+                return pd.read_json(url, **kwargs)
+            return pd.read_csv(url, **kwargs)
+        except HTTPError:
+            if attempt < max_attempts:
+                sleep_time = wait_seconds * (2 ** (attempt - 1))
+                print(
+                    f"HTTP 429 received from {url}. ",
+                    f"Retrying in {sleep_time:.1f}s ",
+                    f"(attempt {attempt}/{max_attempts})...",
+                )
+                time.sleep(sleep_time)
+            else:
+                raise
+>>>>>>> 6.0.0rc4

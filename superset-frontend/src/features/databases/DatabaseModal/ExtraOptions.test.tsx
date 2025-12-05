@@ -191,4 +191,35 @@ describe('ExtraOptions Component', () => {
     fireEvent.change(input, { target: { value: '1000' } });
     expect(onExtraInputChange).toHaveBeenCalled();
   });
+<<<<<<< HEAD
+=======
+
+  it('renders the collaps tab correctly and resets to default tab after closing', () => {
+    const { rerender } = renderComponent();
+    const sqlLabTab = screen.getByRole('tab', {
+      name: /SQL Lab./i,
+    });
+
+    expect(sqlLabTab).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(sqlLabTab);
+    expect(sqlLabTab).toHaveAttribute('aria-expanded', 'true');
+    const customDb = {
+      ...defaultDb,
+      expose_in_sqllab: false,
+    };
+
+    rerender(
+      <ExtraOptions
+        db={customDb as unknown as DatabaseObject}
+        onInputChange={onInputChange}
+        onTextChange={onTextChange}
+        onEditorChange={onEditorChange}
+        onExtraInputChange={onExtraInputChange}
+        onExtraEditorChange={onExtraEditorChange}
+        extraExtension={undefined}
+      />,
+    );
+    expect(sqlLabTab).toHaveAttribute('aria-expanded', 'false');
+  });
+>>>>>>> 6.0.0rc4
 });

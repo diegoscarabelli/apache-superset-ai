@@ -20,7 +20,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useSelector, useDispatch, shallowEqual, useStore } from 'react-redux';
 import { getExtensionsRegistry, t } from '@superset-ui/core';
 
-import { Editor } from 'src/components/AsyncAceEditor';
+import type { Editor } from '@superset-ui/core/components';
 import sqlKeywords from 'src/SqlLab/utils/sqlKeywords';
 import { addTable, addDangerToast } from 'src/SqlLab/actions/sqlLab';
 import {
@@ -45,6 +45,7 @@ type Params = {
   dbId?: string | number;
   catalog?: string | null;
   schema?: string | string[];
+  tabViewId?: string;
 };
 
 const EMPTY_LIST = [] as typeof sqlKeywords;
@@ -60,7 +61,7 @@ const getHelperText = (value: string) =>
 const extensionsRegistry = getExtensionsRegistry();
 
 export function useKeywords(
-  { queryEditorId, dbId, catalog, schema }: Params,
+  { queryEditorId, dbId, catalog, schema, tabViewId }: Params,
   skip = false,
 ) {
   const useCustomKeywords = extensionsRegistry.get(
@@ -150,7 +151,13 @@ export function useKeywords(
   const insertMatch = useEffectEvent((editor: Editor, data: any) => {
     if (data.meta === 'table') {
       dispatch(
-        addTable({ id: queryEditorId, dbId }, data.value, catalog, normalizedSchema),
+        addTable(
+          { id: queryEditorId, dbId, tabViewId },
+          data.value,
+          catalog,
+          normalizedSchema,
+          false, // Don't auto-expand/switch tabs when adding via autocomplete
+        ),
       );
     }
 

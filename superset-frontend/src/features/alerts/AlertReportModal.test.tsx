@@ -16,9 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
-import { render, screen, within } from 'spec/helpers/testing-library';
+import {
+  render,
+  screen,
+  userEvent,
+  within,
+} from 'spec/helpers/testing-library';
 import { VizType } from '@superset-ui/core';
 import { buildErrorTooltipMessage } from './buildErrorTooltipMessage';
 import AlertReportModal, { AlertReportModalProps } from './AlertReportModal';
@@ -45,6 +49,7 @@ const generateMockPayload = (dashboard = true) => {
     database: {
       database_name: 'examples',
       id: 1,
+      value: 1,
     },
     description: 'Some description',
     extra: {},
@@ -89,8 +94,9 @@ const generateMockPayload = (dashboard = true) => {
     ...mockPayload,
     chart: {
       id: 1,
-      slice_name: 'Test Chart',
+      slice_name: 'test chart',
       viz_type: VizType.Table,
+      value: 1,
     },
   };
 };
@@ -130,7 +136,7 @@ const validAlert: AlertObject = {
   creation_method: 'alerts_reports',
   crontab: '0 0 * * *',
   dashboard_id: 0,
-  chart_id: 0,
+  chart_id: 1,
   force_screenshot: false,
   last_state: 'Not triggered',
   name: 'Test Alert',
@@ -149,6 +155,24 @@ const validAlert: AlertObject = {
   ],
   timezone: 'America/Rainy_River',
   type: 'Alert',
+  database: {
+    id: 1,
+    value: 1,
+    database_name: 'test_db',
+  } as any,
+  sql: 'SELECT COUNT(*) FROM test_table',
+  validator_config_json: {
+    op: '>',
+    threshold: 10.0,
+  },
+  working_timeout: 3600,
+  chart: {
+    id: 1,
+    value: 1,
+    label: 'Test Chart',
+    slice_name: 'Test Chart',
+    viz_type: 'table',
+  } as any,
 };
 
 jest.mock('./buildErrorTooltipMessage', () => ({
@@ -260,6 +284,10 @@ test('renders 5 checkmarks for a valid alert', async () => {
   render(<AlertReportModal {...generateMockedProps(false, true, false)} />, {
     useRedux: true,
   });
+
+  // Wait for validation to complete by waiting for the modal to fully render
+  await screen.findByText('Edit Alert');
+
   const checkmarks = await screen.findAllByRole('img', {
     name: /check-circle/i,
   });
@@ -361,7 +389,7 @@ test('renders all Alert Condition fields', async () => {
   });
   userEvent.click(screen.getByTestId('alert-condition-panel'));
   const database = screen.getByRole('combobox', { name: /database/i });
-  const sql = screen.getAllByRole('textbox')[2];
+  const sql = screen.getByRole('textbox');
   const condition = screen.getByRole('combobox', { name: /condition/i });
   const threshold = screen.getByRole('spinbutton');
   expect(database).toBeInTheDocument();

@@ -16,23 +16,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+<<<<<<< HEAD
 import { FunctionComponent, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Alert from 'src/components/Alert';
 import Button from 'src/components/Button';
 import {
   isDefined,
+=======
+import { FunctionComponent, useState, useEffect, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import {
+>>>>>>> 6.0.0rc4
   styled,
   SupersetClient,
   getClientErrorObject,
   t,
   SupersetError,
+  useTheme,
+  css,
 } from '@superset-ui/core';
 
-import Modal from 'src/components/Modal';
-import AsyncEsmComponent from 'src/components/AsyncEsmComponent';
-import ErrorMessageWithStackTrace from 'src/components/ErrorMessage/ErrorMessageWithStackTrace';
+import {
+  Icons,
+  Alert,
+  Button,
+  Checkbox,
+  Modal,
+  AsyncEsmComponent,
+} from '@superset-ui/core/components';
 import withToasts from 'src/components/MessageToasts/withToasts';
+<<<<<<< HEAD
 import {
   startMetaDataLoading,
   stopMetaDataLoading,
@@ -43,6 +57,11 @@ import {
   updateColumns,
 } from 'src/components/Datasource/utils';
 import { DatasetObject } from '../../features/datasets/types';
+=======
+import { ErrorMessageWithStackTrace } from 'src/components';
+import type { DatasetObject } from 'src/features/datasets/types';
+import type { DatasourceModalProps } from './types';
+>>>>>>> 6.0.0rc4
 
 const DatasourceEditor = AsyncEsmComponent(() => import('./DatasourceEditor'));
 
@@ -65,8 +84,13 @@ const StyledDatasourceModal = styled(Modal)`
   .modal-footer {
     flex: 0 1 auto;
   }
+
+  .ant-tabs-top {
+    margin-top: -${({ theme }) => theme.sizeUnit * 4}px;
+  }
 `;
 
+<<<<<<< HEAD
 interface DatasourceModalProps {
   addSuccessToast: (msg: string) => void;
   addDangerToast: (msg: string) => void;
@@ -77,6 +101,8 @@ interface DatasourceModalProps {
   show: boolean;
 }
 
+=======
+>>>>>>> 6.0.0rc4
 function buildExtraJsonObject(
   item: DatasetObject['metrics'][0] | DatasetObject['columns'][0],
 ) {
@@ -101,8 +127,14 @@ const DatasourceModal: FunctionComponent<DatasourceModalProps> = ({
   onHide,
   show,
 }) => {
+<<<<<<< HEAD
   const dispatch = useDispatch();
   const [currentDatasource, setCurrentDatasource] = useState(datasource);
+=======
+  const theme = useTheme();
+  const [currentDatasource, setCurrentDatasource] = useState(datasource);
+  const [syncColumns, setSyncColumns] = useState(false);
+>>>>>>> 6.0.0rc4
   const currencies = useSelector<
     {
       common: {
@@ -114,8 +146,8 @@ const DatasourceModal: FunctionComponent<DatasourceModalProps> = ({
   const [errors, setErrors] = useState<any[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const dialog = useRef<any>(null);
   const [modal, contextHolder] = Modal.useModal();
+<<<<<<< HEAD
   const buildPayload = (datasource: Record<string, any>) => ({
     table_name: datasource.table_name,
     database_id: datasource.database?.id,
@@ -181,11 +213,89 @@ const DatasourceModal: FunctionComponent<DatasourceModalProps> = ({
       (o: Record<string, number>) => o.value || o.id,
     ),
   });
+=======
+  const buildPayload = (datasource: Record<string, any>) => {
+    const payload: Record<string, any> = {
+      table_name: datasource.table_name,
+      database_id: datasource.database?.id,
+      sql: datasource.sql,
+      filter_select_enabled: datasource.filter_select_enabled,
+      fetch_values_predicate: datasource.fetch_values_predicate,
+      schema:
+        datasource.tableSelector?.schema ||
+        datasource.databaseSelector?.schema ||
+        datasource.schema,
+      description: datasource.description,
+      main_dttm_col: datasource.main_dttm_col,
+      normalize_columns: datasource.normalize_columns,
+      always_filter_main_dttm: datasource.always_filter_main_dttm,
+      offset: datasource.offset,
+      default_endpoint: datasource.default_endpoint,
+      cache_timeout:
+        datasource.cache_timeout === '' ? null : datasource.cache_timeout,
+      is_sqllab_view: datasource.is_sqllab_view,
+      template_params: datasource.template_params,
+      extra: datasource.extra,
+      is_managed_externally: datasource.is_managed_externally,
+      external_url: datasource.external_url,
+      metrics: datasource?.metrics?.map(
+        (metric: DatasetObject['metrics'][0]) => {
+          const metricBody: any = {
+            expression: metric.expression,
+            description: metric.description,
+            metric_name: metric.metric_name,
+            metric_type: metric.metric_type,
+            d3format: metric.d3format || null,
+            currency: metric.currency,
+            verbose_name: metric.verbose_name,
+            warning_text: metric.warning_text,
+            uuid: metric.uuid,
+            extra: buildExtraJsonObject(metric),
+          };
+          if (!Number.isNaN(Number(metric.id))) {
+            metricBody.id = metric.id;
+          }
+          return metricBody;
+        },
+      ),
+      columns: datasource?.columns?.map(
+        (column: DatasetObject['columns'][0]) => ({
+          id: typeof column.id === 'number' ? column.id : undefined,
+          column_name: column.column_name,
+          type: column.type,
+          advanced_data_type: column.advanced_data_type,
+          verbose_name: column.verbose_name,
+          description: column.description,
+          expression: column.expression,
+          filterable: column.filterable,
+          groupby: column.groupby,
+          is_active: column.is_active,
+          is_dttm: column.is_dttm,
+          python_date_format: column.python_date_format || null,
+          uuid: column.uuid,
+          extra: buildExtraJsonObject(column),
+        }),
+      ),
+      owners: datasource.owners.map(
+        (o: Record<string, number>) => o.value || o.id,
+      ),
+    };
+    // Handle catalog based on database's allow_multi_catalog setting
+    // If multi-catalog is disabled, don't include catalog in payload
+    // The backend will use the default catalog
+    // If multi-catalog is enabled, include the selected catalog
+    if (datasource.database?.allow_multi_catalog) {
+      payload.catalog = datasource.catalog;
+    }
+    return payload;
+  };
+>>>>>>> 6.0.0rc4
   const onConfirmSave = async () => {
     // Pull out extra fields into the extra object
     setIsSaving(true);
     try {
       await SupersetClient.put({
+<<<<<<< HEAD
         endpoint: `/api/v1/dataset/${currentDatasource.id}`,
         jsonPayload: buildPayload(currentDatasource),
       });
@@ -214,6 +324,12 @@ const DatasourceModal: FunctionComponent<DatasourceModalProps> = ({
           jsonPayload: buildPayload(currentDatasource),
         });
       }
+=======
+        endpoint: `/api/v1/dataset/${currentDatasource.id}?override_columns=${syncColumns}`,
+        jsonPayload: buildPayload(currentDatasource),
+      });
+
+>>>>>>> 6.0.0rc4
       const { json } = await SupersetClient.get({
         endpoint: `/api/v1/dataset/${currentDatasource?.id}`,
       });
@@ -262,29 +378,69 @@ const DatasourceModal: FunctionComponent<DatasourceModalProps> = ({
     setErrors(err);
   };
 
-  const renderSaveDialog = () => (
-    <div>
-      <Alert
-        css={theme => ({
-          marginTop: theme.gridUnit * 4,
-          marginBottom: theme.gridUnit * 4,
-        })}
-        type="warning"
-        showIcon
-        message={t(`The dataset configuration exposed here
+  const getSaveDialog = useCallback(
+    () => (
+      <div>
+        <Alert
+          css={theme => ({
+            marginTop: theme.marginMD,
+            marginBottom: theme.marginSM,
+          })}
+          type="warning"
+          showIcon={false}
+          message={t(`The dataset configuration exposed here
                 affects all the charts using this dataset.
                 Be mindful that changing settings
                 here may affect other charts
                 in undesirable ways.`)}
-      />
-      {t('Are you sure you want to save and apply changes?')}
-    </div>
+        />
+        {datasource.sql !== currentDatasource.sql && (
+          <div
+            css={theme => ({
+              marginBottom: theme.marginMD,
+            })}
+          >
+            <Alert
+              css={theme => ({
+                marginBottom: theme.marginSM,
+              })}
+              type="info"
+              showIcon={false}
+              message={t(`The dataset columns will be automatically synced
+              based on the changes in your SQL query. If your changes don't
+              impact the column definitions, you might want to skip this step.`)}
+            />
+            <Checkbox
+              checked={syncColumns}
+              onChange={() => {
+                setSyncColumns(!syncColumns);
+              }}
+            />
+            <span
+              css={theme => ({
+                marginLeft: theme.marginXS,
+              })}
+            >
+              {t('Automatically sync columns')}
+            </span>
+          </div>
+        )}
+        {t('Are you sure you want to save and apply changes?')}
+      </div>
+    ),
+    [currentDatasource.sql, datasource.sql, syncColumns],
   );
 
+  useEffect(() => {
+    if (datasource.sql !== currentDatasource.sql) {
+      setSyncColumns(true);
+    }
+  }, [datasource.sql, currentDatasource.sql]);
+
   const onClickSave = () => {
-    dialog.current = modal.confirm({
+    modal.confirm({
       title: t('Confirm save'),
-      content: renderSaveDialog(),
+      content: getSaveDialog(),
       onOk: onConfirmSave,
       icon: null,
       okText: t('OK'),
@@ -298,6 +454,13 @@ const DatasourceModal: FunctionComponent<DatasourceModalProps> = ({
       onHide={onHide}
       title={
         <span>
+          <Icons.EditOutlined
+            iconSize="l"
+            css={css`
+              margin: auto ${theme.sizeUnit * 2}px auto 0;
+            `}
+            data-test="edit-alt"
+          />
           {t('Edit Dataset ')}
           <strong>{currentDatasource.table_name}</strong>
         </span>
@@ -308,7 +471,7 @@ const DatasourceModal: FunctionComponent<DatasourceModalProps> = ({
           <Button
             data-test="datasource-modal-cancel"
             buttonSize="small"
-            className="m-r-5"
+            buttonStyle="secondary"
             onClick={onHide}
           >
             {t('Cancel')}

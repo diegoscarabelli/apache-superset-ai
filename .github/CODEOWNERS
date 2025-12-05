@@ -2,7 +2,7 @@
 
 # https://github.com/apache/superset/issues/13351
 
-/superset/migrations/ @mistercrunch @michael-s-molina @betodealmeida @eschutho
+/superset/migrations/ @mistercrunch @michael-s-molina @betodealmeida @eschutho @sadpandajoe
 
 # Notify some committers of changes in the components
 
@@ -16,7 +16,7 @@
 
 # Notify E2E test maintainers of changes
 
-/superset-frontend/cypress-base/ @sadpandajoe @geido @eschutho @rusackas @betodealmeida
+/superset-frontend/cypress-base/ @sadpandajoe @geido @eschutho @rusackas @betodealmeida @mistercrunch
 
 # Notify PMC members of changes to GitHub Actions
 

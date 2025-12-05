@@ -38,7 +38,7 @@ const StyledCrossLinks = styled.div`
       width: 100%;
       display: flex;
 
-      .antd5-tooltip-open {
+      .ant-tooltip-open {
         display: inline;
       }
 
@@ -53,8 +53,8 @@ const StyledCrossLinks = styled.div`
 
       .count {
         cursor: pointer;
-        color: ${theme.colors.grayscale.base};
-        font-weight: ${theme.typography.weights.bold};
+        color: ${theme.colorTextSecondary};
+        font-weight: ${theme.fontWeightStrong};
       }
     }
   `}

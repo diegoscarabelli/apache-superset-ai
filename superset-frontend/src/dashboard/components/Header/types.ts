@@ -19,6 +19,7 @@
 
 import { Layout } from 'src/dashboard/types';
 import { ChartState } from 'src/explore/types';
+import { AlertObject } from 'src/features/alerts/types';
 
 interface DashboardInfo {
   id: number;
@@ -27,6 +28,10 @@ interface DashboardInfo {
   dash_save_perm: boolean;
   metadata?: Record<string, any>;
   common?: { conf: Record<string, any> };
+  theme?: {
+    id: number;
+    name: string;
+  } | null;
 }
 
 export interface HeaderDropdownProps {
@@ -60,11 +65,11 @@ export interface HeaderDropdownProps {
   dataMask: any;
   lastModifiedTime: number;
   logEvent: () => void;
-  setIsDropdownVisible: (visible: boolean) => void;
-  isDropdownVisible: boolean;
   refreshLimit: number;
   refreshWarning: string;
   directPathToChild: string[];
+  showReportModal: () => void;
+  setCurrentReportDeleting: (alert: AlertObject | null) => void;
 }
 
 export interface HeaderProps {

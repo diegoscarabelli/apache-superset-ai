@@ -18,16 +18,22 @@
  */
 import { Component } from 'react';
 import PropTypes from 'prop-types';
+<<<<<<< HEAD
 import { TextArea } from 'src/components/Input';
 import {
   Tooltip,
   TooltipProps as TooltipOptions,
 } from 'src/components/Tooltip';
+=======
+import {
+  Input,
+  Tooltip,
+  Button,
+  TextAreaEditor,
+  ModalTrigger,
+} from '@superset-ui/core/components';
+>>>>>>> 6.0.0rc4
 import { t, withTheme } from '@superset-ui/core';
-
-import Button from 'src/components/Button';
-import { TextAreaEditor } from 'src/components/AsyncAceEditor';
-import ModalTrigger from 'src/components/ModalTrigger';
 
 import ControlHeader from 'src/explore/components/ControlHeader';
 
@@ -59,7 +65,12 @@ const propTypes = {
     'vertical',
   ]),
   textAreaStyles: PropTypes.object,
+<<<<<<< HEAD
   tooltipOptions: PropTypes.oneOf([null, TooltipOptions]),
+=======
+  tooltipOptions: PropTypes.object,
+  hotkeys: PropTypes.array,
+>>>>>>> 6.0.0rc4
 };
 
 const defaultProps = {
@@ -73,6 +84,10 @@ const defaultProps = {
   resize: null,
   textAreaStyles: {},
   tooltipOptions: {},
+<<<<<<< HEAD
+=======
+  hotkeys: [],
+>>>>>>> 6.0.0rc4
 };
 
 class TextAreaControl extends Component {
@@ -89,7 +104,7 @@ class TextAreaControl extends Component {
     const minLines = inModal ? 40 : this.props.minLines || 12;
     if (this.props.language) {
       const style = {
-        border: `1px solid ${this.props.theme.colors.grayscale.light1}`,
+        border: `1px solid ${this.props.theme.colorBorder}`,
         minHeight: `${minLines}em`,
         width: 'auto',
         ...this.props.textAreaStyles,
@@ -100,6 +115,18 @@ class TextAreaControl extends Component {
       if (this.props.readOnly) {
         style.backgroundColor = '#f2f2f2';
       }
+<<<<<<< HEAD
+=======
+      const onEditorLoad = editor => {
+        this.props.hotkeys.forEach(keyConfig => {
+          editor.commands.addCommand({
+            name: keyConfig.name,
+            bindKey: { win: keyConfig.key, mac: keyConfig.key },
+            exec: keyConfig.func,
+          });
+        });
+      };
+>>>>>>> 6.0.0rc4
       const codeEditor = (
         <div>
           <TextAreaEditor
@@ -108,6 +135,10 @@ class TextAreaControl extends Component {
             minLines={minLines}
             maxLines={inModal ? 1000 : this.props.maxLines}
             editorProps={{ $blockScrolling: true }}
+<<<<<<< HEAD
+=======
+            onLoad={onEditorLoad}
+>>>>>>> 6.0.0rc4
             defaultValue={this.props.initialValue}
             readOnly={this.props.readOnly}
             key={this.props.name}
@@ -125,12 +156,20 @@ class TextAreaControl extends Component {
 
     const textArea = (
       <div>
+<<<<<<< HEAD
         <TextArea
+=======
+        <Input.TextArea
+>>>>>>> 6.0.0rc4
           placeholder={t('textarea')}
           onChange={this.onControlChange.bind(this)}
           defaultValue={this.props.initialValue}
           disabled={this.props.readOnly}
           style={{ height: this.props.height }}
+<<<<<<< HEAD
+=======
+          aria-required={this.props['aria-required']}
+>>>>>>> 6.0.0rc4
         />
       </div>
     );
@@ -159,9 +198,11 @@ class TextAreaControl extends Component {
           <ModalTrigger
             modalTitle={controlHeader}
             triggerNode={
-              <Button buttonSize="small" className="m-t-5">
-                {t('Edit')} <strong>{this.props.language}</strong>{' '}
-                {t('in modal')}
+              <Button
+                buttonSize="small"
+                style={{ marginTop: this.props.theme.sizeUnit }}
+              >
+                {t('Edit %s in modal', this.props.language)}
               </Button>
             }
             modalBody={this.renderModalBody(true)}

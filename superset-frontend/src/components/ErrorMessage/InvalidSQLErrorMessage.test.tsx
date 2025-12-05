@@ -16,16 +16,9 @@
  * limitations under the License.
  */
 
-import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import {
-  ErrorLevel,
-  ErrorSource,
-  ErrorTypeEnum,
-  ThemeProvider,
-  supersetTheme,
-} from '@superset-ui/core';
-import InvalidSQLErrorMessage from './InvalidSQLErrorMessage';
+import { render, cleanup } from 'spec/helpers/testing-library';
+import { ErrorLevel, ErrorSource, ErrorTypeEnum } from '@superset-ui/core';
+import { InvalidSQLErrorMessage } from './InvalidSQLErrorMessage';
 
 const defaultProps = {
   error: {
@@ -59,20 +52,27 @@ const missingExtraProps = {
 };
 
 const renderComponent = (overrides = {}) =>
-  render(
-    <ThemeProvider theme={supersetTheme}>
-      <InvalidSQLErrorMessage {...defaultProps} {...overrides} />
-    </ThemeProvider>,
-  );
+  render(<InvalidSQLErrorMessage {...defaultProps} {...overrides} />);
 
 describe('InvalidSQLErrorMessage', () => {
-  it('renders the error message with correct properties', () => {
-    const { getByText } = renderComponent();
+  beforeAll(() => {
+    jest.setTimeout(30000);
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await new Promise(resolve => setTimeout(resolve, 0));
+  });
+
+  it('renders the error message with correct properties', async () => {
+    const { getByText, unmount } = renderComponent();
 
     // Validate main properties
     expect(getByText('Unable to parse SQL')).toBeInTheDocument();
     expect(getByText('Test subtitle')).toBeInTheDocument();
     expect(getByText('SELECT * FFROM table')).toBeInTheDocument();
+
+    unmount();
   });
 
   it('renders the error message with the empty extra properties', () => {
@@ -81,8 +81,13 @@ describe('InvalidSQLErrorMessage', () => {
     expect(getByText(missingExtraProps.error.message)).toBeInTheDocument();
   });
 
+<<<<<<< HEAD
   it('displays the SQL error line and column indicator', () => {
     const { getByText, container } = renderComponent();
+=======
+  it('displays the SQL error line and column indicator', async () => {
+    const { getByText, container, unmount } = renderComponent();
+>>>>>>> 6.0.0rc4
 
     // Validate SQL and caret indicator
     expect(getByText('SELECT * FFROM table')).toBeInTheDocument();
@@ -91,16 +96,18 @@ describe('InvalidSQLErrorMessage', () => {
     const preTags = container.querySelectorAll('pre');
     const secondPre = preTags[1];
     expect(secondPre).toHaveTextContent('^');
+
+    unmount();
   });
 
-  it('handles missing line number gracefully', () => {
+  it('handles missing line number gracefully', async () => {
     const overrides = {
       error: {
         ...defaultProps.error,
         extra: { ...defaultProps.error.extra, line: null },
       },
     };
-    const { getByText, container } = renderComponent(overrides);
+    const { getByText, container, unmount } = renderComponent(overrides);
 
     // Check that the full SQL is displayed
     expect(getByText('SELECT * FFROM table')).toBeInTheDocument();
@@ -108,15 +115,18 @@ describe('InvalidSQLErrorMessage', () => {
     // Validate absence of caret indicator
     const caret = container.querySelector('pre');
     expect(caret).not.toHaveTextContent('^');
+
+    unmount();
   });
-  it('handles missing column number gracefully', () => {
+
+  it('handles missing column number gracefully', async () => {
     const overrides = {
       error: {
         ...defaultProps.error,
         extra: { ...defaultProps.error.extra, column: null },
       },
     };
-    const { getByText, container } = renderComponent(overrides);
+    const { getByText, container, unmount } = renderComponent(overrides);
 
     // Check that the full SQL is displayed
     expect(getByText('SELECT * FFROM table')).toBeInTheDocument();
@@ -124,5 +134,7 @@ describe('InvalidSQLErrorMessage', () => {
     // Validate absence of caret indicator
     const caret = container.querySelector('pre');
     expect(caret).not.toHaveTextContent('^');
+
+    unmount();
   });
 });

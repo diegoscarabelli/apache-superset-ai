@@ -19,9 +19,14 @@
 
 import { Route } from 'react-router-dom';
 import fetchMock from 'fetch-mock';
-import userEvent from '@testing-library/user-event';
 import { DatasourceType, JsonObject, SupersetClient } from '@superset-ui/core';
-import { render, screen, act, waitFor } from 'spec/helpers/testing-library';
+import {
+  render,
+  screen,
+  act,
+  userEvent,
+  waitFor,
+} from 'spec/helpers/testing-library';
 import { fallbackExploreInitialData } from 'src/explore/fixtures';
 import DatasourceControl from '.';
 
@@ -473,4 +478,31 @@ test('should show missing dataset state', () => {
       /the dataset linked to this chart may have been deleted\./i,
     ),
   ).toBeVisible();
+});
+
+test('should show forbidden dataset state', () => {
+  // @ts-ignore
+  delete window.location;
+  // @ts-ignore
+  window.location = { search: '?slice_id=152' };
+  const error = {
+    error_type: 'TABLE_SECURITY_ACCESS_ERROR',
+    statusText: 'FORBIDDEN',
+    message: 'You do not have access to the following tables: blocked_table',
+    extra: {
+      datasource: 152,
+      datasource_name: 'forbidden dataset',
+    },
+  };
+  const props = createProps({
+    datasource: {
+      ...fallbackExploreInitialData.dataset,
+      extra: {
+        error,
+      },
+    },
+  });
+  render(<DatasourceControl {...props} />, { useRedux: true, useRouter: true });
+  expect(screen.getByText(error.message)).toBeInTheDocument();
+  expect(screen.getByText(error.statusText)).toBeVisible();
 });

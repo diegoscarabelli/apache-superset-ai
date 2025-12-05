@@ -50,13 +50,24 @@ import {
   SET_DASHBOARD_LABELS_COLORMAP_SYNCED,
   SET_DASHBOARD_SHARED_LABELS_COLORS_SYNCABLE,
   SET_DASHBOARD_SHARED_LABELS_COLORS_SYNCED,
+  TOGGLE_NATIVE_FILTERS_BAR,
 } from '../actions/dashboardState';
 import { HYDRATE_DASHBOARD } from '../actions/hydrate';
 
 export default function dashboardStateReducer(state = {}, action) {
   const actionHandlers = {
     [HYDRATE_DASHBOARD]() {
-      return { ...state, ...action.data.dashboardState };
+      const hydratedState = { ...state, ...action.data.dashboardState };
+      // Initialize tab activation times for initially active tabs
+      if (hydratedState.activeTabs && hydratedState.activeTabs.length > 0) {
+        const now = Date.now();
+        hydratedState.tabActivationTimes =
+          hydratedState.tabActivationTimes || {};
+        hydratedState.activeTabs.forEach(tabId => {
+          hydratedState.tabActivationTimes[tabId] = now;
+        });
+      }
+      return hydratedState;
     },
     [UPDATE_CSS]() {
       return { ...state, css: action.css };
@@ -181,6 +192,7 @@ export default function dashboardStateReducer(state = {}, action) {
       return {
         ...state,
         isRefreshing: true,
+        lastRefreshTime: Date.now(),
       };
     },
     [ON_FILTERS_REFRESH]() {
@@ -216,10 +228,23 @@ export default function dashboardStateReducer(state = {}, action) {
         .difference(new Set(action.activeTabs))
         .union(new Set(action.inactiveTabs));
 
+<<<<<<< HEAD
+=======
+      // Track when each tab was last activated
+      const tabActivationTimes = { ...state.tabActivationTimes };
+      action.activeTabs.forEach(tabId => {
+        tabActivationTimes[tabId] = Date.now();
+      });
+
+>>>>>>> 6.0.0rc4
       return {
         ...state,
         inactiveTabs: Array.from(newInactiveTabs),
         activeTabs: Array.from(newActiveTabs.union(new Set(action.activeTabs))),
+<<<<<<< HEAD
+=======
+        tabActivationTimes,
+>>>>>>> 6.0.0rc4
       };
     },
     [SET_ACTIVE_TABS]() {
@@ -269,6 +294,12 @@ export default function dashboardStateReducer(state = {}, action) {
       return {
         ...state,
         datasetsStatus: action.status,
+      };
+    },
+    [TOGGLE_NATIVE_FILTERS_BAR]() {
+      return {
+        ...state,
+        nativeFiltersBarOpen: action.isOpen,
       };
     },
   };

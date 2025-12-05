@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { SafeMarkdown, styled, t } from '@superset-ui/core';
+import { styled, t } from '@superset-ui/core';
+import { SafeMarkdown } from '@superset-ui/core/components';
 import Handlebars from 'handlebars';
 import dayjs from 'dayjs';
 import { useMemo, useState } from 'react';
@@ -98,6 +99,19 @@ Handlebars.registerHelper(
     return number.toLocaleString(locale);
   },
 );
+
+// usage: {{parseJson jsonString}}
+Handlebars.registerHelper('parseJson', (jsonString: string) => {
+  try {
+    return JSON.parse(jsonString);
+  } catch (error) {
+    if (error instanceof Error) {
+      error.message = `Invalid JSON string: ${error.message}`;
+      throw error;
+    }
+    throw new Error(`Invalid JSON string: ${String(error)}`);
+  }
+});
 
 Helpers.registerHelpers(Handlebars);
 HandlebarsGroupBy.register(Handlebars);

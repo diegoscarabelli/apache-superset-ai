@@ -21,8 +21,9 @@ from uuid import UUID
 
 import pandas as pd
 from celery.exceptions import SoftTimeLimitExceeded
+from flask import current_app as app
 
-from superset import app, db, security_manager
+from superset import db, security_manager
 from superset.commands.base import BaseCommand
 from superset.commands.dashboard.permalink.create import CreateDashboardPermalinkCommand
 from superset.commands.exceptions import CommandException, UpdateFailedError
@@ -176,19 +177,35 @@ class BaseReportState:
         """
         Creates a Report execution log, uses the current computed last_value for Alerts
         """
-        log = ReportExecutionLog(
-            scheduled_dttm=self._scheduled_dttm,
-            start_dttm=self._start_dttm,
-            end_dttm=datetime.utcnow(),
-            value=self._report_schedule.last_value,
-            value_row_json=self._report_schedule.last_value_row_json,
-            state=self._report_schedule.last_state,
-            error_message=error_message,
-            report_schedule=self._report_schedule,
-            uuid=self._execution_id,
-        )
-        db.session.add(log)
-        db.session.commit()  # pylint: disable=consider-using-transaction
+        from sqlalchemy.orm.exc import StaleDataError
+
+        try:
+            log = ReportExecutionLog(
+                scheduled_dttm=self._scheduled_dttm,
+                start_dttm=self._start_dttm,
+                end_dttm=datetime.utcnow(),
+                value=self._report_schedule.last_value,
+                value_row_json=self._report_schedule.last_value_row_json,
+                state=self._report_schedule.last_state,
+                error_message=error_message,
+                report_schedule=self._report_schedule,
+                uuid=self._execution_id,
+            )
+            db.session.add(log)
+            db.session.commit()  # pylint: disable=consider-using-transaction
+        except StaleDataError as ex:
+            # Report schedule was modified or deleted by another process
+            db.session.rollback()
+            logger.warning(
+                "Report schedule (execution %s) was modified or deleted "
+                "during execution. This can occur when a report is deleted "
+                "while running.",
+                self._execution_id,
+            )
+            raise ReportScheduleUnexpectedError(
+                "Report schedule was modified or deleted by another process "
+                "during execution"
+            ) from ex
 
     def _get_url(
         self,
@@ -310,6 +327,7 @@ class BaseReportState:
         Get chart or dashboard screenshots
         :raises: ReportScheduleScreenshotFailedError
         """
+
         _, username = get_executor(
             executors=app.config["ALERT_REPORTS_EXECUTORS"],
             model=self._report_schedule,
@@ -407,6 +425,7 @@ class BaseReportState:
         """
         Return data as a Pandas dataframe, to embed in notifications as a table.
         """
+
         url = self._get_url(result_format=ChartDataResultFormat.JSON)
         _, username = get_executor(
             executors=app.config["ALERT_REPORTS_EXECUTORS"],
@@ -481,6 +500,7 @@ class BaseReportState:
             "dashboard_id": dashboard_id,
             "owners": self._report_schedule.owners,
             "slack_channels": slack_channels,
+            "execution_id": str(self._execution_id),
         }
         return log_data
 
@@ -715,7 +735,7 @@ class ReportNotTriggeredErrorState(BaseReportState):
     current_states = [ReportState.NOOP, ReportState.ERROR]
     initial = True
 
-    def next(self) -> None:
+    def next(self) -> None:  # noqa: C901
         self.update_report_schedule_and_log(ReportState.WORKING)
         try:
             # If it's an alert check if the alert is triggered
@@ -730,9 +750,21 @@ class ReportNotTriggeredErrorState(BaseReportState):
             if isinstance(first_ex, SupersetErrorsException):
                 error_message = ";".join([error.message for error in first_ex.errors])
 
-            self.update_report_schedule_and_log(
-                ReportState.ERROR, error_message=error_message
-            )
+            try:
+                self.update_report_schedule_and_log(
+                    ReportState.ERROR, error_message=error_message
+                )
+            except ReportScheduleUnexpectedError as logging_ex:
+                # Logging failed (likely StaleDataError), but we still want to
+                # raise the original error so the root cause remains visible
+                logger.warning(
+                    "Failed to log error for report schedule (execution %s) "
+                    "due to database issue",
+                    self._execution_id,
+                    exc_info=True,
+                )
+                # Re-raise the original exception, not the logging failure
+                raise first_ex from logging_ex
 
             # TODO (dpgaspar) convert this logic to a new state eg: ERROR_ON_GRACE
             if not self.is_in_error_grace_period():
@@ -748,12 +780,26 @@ class ReportNotTriggeredErrorState(BaseReportState):
                     second_error_message = ";".join(
                         [error.message for error in second_ex.errors]
                     )
+                except ReportScheduleUnexpectedError:
+                    # send_error failed due to logging issue, log and continue
+                    # to raise the original error
+                    logger.warning(
+                        "Failed to send error notification due to database issue",
+                        exc_info=True,
+                    )
                 except Exception as second_ex:  # pylint: disable=broad-except
                     second_error_message = str(second_ex)
                 finally:
-                    self.update_report_schedule_and_log(
-                        ReportState.ERROR, error_message=second_error_message
-                    )
+                    try:
+                        self.update_report_schedule_and_log(
+                            ReportState.ERROR, error_message=second_error_message
+                        )
+                    except ReportScheduleUnexpectedError:
+                        # Logging failed again, log it but don't let it hide first_ex
+                        logger.warning(
+                            "Failed to log final error state due to database issue",
+                            exc_info=True,
+                        )
             raise
 
 
@@ -823,9 +869,22 @@ class ReportSuccessState(BaseReportState):
             self.send()
             self.update_report_schedule_and_log(ReportState.SUCCESS)
         except Exception as ex:  # pylint: disable=broad-except
-            self.update_report_schedule_and_log(
-                ReportState.ERROR, error_message=str(ex)
-            )
+            try:
+                self.update_report_schedule_and_log(
+                    ReportState.ERROR, error_message=str(ex)
+                )
+            except ReportScheduleUnexpectedError as logging_ex:
+                # Logging failed (likely StaleDataError), but we still want to
+                # raise the original error so the root cause remains visible
+                logger.warning(
+                    "Failed to log error for report schedule (execution %s) "
+                    "due to database issue",
+                    self._execution_id,
+                    exc_info=True,
+                )
+                # Re-raise the original exception, not the logging failure
+                raise ex from logging_ex
+            raise
 
 
 class ReportScheduleStateMachine:  # pylint: disable=too-few-public-methods
@@ -880,6 +939,7 @@ class AsyncExecuteReportScheduleCommand(BaseCommand):
             self.validate()
             if not self._model:
                 raise ReportScheduleExecuteUnexpectedError()
+
             _, username = get_executor(
                 executors=app.config["ALERT_REPORTS_EXECUTORS"],
                 model=self._model,

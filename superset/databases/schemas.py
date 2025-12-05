@@ -64,6 +64,7 @@ database_schemas_query_schema = {
     "type": "object",
     "properties": {
         "force": {"type": "boolean"},
+        "upload_allowed": {"type": "boolean"},
         "catalog": {"type": "string"},
     },
 }
@@ -111,9 +112,7 @@ allow_file_upload_description = (
 allow_ctas_description = "Allow CREATE TABLE AS option in SQL Lab"
 allow_cvas_description = "Allow CREATE VIEW AS option in SQL Lab"
 allow_dml_description = (
-    "Allow users to run non-SELECT statements "
-    "(UPDATE, DELETE, CREATE, ...) "
-    "in SQL Lab"
+    "Allow users to run non-SELECT statements (UPDATE, DELETE, CREATE, ...) in SQL Lab"
 )
 configuration_method_description = (
     "Configuration_method is used on the frontend to "
@@ -234,7 +233,7 @@ def server_cert_validator(value: str) -> str:
     return value
 
 
-def encrypted_extra_validator(value: str) -> str:
+def encrypted_extra_validator(value: str | None) -> None:
     """
     Validate that encrypted extra is a valid JSON string
     """
@@ -245,7 +244,6 @@ def encrypted_extra_validator(value: str) -> str:
             raise ValidationError(
                 [_("Field cannot be decoded by JSON. %(msg)s", msg=str(ex))]
             ) from ex
-    return value
 
 
 def extra_validator(value: str) -> str:
@@ -933,6 +931,7 @@ class ImportV1DatabaseSchema(Schema):
     database_name = fields.String(required=True)
     sqlalchemy_uri = fields.String(required=True)
     password = fields.String(allow_none=True)
+    encrypted_extra = fields.String(allow_none=True, validate=encrypted_extra_validator)
     cache_timeout = fields.Integer(allow_none=True)
     expose_in_sqllab = fields.Boolean()
     allow_run_async = fields.Boolean()

@@ -20,9 +20,9 @@ from typing import Optional, Union
 from sqlalchemy.engine.reflection import Inspector
 
 from superset.constants import TimeGrain
-from superset.db_engine_specs.base import BaseEngineSpec, LimitMethod
+from superset.db_engine_specs.base import BaseEngineSpec
 from superset.models.core import Database
-from superset.sql_parse import Table
+from superset.sql.parse import LimitMethod, Table
 
 logger = logging.getLogger(__name__)
 
@@ -47,11 +47,7 @@ class Db2EngineSpec(BaseEngineSpec):
         " - MINUTE({col}) MINUTES"
         " - SECOND({col}) SECONDS"
         " - MICROSECOND({col}) MICROSECONDS ",
-        TimeGrain.DAY: "CAST({col} as TIMESTAMP)"
-        " - HOUR({col}) HOURS"
-        " - MINUTE({col}) MINUTES"
-        " - SECOND({col}) SECONDS"
-        " - MICROSECOND({col}) MICROSECONDS",
+        TimeGrain.DAY: "DATE({col})",
         TimeGrain.WEEK: "{col} - (DAYOFWEEK({col})) DAYS",
         TimeGrain.MONTH: "{col} - (DAY({col})-1) DAYS",
         TimeGrain.QUARTER: "{col} - (DAY({col})-1) DAYS"

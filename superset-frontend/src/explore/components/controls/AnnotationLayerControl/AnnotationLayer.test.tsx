@@ -16,8 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { render, screen, waitFor } from 'spec/helpers/testing-library';
-import userEvent from '@testing-library/user-event';
+import {
+  render,
+  screen,
+  userEvent,
+  waitFor,
+} from 'spec/helpers/testing-library';
 import {
   getChartMetadataRegistry,
   ChartMetadata,
@@ -216,13 +220,14 @@ test('keeps apply disabled when missing required fields', async () => {
   expect(await screen.findByText('Chart A')).toBeInTheDocument();
   userEvent.click(screen.getByText('Chart A'));
   await screen.findByText(/title column/i);
-  userEvent.click(screen.getByRole('button', { name: 'Automatic Color' }));
   userEvent.click(
     screen.getByRole('combobox', { name: 'Annotation layer title column' }),
   );
   expect(await screen.findByText(/none/i)).toBeInTheDocument();
   userEvent.click(screen.getByText('None'));
   userEvent.click(screen.getByText('Style'));
+  // The checkbox for automatic color is in the Style tab
+  userEvent.click(screen.getByText('Use automatic color'));
   userEvent.click(
     screen.getByRole('combobox', { name: 'Annotation layer stroke' }),
   );

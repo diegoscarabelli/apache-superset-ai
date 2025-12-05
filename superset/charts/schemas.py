@@ -20,13 +20,14 @@ from __future__ import annotations
 import inspect
 from typing import Any, TYPE_CHECKING
 
+from flask import current_app
 from flask_babel import gettext as _
 from marshmallow import EXCLUDE, fields, post_load, Schema, validate
 from marshmallow.validate import Length, Range
 
-from superset import app
 from superset.common.chart_data import ChartDataResultFormat, ChartDataResultType
 from superset.db_engine_specs.base import builtin_time_grains
+from superset.tags.models import TagType
 from superset.utils import pandas_postprocessing, schema as utils
 from superset.utils.core import (
     AnnotationType,
@@ -40,7 +41,25 @@ if TYPE_CHECKING:
     from superset.common.query_context import QueryContext
     from superset.common.query_context_factory import QueryContextFactory
 
-config = app.config
+
+def get_time_grain_choices() -> Any:
+    """Get time grain choices including addons from config"""
+    try:
+        # Try to get config from current app context
+        time_grain_addons = current_app.config.get("TIME_GRAIN_ADDONS", {})
+    except RuntimeError:
+        # Outside app context, use empty addons
+        time_grain_addons = {}
+
+    return [
+        i
+        for i in {
+            **builtin_time_grains,
+            **time_grain_addons,
+        }.keys()
+        if i
+    ]
+
 
 #
 # RISON/JSON schemas for query parameters
@@ -223,6 +242,7 @@ class ChartPostSchema(Schema):
     )
     is_managed_externally = fields.Boolean(allow_none=True, dump_default=False)
     external_url = fields.String(allow_none=True)
+    uuid = fields.UUID(allow_none=True)
 
 
 class ChartPutSchema(Schema):
@@ -248,7 +268,9 @@ class ChartPutSchema(Schema):
     )
     owners = fields.List(fields.Integer(metadata={"description": owners_description}))
     params = fields.String(
-        metadata={"description": params_description}, allow_none=True
+        metadata={"description": params_description},
+        allow_none=True,
+        validate=utils.validate_json,
     )
     query_context = fields.String(
         metadata={"description": query_context_description}, allow_none=True
@@ -279,6 +301,7 @@ class ChartPutSchema(Schema):
     is_managed_externally = fields.Boolean(allow_none=True, dump_default=False)
     external_url = fields.String(allow_none=True)
     tags = fields.List(fields.Integer(metadata={"description": tags_description}))
+    uuid = fields.UUID(allow_none=True)
 
 
 class ChartGetDatasourceObjectDataResponseSchema(Schema):
@@ -624,13 +647,7 @@ class ChartDataProphetOptionsSchema(ChartDataPostProcessingOperationOptionsSchem
             "[ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Durations) durations.",
             "example": "P1D",
         },
-        validate=validate.OneOf(
-            choices=[
-                i
-                for i in {**builtin_time_grains, **config["TIME_GRAIN_ADDONS"]}.keys()
-                if i
-            ]
-        ),
+        validate=validate.OneOf(choices=get_time_grain_choices()),
         required=True,
     )
     periods = fields.Integer(
@@ -801,8 +818,7 @@ class ChartDataPivotOptionsSchema(ChartDataPostProcessingOperationOptionsSchema)
     )
     marginal_distribution_name = fields.String(
         metadata={
-            "description": "Name of marginal distribution row/column. "
-            "(default: `All`)"
+            "description": "Name of marginal distribution row/column. (default: `All`)"
         },
     )
     aggregates = ChartDataAggregateConfigField()
@@ -990,13 +1006,7 @@ class ChartDataExtrasSchema(Schema):
             "[ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Durations) durations.",
             "example": "P1D",
         },
-        validate=validate.OneOf(
-            choices=[
-                i
-                for i in {**builtin_time_grains, **config["TIME_GRAIN_ADDONS"]}.keys()
-                if i
-            ]
-        ),
+        validate=validate.OneOf(choices=get_time_grain_choices()),
         allow_none=True,
     )
     instant_time_comparison_range = fields.String(
@@ -1258,6 +1268,14 @@ class ChartDataQueryObjectSchema(Schema):
         },
         allow_none=True,
     )
+    group_others_when_limit_reached = fields.Boolean(
+        metadata={
+            "description": "When true, groups remaining series into an 'Others' "
+            "category when series limit is reached. Prevents incomplete data."
+        },
+        load_default=False,
+        allow_none=True,
+    )
     timeseries_limit = fields.Integer(
         metadata={
             "description": "Maximum row count for timeseries queries. "
@@ -1451,9 +1469,12 @@ class ChartDataResponseResult(Schema):
         allow_none=None,
     )
     query = fields.String(
-        metadata={"description": "The executed query statement"},
-        required=True,
-        allow_none=False,
+        metadata={
+            "description": "The executed query statement. May be absent when "
+            "validation errors occur."
+        },
+        required=False,
+        allow_none=True,
     )
     status = fields.String(
         metadata={"description": "Status of the query"},
@@ -1565,6 +1586,7 @@ class ImportV1ChartSchema(Schema):
     dataset_uuid = fields.UUID(required=True)
     is_managed_externally = fields.Boolean(allow_none=True, dump_default=False)
     external_url = fields.String(allow_none=True)
+    tags = fields.List(fields.String(), allow_none=True)
 
 
 class ChartCacheWarmUpRequestSchema(Schema):
@@ -1603,6 +1625,49 @@ class ChartCacheWarmUpResponseSchema(Schema):
     )
 
 
+class TagSchema(Schema):
+    id = fields.Int()
+    name = fields.String()
+    type = fields.Enum(TagType, by_value=True)
+
+
+class UserSchema(Schema):
+    id = fields.Int()
+    first_name = fields.String()
+    last_name = fields.String()
+
+
+class DashboardSchema(Schema):
+    id = fields.Int()
+    dashboard_title = fields.String()
+    json_metadata = fields.String()
+
+
+class ChartGetResponseSchema(Schema):
+    id = fields.Int(description=id_description)
+    url = fields.String()
+    cache_timeout = fields.String()
+    certified_by = fields.String()
+    certification_details = fields.String()
+    changed_on_humanized = fields.String(data_key="changed_on_delta_humanized")
+    description = fields.String()
+    params = fields.String()
+    slice_name = fields.String()
+    thumbnail_url = fields.String()
+    viz_type = fields.String()
+    query_context = fields.String()
+    is_managed_externally = fields.Boolean()
+    tags = fields.Nested(TagSchema, many=True)
+    owners = fields.List(fields.Nested(UserSchema))
+    dashboards = fields.List(fields.Nested(DashboardSchema))
+    uuid = fields.UUID()
+    datasource_id = fields.Int()
+    datasource_name_text = fields.Function(lambda obj: obj.datasource_name_text())
+    datasource_type = fields.String()
+    datasource_url = fields.Function(lambda obj: obj.datasource_url())
+    datasource_uuid = fields.UUID(attribute="table.uuid")
+
+
 CHART_SCHEMAS = (
     ChartCacheWarmUpRequestSchema,
     ChartCacheWarmUpResponseSchema,
@@ -1626,6 +1691,7 @@ CHART_SCHEMAS = (
     ChartDataGeodeticParseOptionsSchema,
     ChartEntityResponseSchema,
     ChartGetDatasourceResponseSchema,
+    ChartGetResponseSchema,
     ChartCacheScreenshotResponseSchema,
     GetFavStarIdsSchema,
 )

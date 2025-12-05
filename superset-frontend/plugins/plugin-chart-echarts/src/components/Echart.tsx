@@ -27,10 +27,15 @@ import {
   Ref,
   useState,
 } from 'react';
+import { merge } from 'lodash';
 
 import { useSelector } from 'react-redux';
 
+<<<<<<< HEAD
 import { styled } from '@superset-ui/core';
+=======
+import { styled, useTheme } from '@superset-ui/core';
+>>>>>>> 6.0.0rc4
 import { use, init, EChartsType, registerLocale } from 'echarts/core';
 import {
   SankeyChart,
@@ -47,10 +52,12 @@ import {
   TreemapChart,
   HeatmapChart,
   SunburstChart,
+  CustomChart,
 } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 import {
   TooltipComponent,
+  TitleComponent,
   GridComponent,
   VisualMapComponent,
   LegendComponent,
@@ -82,6 +89,7 @@ use([
   CanvasRenderer,
   BarChart,
   BoxplotChart,
+  CustomChart,
   FunnelChart,
   GaugeChart,
   GraphChart,
@@ -103,6 +111,7 @@ use([
   LegendComponent,
   ToolboxComponent,
   TooltipComponent,
+  TitleComponent,
   VisualMapComponent,
   LabelLayout,
 ]);
@@ -129,6 +138,7 @@ function Echart(
   }: EchartsProps,
   ref: Ref<EchartsHandler>,
 ) {
+  const theme = useTheme();
   const divRef = useRef<HTMLDivElement>(null);
   if (refs) {
     // eslint-disable-next-line no-param-reassign
@@ -168,6 +178,11 @@ function Echart(
       if (!chartRef.current) {
         chartRef.current = init(divRef.current, null, { locale });
       }
+<<<<<<< HEAD
+=======
+      // did mount
+      handleSizeChange({ width, height });
+>>>>>>> 6.0.0rc4
       setDidMount(true);
     });
   }, [locale]);
@@ -184,12 +199,68 @@ function Echart(
         chartRef.current?.getZr().on(name, handler);
       });
 
+<<<<<<< HEAD
       chartRef.current?.setOption(echartOptions, true);
 
       // did mount
       handleSizeChange({ width, height });
     }
   }, [didMount, echartOptions, eventHandlers, zrEventHandlers]);
+=======
+      const getEchartsTheme = (options: any) => {
+        const antdTheme = theme;
+        const echartsTheme = {
+          textStyle: {
+            color: antdTheme.colorText,
+            fontFamily: antdTheme.fontFamily,
+          },
+          title: {
+            textStyle: { color: antdTheme.colorText },
+          },
+          legend: {
+            textStyle: { color: antdTheme.colorTextSecondary },
+            pageTextStyle: {
+              color: antdTheme.colorTextSecondary,
+            },
+            pageIconColor: antdTheme.colorTextSecondary,
+            pageIconInactiveColor: antdTheme.colorTextDisabled,
+            inactiveColor: antdTheme.colorTextDisabled,
+          },
+          tooltip: {
+            backgroundColor: antdTheme.colorBgContainer,
+            textStyle: { color: antdTheme.colorText },
+          },
+          axisPointer: {
+            lineStyle: { color: antdTheme.colorPrimary },
+            label: { color: antdTheme.colorText },
+          },
+        } as any;
+        if (options?.xAxis) {
+          echartsTheme.xAxis = {
+            axisLine: { lineStyle: { color: antdTheme.colorSplit } },
+            axisLabel: { color: antdTheme.colorTextSecondary },
+            splitLine: { lineStyle: { color: antdTheme.colorSplit } },
+          };
+        }
+        if (options?.yAxis) {
+          echartsTheme.yAxis = {
+            axisLine: { lineStyle: { color: antdTheme.colorSplit } },
+            axisLabel: { color: antdTheme.colorTextSecondary },
+            splitLine: { lineStyle: { color: antdTheme.colorSplit } },
+          };
+        }
+        return echartsTheme;
+      };
+
+      const themedEchartOptions = merge(
+        {},
+        getEchartsTheme(echartOptions),
+        echartOptions,
+      );
+      chartRef.current?.setOption(themedEchartOptions, true);
+    }
+  }, [didMount, echartOptions, eventHandlers, zrEventHandlers, theme]);
+>>>>>>> 6.0.0rc4
 
   useEffect(() => () => chartRef.current?.dispose(), []);
 

@@ -19,26 +19,19 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  FeatureFlag,
-  isFeatureEnabled,
-  styled,
-  t,
-  useTheme,
-} from '@superset-ui/core';
-import { MenuProps } from 'src/components/Menu';
+import { styled, t, useTheme, css } from '@superset-ui/core';
+import { MenuProps } from '@superset-ui/core/components/Menu';
 import { FilterBarOrientation, RootState } from 'src/dashboard/types';
 import {
   saveFilterBarOrientation,
   saveCrossFiltersSetting,
 } from 'src/dashboard/actions/dashboardInfo';
-import Icons from 'src/components/Icons';
-import DropdownSelectableIcon, {
-  DropDownSelectableProps,
-} from 'src/components/DropdownSelectableIcon';
-import Checkbox from 'src/components/Checkbox';
+import { Icons } from '@superset-ui/core/components/Icons';
+import { Button, Checkbox, Dropdown } from '@superset-ui/core/components';
+import { Space } from '@superset-ui/core/components/Space';
 import { clearDataMaskState } from 'src/dataMask/actions';
 import { useFilters } from 'src/dashboard/components/nativeFilters/FilterBar/state';
+import { useFilterConfigModal } from 'src/dashboard/components/nativeFilters/FilterBar/FilterConfigurationLink/useFilterConfigModal';
 import { useCrossFiltersScopingModal } from '../CrossFilters/ScopingModal/useCrossFiltersScopingModal';
 import FilterConfigurationLink from '../FilterConfigurationLink';
 
@@ -50,19 +43,8 @@ const StyledMenuLabel = styled.span`
   justify-content: space-between;
 
   .enable-cross-filters-text {
-    padding-left: ${({ theme }) => `${theme.gridUnit * 2}px`};
+    padding-left: ${({ theme }) => `${theme.sizeUnit * 2}px`};
   }
-`;
-
-const StyledCheckbox = styled(Checkbox)`
-  ${({ theme }) => `
-  &,
-  svg {
-    display: inline-block;
-    width: ${theme.gridUnit * 4}px;
-    height: ${theme.gridUnit * 4}px;
-  }
-`}
 `;
 
 const CROSS_FILTERS_MENU_KEY = 'cross-filters-menu-key';
@@ -73,8 +55,8 @@ const isOrientation = (o: SelectedKey): o is FilterBarOrientation =>
   o === FilterBarOrientation.Vertical || o === FilterBarOrientation.Horizontal;
 
 const FilterBarSettings = () => {
-  const dispatch = useDispatch();
   const theme = useTheme();
+  const dispatch = useDispatch();
   const isCrossFiltersEnabled = useSelector<RootState, boolean>(
     ({ dashboardInfo }) => dashboardInfo.crossFiltersEnabled,
   );
@@ -95,10 +77,14 @@ const FilterBarSettings = () => {
   const dashboardId = useSelector<RootState, number>(
     ({ dashboardInfo }) => dashboardInfo.id,
   );
-  const canSetHorizontalFilterBar =
-    canEdit && isFeatureEnabled(FeatureFlag.HorizontalFilterBar);
 
   const [openScopingModal, scopingModal] = useCrossFiltersScopingModal();
+
+  const { openFilterConfigModal, FilterConfigModalComponent } =
+    useFilterConfigModal({
+      createNewOnOpen: filterValues.length === 0,
+      dashboardId,
+    });
 
   const updateCrossFiltersSetting = useCallback(
     async isEnabled => {
@@ -133,7 +119,7 @@ const FilterBarSettings = () => {
     [dispatch, filterBarOrientation],
   );
 
-  const handleSelect = useCallback(
+  const handleClick = useCallback(
     (
       selection: Parameters<
         Required<Pick<MenuProps, 'onSelect'>>['onSelect']
@@ -146,43 +132,48 @@ const FilterBarSettings = () => {
         toggleFilterBarOrientation(selectedKey);
       } else if (selectedKey === CROSS_FILTERS_SCOPING_MENU_KEY) {
         openScopingModal();
+      } else if (selectedKey === ADD_EDIT_FILTERS_MENU_KEY) {
+        openFilterConfigModal();
       }
     },
-    [openScopingModal, toggleCrossFiltering, toggleFilterBarOrientation],
+    [
+      openScopingModal,
+      toggleCrossFiltering,
+      toggleFilterBarOrientation,
+      openFilterConfigModal,
+    ],
   );
 
   const crossFiltersMenuItem = useMemo(
     () => (
       <StyledMenuLabel>
-        <StyledCheckbox
-          className="enable-cross-filters"
+        <Checkbox
+          name="enable-cross-filters"
           checked={crossFiltersEnabled}
-          onChange={checked => setCrossFiltersEnabled(checked || false)}
-        />{' '}
-        <span className="enable-cross-filters-text">
+          onChange={e => setCrossFiltersEnabled(e.target.checked)}
+        >
           {t('Enable cross-filtering')}
-        </span>
+        </Checkbox>
       </StyledMenuLabel>
     ),
     [crossFiltersEnabled],
   );
 
   const menuItems = useMemo(() => {
-    const items: DropDownSelectableProps['menuItems'] = [];
+    const items: MenuProps['items'] = [];
 
     if (canEdit) {
       items.push({
         key: ADD_EDIT_FILTERS_MENU_KEY,
         label: (
-          <FilterConfigurationLink
-            dashboardId={dashboardId}
-            createNewOnOpen={filterValues.length === 0}
-          >
+          <FilterConfigurationLink>
             {t('Add or edit filters')}
           </FilterConfigurationLink>
         ),
-        divider: canSetHorizontalFilterBar,
       });
+      if (canEdit) {
+        items.push({ type: 'divider' });
+      }
     }
     if (canEdit) {
       items.push({
@@ -192,29 +183,55 @@ const FilterBarSettings = () => {
       items.push({
         key: CROSS_FILTERS_SCOPING_MENU_KEY,
         label: t('Cross-filtering scoping'),
-        divider: canSetHorizontalFilterBar,
       });
+      items.push({ type: 'divider' });
     }
-    if (canSetHorizontalFilterBar) {
+    if (canEdit) {
       items.push({
         key: 'placement',
         label: t('Orientation of filter bar'),
+        className: 'filter-bar-orientation-submenu',
         children: [
           {
             key: FilterBarOrientation.Vertical,
-            label: t('Vertical (Left)'),
+            label: (
+              <Space>
+                {t('Vertical (Left)')}
+                {selectedFilterBarOrientation ===
+                  FilterBarOrientation.Vertical && (
+                  <Icons.CheckOutlined
+                    iconColor={theme.colorPrimary}
+                    iconSize="m"
+                  />
+                )}
+              </Space>
+            ),
           },
           {
             key: FilterBarOrientation.Horizontal,
-            label: t('Horizontal (Top)'),
+            label: (
+              <Space>
+                {t('Horizontal (Top)')}
+                {selectedFilterBarOrientation ===
+                  FilterBarOrientation.Horizontal && (
+                  <Icons.CheckOutlined
+                    iconSize="m"
+                    css={css`
+                      vertical-align: middle;
+                    `}
+                  />
+                )}
+              </Space>
+            ),
           },
         ],
+        ...{ 'data-test': 'dropdown-selectable-icon-submenu' },
       });
     }
     return items;
   }, [
+    selectedFilterBarOrientation,
     canEdit,
-    canSetHorizontalFilterBar,
     crossFiltersMenuItem,
     dashboardId,
     filterValues,
@@ -226,19 +243,41 @@ const FilterBarSettings = () => {
 
   return (
     <>
-      <DropdownSelectableIcon
-        onSelect={handleSelect}
-        icon={
-          <Icons.Gear
+      <Dropdown
+        menu={{
+          onClick: handleClick,
+          items: menuItems,
+          selectedKeys: [selectedFilterBarOrientation],
+        }}
+        trigger={['click']}
+        popupRender={menu => (
+          <div
+            css={css`
+              .filter-bar-orientation-submenu.ant-dropdown-menu-submenu-selected
+                > .ant-dropdown-menu-submenu-title {
+                color: inherit;
+              }
+            `}
+          >
+            {menu}
+          </div>
+        )}
+      >
+        <Button
+          buttonStyle="link"
+          css={css`
+            padding: 0;
+          `}
+        >
+          <Icons.SettingOutlined
+            iconSize="xl"
             name="gear"
-            iconColor={theme.colors.grayscale.base}
             data-test="filterbar-orientation-icon"
           />
-        }
-        menuItems={menuItems}
-        selectedKeys={[selectedFilterBarOrientation]}
-      />
+        </Button>
+      </Dropdown>
       {scopingModal}
+      {FilterConfigModalComponent}
     </>
   );
 };

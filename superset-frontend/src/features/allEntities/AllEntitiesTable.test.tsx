@@ -17,8 +17,7 @@
  * under the License.
  */
 
-import { render } from 'spec/helpers/testing-library';
-import { screen } from '@testing-library/react';
+import { render, screen } from 'spec/helpers/testing-library';
 import * as useQueryParamsModule from 'use-query-params';
 import AllEntitiesTable from './AllEntitiesTable';
 
@@ -100,6 +99,7 @@ describe('AllEntitiesTable', () => {
         objects={mockObjects}
         canEditTag
       />,
+      { useRouter: true },
     );
 
     expect(
@@ -127,7 +127,11 @@ describe('AllEntitiesTable', () => {
     expect(screen.queryByText('Add tag to entities')).not.toBeInTheDocument();
   });
 
+<<<<<<< HEAD
   it('renders the correct tags for each object type, excluding the current tag', () => {
+=======
+  it('renders the correct tags for each object type', () => {
+>>>>>>> 6.0.0rc4
     render(
       <AllEntitiesTable
         search=""
@@ -135,6 +139,7 @@ describe('AllEntitiesTable', () => {
         objects={mockObjectsWithTags}
         canEditTag
       />,
+      { useRouter: true },
     );
 
     expect(screen.getByText('Dashboards')).toBeInTheDocument();
@@ -148,8 +153,29 @@ describe('AllEntitiesTable', () => {
     expect(screen.getByText('Queries')).toBeInTheDocument();
     expect(screen.getByText('User Engagement')).toBeInTheDocument();
     expect(screen.getByText('Engagement')).toBeInTheDocument();
+  });
 
-    expect(screen.queryByText('Current Tag')).not.toBeInTheDocument();
+  it('Only list asset types that have entities', () => {
+    const mockObjects = {
+      dashboard: [],
+      chart: [mockObjectsWithTags.chart[0]],
+      query: [],
+    };
+
+    render(
+      <AllEntitiesTable
+        search=""
+        setShowTagModal={mockSetShowTagModal}
+        objects={mockObjects}
+        canEditTag
+      />,
+      { useRouter: true },
+    );
+
+    expect(screen.queryByText('Dashboards')).not.toBeInTheDocument();
+    expect(screen.getByText('Charts')).toBeInTheDocument();
+    expect(screen.getByText('Monthly Revenue')).toBeInTheDocument();
+    expect(screen.queryByText('Queries')).not.toBeInTheDocument();
   });
 
   it('Only list asset types that have entities', () => {

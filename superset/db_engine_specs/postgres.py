@@ -21,7 +21,7 @@ import logging
 import re
 from datetime import datetime
 from re import Pattern
-from typing import Any, TYPE_CHECKING
+from typing import Any, Optional, TYPE_CHECKING
 
 from flask_babel import gettext as __
 from sqlalchemy.dialects.postgresql import DOUBLE_PRECISION, ENUM, JSON
@@ -35,9 +35,9 @@ from superset.db_engine_specs.base import BaseEngineSpec, BasicParametersMixin
 from superset.errors import ErrorLevel, SupersetError, SupersetErrorType
 from superset.exceptions import SupersetException, SupersetSecurityException
 from superset.models.sql_lab import Query
-from superset.sql.parse import SQLScript
+from superset.sql.parse import process_jinja_sql
 from superset.utils import core as utils, json
-from superset.utils.core import GenericDataType
+from superset.utils.core import GenericDataType, QuerySource
 
 if TYPE_CHECKING:
     from superset.models.core import Database  # pragma: no cover
@@ -280,6 +280,7 @@ class PostgresEngineSpec(BasicParametersMixin, PostgresBaseEngineSpec):
         cls,
         database: Database,
         query: Query,
+        template_params: Optional[dict[str, Any]] = None,
     ) -> str | None:
         """
         Return the default schema for a given query.
@@ -287,7 +288,7 @@ class PostgresEngineSpec(BasicParametersMixin, PostgresBaseEngineSpec):
         This method simply uses the parent method after checking that there are no
         malicious path setting in the query.
         """
-        script = SQLScript(query.sql, engine=cls.engine)
+        script = process_jinja_sql(query.sql, database, template_params).script
         settings = script.get_settings()
         if "search_path" in settings:
             raise SupersetSecurityException(
@@ -300,7 +301,7 @@ class PostgresEngineSpec(BasicParametersMixin, PostgresBaseEngineSpec):
                 )
             )
 
-        return super().get_default_schema_for_query(database, query)
+        return super().get_default_schema_for_query(database, query, template_params)
 
     @classmethod
     def adjust_engine_params(
@@ -319,7 +320,7 @@ class PostgresEngineSpec(BasicParametersMixin, PostgresBaseEngineSpec):
         return uri, connect_args
 
     @classmethod
-    def get_default_catalog(cls, database: Database) -> str | None:
+    def get_default_catalog(cls, database: Database) -> str:
         """
         Return the default catalog for a given database.
         """
@@ -411,7 +412,9 @@ WHERE datistemplate = false;
         )
 
     @staticmethod
-    def get_extra_params(database: Database) -> dict[str, Any]:
+    def get_extra_params(
+        database: Database, source: QuerySource | None = None
+    ) -> dict[str, Any]:
         """
         For Postgres, the path to a SSL certificate is placed in `connect_args`.
 

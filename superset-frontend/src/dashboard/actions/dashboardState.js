@@ -57,6 +57,7 @@ import { safeStringify } from 'src/utils/safeStringify';
 import { logEvent } from 'src/logger/actions';
 import { LOG_ACTIONS_CONFIRM_OVERWRITE_DASHBOARD_METADATA } from 'src/logger/LogUtils';
 import { isEqual } from 'lodash';
+import { navigateWithState, navigateTo } from 'src/utils/navigationUtils';
 import { UPDATE_COMPONENTS_PARENTS_LIST } from './dashboardLayout';
 import {
   saveChartConfiguration,
@@ -77,6 +78,11 @@ import {
   getFreshSharedLabels,
   getDynamicLabelsColors,
 } from '../../utils/colorScheme';
+
+export const TOGGLE_NATIVE_FILTERS_BAR = 'TOGGLE_NATIVE_FILTERS_BAR';
+export function toggleNativeFiltersBar(isOpen) {
+  return { type: TOGGLE_NATIVE_FILTERS_BAR, isOpen };
+}
 
 export const SET_UNSAVED_CHANGES = 'SET_UNSAVED_CHANGES';
 export function setUnsavedChanges(hasUnsavedChanges) {
@@ -293,6 +299,7 @@ export function saveDashboardRequest(data, id, saveType) {
       owners,
       roles,
       slug,
+      tags,
     } = data;
 
     const hasId = item => item.id !== undefined;
@@ -314,6 +321,9 @@ export function saveDashboardRequest(data, id, saveType) {
         ? undefined
         : ensureIsArray(roles).map(r => (hasId(r) ? r.id : r)),
       slug: slug || null,
+      tags: !isFeatureEnabled(FeatureFlag.TaggingSystem)
+        ? undefined
+        : ensureIsArray(tags || []).map(r => (hasId(r) ? r.id : r)),
       metadata: {
         ...data.metadata,
         color_namespace: getColorNamespace(data.metadata?.color_namespace),
@@ -362,6 +372,7 @@ export function saveDashboardRequest(data, id, saveType) {
         }),
       );
       dispatch(saveDashboardFinished());
+      navigateTo(`/superset/dashboard/${response.json.result.id}/`);
       dispatch(addSuccessToast(t('This dashboard was saved successfully.')));
       return response;
     };
@@ -402,11 +413,9 @@ export function saveDashboardRequest(data, id, saveType) {
       }
       dispatch(saveDashboardFinished());
       // redirect to the new slug or id
-      window.history.pushState(
-        { event: 'dashboard_properties_changed' },
-        '',
-        `/superset/dashboard/${slug || id}/`,
-      );
+      navigateWithState(`/superset/dashboard/${slug || id}/`, {
+        event: 'dashboard_properties_changed',
+      });
 
       dispatch(addSuccessToast(t('This dashboard was saved successfully.')));
       dispatch(setOverrideConfirm(undefined));
@@ -446,6 +455,7 @@ export function saveDashboardRequest(data, id, saveType) {
               slug: cleanedData.slug,
               owners: cleanedData.owners,
               roles: cleanedData.roles,
+              tags: cleanedData.tags || [],
               json_metadata: safeStringify({
                 ...(cleanedData?.metadata || {}),
                 default_filters: safeStringify(serializedFilters),

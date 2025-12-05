@@ -17,8 +17,13 @@
  * under the License.
  */
 import fetchMock from 'fetch-mock';
-import { render, screen, waitFor, within } from 'spec/helpers/testing-library';
-import userEvent from '@testing-library/user-event';
+import {
+  render,
+  screen,
+  userEvent,
+  waitFor,
+  within,
+} from 'spec/helpers/testing-library';
 import SqlEditorLeftBar, {
   SqlEditorLeftBarProps,
 } from 'src/SqlLab/components/SqlEditorLeftBar';
@@ -124,7 +129,7 @@ test.skip('table should be visible when expanded is true', async () => {
     name: 'Select database or type to search databases',
   });
   const schemaSelect = getByRole('combobox', {
-    name: 'Select schema or type to search schemas',
+    name: 'Select schema or type to search schemas: main',
   });
   const tableSelect = getAllByLabelText(
     /Select table or type to search tables/i,
@@ -270,7 +275,7 @@ test.skip('When changing database the schema and table list must be updated', as
     await screen.findByRole('option', { name: 'new_schema' }),
   ).toBeInTheDocument();
 
-  userEvent.click(screen.getAllByText('new_schema')[1]);
+  userEvent.click(screen.getByText('new_schema'));
 
   const updatedTableSelector = await screen.findAllByText(/new_table/i);
   expect(updatedTableSelector[0]).toBeInTheDocument();
