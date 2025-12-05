@@ -109,6 +109,7 @@ class OpenAiLlm(BaseLlm):
             response = client.chat.completions.create(
                 model=llm_model,
                 messages=messages,
+                stream=False,  # Explicitly disable streaming
             )
         except Exception as e:
             logger.error(f"OpenAI API error: {e}")

@@ -87,11 +87,15 @@ class ThauraLlm(OpenAiLlm):
             messages.append({"role": "user", "content": history})
         messages.append({"role": "user", "content": prompt})
 
+        logger.info(f"Thaura request - model: {llm_model}, context size: {len(context_json)} chars, total message count: {len(messages)}")
+
         try:
             response = client.chat.completions.create(
                 model=llm_model,
                 messages=messages,
+                stream=False,  # Explicitly disable streaming
             )
+            logger.info(f"Thaura API response type: {type(response)}")
         except Exception as e:
             logger.error(f"Thaura API error: {e}")
             return f"-- Failed to generate SQL: {str(e)}"

@@ -63,7 +63,8 @@ def _get_or_create_llm_provider(pk: int, dialect: str, provider_type: str) -> Ba
     llm_provider = llm_providers.get(pk, None)
     if llm_provider:
         started_time_utc = context_builder_task.started_time.replace(tzinfo=datetime.timezone.utc)
-        if started_time_utc < llm_provider.created_at:
+        # Check both that context is fresh AND provider type matches
+        if started_time_utc < llm_provider.created_at and llm_provider.llm_type == provider_type:
             return llm_provider
 
     try:
