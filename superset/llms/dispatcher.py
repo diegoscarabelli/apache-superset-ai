@@ -12,7 +12,7 @@ from superset.daos.context_builder_task import ContextBuilderTaskDAO
 from superset.exceptions import DatabaseNotFoundException
 from superset.models.core import ContextBuilderTask
 from superset.tasks.llm_context import initiate_context_generation, generate_llm_context
-from superset.llms import anthropic, gemini, openai
+from superset.llms import anthropic, gemini, openai, thaura
 from superset.llms.base_llm import BaseLlm
 from superset.llms.exceptions import NoContextError, NoProviderError
 
@@ -24,9 +24,18 @@ logger = logging.getLogger(__name__)
 
 llm_providers = {}
 VALIDATION_ATTEMPTS = 3
+
+def _get_all_subclasses(cls):
+    """Recursively get all subclasses of a class."""
+    all_subclasses = []
+    for subclass in cls.__subclasses__():
+        all_subclasses.append(subclass)
+        all_subclasses.extend(_get_all_subclasses(subclass))
+    return all_subclasses
+
 AVAILABLE_PROVIDERS = [
     cls
-    for cls in BaseLlm.__subclasses__()
+    for cls in _get_all_subclasses(BaseLlm)
     if hasattr(cls, "llm_type")
 ]
 
@@ -54,7 +63,8 @@ def _get_or_create_llm_provider(pk: int, dialect: str, provider_type: str) -> Ba
     llm_provider = llm_providers.get(pk, None)
     if llm_provider:
         started_time_utc = context_builder_task.started_time.replace(tzinfo=datetime.timezone.utc)
-        if started_time_utc < llm_provider.created_at:
+        # Check both that context is fresh AND provider type matches
+        if started_time_utc < llm_provider.created_at and llm_provider.llm_type == provider_type:
             return llm_provider
 
     try:

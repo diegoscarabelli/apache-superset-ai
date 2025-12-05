@@ -101,11 +101,12 @@ Below are two sections:
 
 ### Language Models
 
-This is where the administrator configures the LLM API provider, the API key, and selects the one of the models the provider makes available via its API.  
-Supported providers:  
-   - Gemini  
-   - OpenAI (WIP)  
-   - Anthropic (WIP) 
+This is where the administrator configures the LLM API provider, the API key, and selects the one of the models the provider makes available via its API.
+Supported providers:
+   - Gemini
+   - OpenAI (WIP)
+   - Anthropic (WIP)
+   - Thaura 
 
 These settings are stored in a new table of the Superset database called `llm_connection`.
 
@@ -261,3 +262,29 @@ The Python SDK for interacting with the Anthropic API is [`anthropic`](https://p
 #### Cache
 
 Caching with the Anthropic API operates similarly to OpenAI, relying on prefix matching for prompt caching. However, Anthropic requires explicit [cache control blocks](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching) to be included within the system prompt to enable caching. The Anthropic module is responsible for managing cache behavior, ensuring that cache control blocks are properly inserted and maintained as part of the prompt construction process. This functionality was not utilized for this implementation.
+
+### Thaura
+
+The Python SDK for interacting with the Thaura.ai API is [`openai`](https://pypi.org/project/openai/), as Thaura provides an OpenAI-compatible API. The Thaura implementation leverages the same OpenAI SDK but points to the Thaura.ai backend at `https://backend.thaura.ai/v1`.
+
+Thaura.ai is an ethical, privacy-first AI platform designed for secure knowledge management with encryption. The platform provides an OpenAI-compatible API that can be used as a drop-in replacement for OpenAI endpoints. To use the Thaura API, you need to:
+
+1. Create an account at [thaura.ai](https://thaura.ai)
+2. Generate an API key from your account dashboard
+3. Add funds to your account balance to use the API
+
+The Thaura integration reuses the OpenAI LLM implementation, ensuring consistency in behavior and reducing maintenance overhead.
+
+#### Chain-of-Thought Reasoning
+
+Thaura's model employs chain-of-thought reasoning, which means it may wrap its internal reasoning process in `<think>...</think>` tags before providing the final SQL query. The Thaura implementation automatically handles this by:
+
+1. Detecting the presence of `<think>` and `</think>` tags in the response
+2. Stripping the chain-of-thought reasoning content
+3. Extracting the clean SQL query from the remaining text
+
+This ensures users receive only the SQL query in the editor, while the model still benefits from reasoning through the problem step-by-step internally. The implementation also handles responses formatted with markdown code blocks (` ```sql ... ``` `), applying both tag removal and markdown trimming as needed.
+
+#### Cache
+
+Like OpenAI, Thaura.ai does not provide explicit cache management APIs. The complete database metadata context and system instructions are included with every API call. However, similar to OpenAI, placing the context and system prompt at the beginning of the input prompt can help optimize performance if the provider implements any automatic caching mechanisms.
