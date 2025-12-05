@@ -24,9 +24,18 @@ logger = logging.getLogger(__name__)
 
 llm_providers = {}
 VALIDATION_ATTEMPTS = 3
+
+def _get_all_subclasses(cls):
+    """Recursively get all subclasses of a class."""
+    all_subclasses = []
+    for subclass in cls.__subclasses__():
+        all_subclasses.append(subclass)
+        all_subclasses.extend(_get_all_subclasses(subclass))
+    return all_subclasses
+
 AVAILABLE_PROVIDERS = [
     cls
-    for cls in BaseLlm.__subclasses__()
+    for cls in _get_all_subclasses(BaseLlm)
     if hasattr(cls, "llm_type")
 ]
 
