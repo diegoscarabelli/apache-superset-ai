@@ -19,6 +19,7 @@
 import { useCallback, useMemo, useEffect, useRef } from 'react';
 import useEffectEvent from 'src/hooks/useEffectEvent';
 import { toQueryString } from 'src/utils/urlUtils';
+import { normalizeSchemaToArray } from 'src/SqlLab/utils/schemaUtils';
 import { api, JsonResponse } from './queryApi';
 
 import { useSchemas } from './schemas';
@@ -27,6 +28,7 @@ export interface Table {
   label: string;
   value: string;
   type: string;
+  schema: string;
   extra?: {
     certification?: {
       certified_by: string;
@@ -52,7 +54,7 @@ export type Data = {
 export type FetchTablesQueryParams = {
   dbId?: string | number;
   catalog?: string | null;
-  schema?: string;
+  schema?: string | string[];
   forceRefresh?: boolean;
   onSuccess?: (data: Data, isRefetched: boolean) => void;
   onError?: (error: Response) => void;
@@ -101,19 +103,22 @@ const tableApi = api.injectEndpoints({
   endpoints: builder => ({
     tables: builder.query<Data, FetchTablesQueryParams>({
       providesTags: ['Tables'],
-      query: ({ dbId, catalog, schema, forceRefresh }) => ({
-        endpoint: `/api/v1/database/${dbId ?? 'undefined'}/tables/`,
-        // TODO: Would be nice to add pagination in a follow-up. Needs endpoint changes.
-        urlParams: {
-          force: forceRefresh,
-          schema_name: schema ? encodeURIComponent(schema) : '',
-          ...(catalog && { catalog_name: catalog }),
-        },
-        transformResponse: ({ json }: QueryResponse) => ({
-          options: json.result,
-          hasMore: json.count > json.result.length,
-        }),
-      }),
+      query: ({ dbId, catalog, schema, forceRefresh }) => {
+        const schemas = normalizeSchemaToArray(schema);
+        return {
+          endpoint: `/api/v1/database/${dbId ?? 'undefined'}/tables/`,
+          // TODO: Would be nice to add pagination in a follow-up. Needs endpoint changes.
+          urlParams: {
+            force: forceRefresh,
+            schema_name: schemas.map(s => encodeURIComponent(s)),
+            ...(catalog && { catalog_name: catalog }),
+          },
+          transformResponse: ({ json }: QueryResponse) => ({
+            options: json.result,
+            hasMore: json.count > json.result.length,
+          }),
+        };
+      },
       serializeQueryArgs: ({ queryArgs: { dbId, schema } }) => ({
         dbId,
         schema,
@@ -176,8 +181,10 @@ export function useTables(options: Params) {
     [schemaOptions],
   );
 
+  const schemas = normalizeSchemaToArray(schema);
+  const allSchemasValid = schemas.every(s => schemaOptionsMap.has(s));
   const enabled = Boolean(
-    dbId && schema && !isFetching && schemaOptionsMap.has(schema),
+    dbId && schemas.length > 0 && !isFetching && allSchemasValid,
   );
 
   const result = useTablesQuery(
