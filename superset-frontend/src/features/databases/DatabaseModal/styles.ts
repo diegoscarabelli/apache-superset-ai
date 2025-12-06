@@ -277,6 +277,8 @@ export const StyledInputContainer = styled.div`
       border-style: none;
       border: 1px solid ${theme.colorBorder};
       border-radius: ${theme.borderRadius}px;
+      background-color: ${theme.colorBgContainer};
+      color: ${theme.colorText};
 
       &[name='name'] {
         flex: 0 1 auto;

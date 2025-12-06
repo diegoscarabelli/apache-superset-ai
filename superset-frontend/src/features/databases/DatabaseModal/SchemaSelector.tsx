@@ -11,14 +11,15 @@ import { css, styled } from '@superset-ui/core';
 import IndeterminateCheckbox from 'src/components/IndeterminateCheckbox';
 
 const Container = styled.div`
-  ${({ theme }) => css`  
+  ${({ theme }) => css`
     width: 100%;
     margin: 0 auto;
     padding: ${theme.gridUnit * 1.5}px ${theme.gridUnit * 2}px;
     border-style: none;
     border: 1px solid ${theme.colorBorder};
     border-radius: ${theme.gridUnit}px;
-  
+    background-color: ${theme.colorBgContainer};
+
     input {
       flex-grow: 0;
     }
@@ -277,6 +278,8 @@ const SchemaSelector = ({
                 borderRadius: 0,
                 borderBottom: `1px solid ${theme.colorBorder}`,
                 minWidth: 180,
+                backgroundColor: 'transparent',
+                color: theme.colorText,
               }}
               value={filterText}
               onChange={e => setFilterText(e.target.value)}
