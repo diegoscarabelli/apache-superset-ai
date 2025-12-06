@@ -4,9 +4,8 @@ import {
   SupersetClient,
   SupersetTheme,
 } from '@superset-ui/core';
-import { InfoTooltip } from '@superset-ui/core/components';
+import { InfoTooltip, Collapse } from '@superset-ui/core/components';
 import IndeterminateCheckbox from 'src/components/IndeterminateCheckbox';
-import Collapse from 'src/components/Collapse';
 import { Switch } from 'src/components/Switch';
 import { useDatabaseTables } from 'src/hooks/apiResources';
 import { Select as AntdSelect } from 'antd';
@@ -107,7 +106,7 @@ const AIAssistantOptions = ({
         </div>
       </StyledLlmSwitch>
       <Collapse
-        expandIconPosition="right"
+        expandIconPosition="end"
         accordion
         css={(theme: SupersetTheme) => antdCollapseStyles(theme)}
       >
