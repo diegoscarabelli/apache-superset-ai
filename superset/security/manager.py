@@ -819,6 +819,51 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
                 updated_view_menus.append(new_dataset_view_menu)
         return updated_view_menus
 
+    def get_catalog_perm(
+        self, database_name: str, catalog: Optional[str]
+    ) -> Optional[str]:
+        """
+        Return the catalog permission string.
+        FAB 5.0 removed this method - reimplemented for compatibility.
+
+        :param database_name: The database name
+        :param catalog: The catalog name
+        :return: Permission string in format [database].[catalog] or None
+        """
+        if not catalog:
+            return None
+        return f"[{database_name}].[{catalog}]"
+
+    def get_schema_perm(
+        self, database_name: str, catalog: Optional[str], schema: Optional[str]
+    ) -> Optional[str]:
+        """
+        Return the schema permission string.
+        FAB 5.0 removed this method - reimplemented for compatibility.
+
+        :param database_name: The database name
+        :param catalog: The catalog name
+        :param schema: The schema name
+        :return: Permission string in format [database].[schema] or None
+        """
+        if not schema:
+            return None
+        return f"[{database_name}].[{schema}]"
+
+    def get_dataset_perm(
+        self, dataset_id: int, table_name: str, database_name: str
+    ) -> str:
+        """
+        Return the dataset permission string.
+        FAB 5.0 removed this method - reimplemented for compatibility.
+
+        :param dataset_id: The dataset ID
+        :param table_name: The table name
+        :param database_name: The database name
+        :return: Permission string in format [database].[table]_(id)
+        """
+        return f"[{database_name}].[{table_name}]_({dataset_id})"
+
     def dataset_after_insert(
         self,
         mapper: Mapper,
