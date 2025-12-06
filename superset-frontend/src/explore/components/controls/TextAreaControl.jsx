@@ -72,6 +72,34 @@ const defaultProps = {
   resize: null,
   textAreaStyles: {},
   tooltipOptions: {},
+  hotkeys: [],
+};
+
+class TextAreaControl extends Component {
+  onControlChange(event) {
+    const { value } = event.target;
+    this.props.onChange(value);
+  }
+
+  onAreaEditorChange(value) {
+    this.props.onChange(value);
+  }
+
+  renderEditor(inModal = false) {
+    const minLines = inModal ? 40 : this.props.minLines || 12;
+    if (this.props.language) {
+      const style = {
+        border: `1px solid ${this.props.theme.colorBorder}`,
+        minHeight: `${minLines}em`,
+        width: 'auto',
+        ...this.props.textAreaStyles,
+      };
+      if (this.props.resize) {
+        style.resize = this.props.resize;
+      }
+      if (this.props.readOnly) {
+        style.backgroundColor = '#f2f2f2';
+      }
       const onEditorLoad = editor => {
         this.props.hotkeys.forEach(keyConfig => {
           editor.commands.addCommand({
@@ -89,6 +117,24 @@ const defaultProps = {
             minLines={minLines}
             maxLines={inModal ? 1000 : this.props.maxLines}
             editorProps={{ $blockScrolling: true }}
+            onLoad={onEditorLoad}
+            defaultValue={this.props.initialValue}
+            readOnly={this.props.readOnly}
+            key={this.props.name}
+            {...this.props}
+            onChange={this.onAreaEditorChange.bind(this)}
+          />
+        </div>
+      );
+
+      if (this.props.tooltipOptions) {
+        return <Tooltip {...this.props.tooltipOptions}>{codeEditor}</Tooltip>;
+      }
+      return codeEditor;
+    }
+
+    const textArea = (
+      <div>
         <Input.TextArea
           placeholder={t('textarea')}
           onChange={this.onControlChange.bind(this)}

@@ -525,25 +525,40 @@ export const StyledUploadWrapper = styled.div`
   }
 `;
 
+// AI Assistant styles (added for LLM integration features)
+export const antdCollapseStyles = (theme: SupersetTheme) => css`
+  .ant-collapse-header {
+    padding-top: ${theme.sizeUnit * 3.5}px;
+    padding-bottom: ${theme.sizeUnit * 2.5}px;
+
+    .anticon.ant-collapse-arrow {
+      top: calc(50% - 6px);
+    }
+    .helper {
+      color: ${theme.colorTextSecondary};
+    }
+  }
+`;
+
 export const StyledContextWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: ${({ theme }) => theme.gridUnit * 4}px;
-  gap: ${({ theme }) => theme.gridUnit * 2}px;
+  margin-bottom: ${({ theme }) => theme.sizeUnit * 4}px;
+  gap: ${({ theme }) => theme.sizeUnit * 2}px;
 `;
 
 export const StyledLlmSwitch = styled.div`
   ${({ theme }) => css`
     display: flex;
     align-items: center;
-    margin-top: ${theme.gridUnit * 6}px;
-    margin-left: ${theme.gridUnit * 4}px;
-    margin-bottom: ${theme.gridUnit * 6}px;
+    margin-top: ${theme.sizeUnit * 6}px;
+    margin-left: ${theme.sizeUnit * 4}px;
+    margin-bottom: ${theme.sizeUnit * 6}px;
 
     .control-label {
-      font-family: ${theme.typography.families.sansSerif};
-      font-size: ${theme.typography.sizes.m}px;
-      margin-right: ${theme.gridUnit * 4}px;
+      font-family: ${theme.fontFamily};
+      font-size: ${theme.fontSizeMD}px;
+      margin-right: ${theme.sizeUnit * 4}px;
     }
 
     .input-container {
@@ -551,32 +566,32 @@ export const StyledLlmSwitch = styled.div`
       align-items: center;
 
       label {
-        margin-left: ${theme.gridUnit * 2}px;
-        margin-top: ${theme.gridUnit * 2}px;
+        margin-left: ${theme.sizeUnit * 2}px;
+        margin-top: ${theme.sizeUnit * 2}px;
       }
     }
   `}
 `;
 
 export const StyledTokenEstimate = styled.div`
-  border: 1px solid ${({ theme }) => theme.colors.grayscale.light2};
-  border-radius: ${({ theme }) => theme.gridUnit}px;
-  padding: ${({ theme }) => theme.gridUnit * 3}px;
-  font-size: ${({ theme }) => theme.typography.sizes.s}px;
-  background-color: ${({ theme }) => theme.colors.grayscale.light4};
+  border: 1px solid ${({ theme }) => theme.colorBorder};
+  border-radius: ${({ theme }) => theme.borderRadius}px;
+  padding: ${({ theme }) => theme.sizeUnit * 3}px;
+  font-size: ${({ theme }) => theme.fontSizeSM}px;
+  background-color: ${({ theme }) => theme.colorBgLayout};
 
   .warning {
-    color: ${({ theme }) => theme.colors.error.base};
+    color: ${({ theme }) => theme.colorError};
   }
 `;
 
 export const StyledContextError = styled.div`
-  border: 1px solid ${({ theme }) => theme.colors.error.base};
-  border-radius: ${({ theme }) => theme.gridUnit}px;
-  padding: ${({ theme }) => theme.gridUnit * 3}px;
-  font-size: ${({ theme }) => theme.typography.sizes.s}px;
-  background-color: ${({ theme }) => theme.colors.error.light2};
-  color: ${({ theme }) => theme.colors.error.base};
+  border: 1px solid ${({ theme }) => theme.colorError};
+  border-radius: ${({ theme }) => theme.borderRadius}px;
+  padding: ${({ theme }) => theme.sizeUnit * 3}px;
+  font-size: ${({ theme }) => theme.fontSizeSM}px;
+  background-color: ${({ theme }) => theme.colorErrorBg || '#fee'};
+  color: ${({ theme }) => theme.colorError};
 `;
 
 export const StyledTopKForm = styled.div`
@@ -588,13 +603,13 @@ export const StyledTopKForm = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-bottom: ${({ theme }) => theme.gridUnit * 4}px;
+    margin-bottom: ${({ theme }) => theme.sizeUnit * 4}px;
   }
 
   .control-label {
-    margin-top: ${({ theme }) => theme.gridUnit * 2}px;
-    margin-right: ${({ theme }) => theme.gridUnit * 2}px;
-    width: ${({ theme }) => theme.gridUnit * 20}px;
+    margin-top: ${({ theme }) => theme.sizeUnit * 2}px;
+    margin-right: ${({ theme }) => theme.sizeUnit * 2}px;
+    width: ${({ theme }) => theme.sizeUnit * 20}px;
   }
   
   .helper {
