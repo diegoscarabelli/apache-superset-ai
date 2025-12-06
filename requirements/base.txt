@@ -150,8 +150,9 @@ flask-migrate==3.1.0
     # via apache-superset (pyproject.toml)
 flask-session==0.8.0
     # via apache-superset (pyproject.toml)
-flask-sqlalchemy==2.5.1
+flask-sqlalchemy==3.0.5
     # via
+    #   apache-superset (pyproject.toml)
     #   flask-appbuilder
     #   flask-migrate
 flask-talisman==1.1.0
@@ -269,6 +270,7 @@ numpy==1.26.4
     #   bottleneck
     #   numexpr
     #   pandas
+    #   pyarrow
 odfpy==1.4.1
     # via pandas
 openai==1.82.0
@@ -303,7 +305,7 @@ parsedatetime==2.6
 pgsanity==0.2.9
     # via apache-superset (pyproject.toml)
 pillow==11.3.0
-    # via apache_superset (pyproject.toml)
+    # via apache-superset (pyproject.toml)
 platformdirs==4.3.8
     # via requests-cache
 ply==3.11
@@ -422,7 +424,6 @@ sqlalchemy==1.4.54
     # via
     #   apache-superset (pyproject.toml)
     #   alembic
-    #   apache-superset-core
     #   flask-appbuilder
     #   flask-sqlalchemy
     #   marshmallow-sqlalchemy
@@ -431,12 +432,9 @@ sqlalchemy==1.4.54
 sqlalchemy-utils==0.38.3
     # via
     #   apache-superset (pyproject.toml)
-    #   apache-superset-core
     #   flask-appbuilder
 sqlglot==27.15.2
-    # via
-    #   apache-superset (pyproject.toml)
-    #   apache-superset-core
+    # via apache-superset (pyproject.toml)
 sqlparse==0.5.2
     # via apache-superset (pyproject.toml)
 sshtunnel==0.4.0
@@ -459,9 +457,7 @@ typing-extensions==4.14.0
     #   alembic
     #   anthropic
     #   anyio
-    #   apache-superset-core
     #   cattrs
-    #   flask-limiter
     #   google-genai
     #   limits
     #   openai

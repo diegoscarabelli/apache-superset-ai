@@ -258,9 +258,10 @@ flask-session==0.8.0
     # via
     #   -c requirements/base.txt
     #   apache-superset
-flask-sqlalchemy==2.5.1
+flask-sqlalchemy==3.0.5
     # via
     #   -c requirements/base.txt
+    #   apache-superset
     #   flask-appbuilder
     #   flask-migrate
 flask-talisman==1.1.0
@@ -511,6 +512,7 @@ numpy==1.26.4
     #   pandas
     #   pandas-gbq
     #   prophet
+    #   pyarrow
 oauthlib==3.2.2
     # via requests-oauthlib
 odfpy==1.4.1
@@ -876,6 +878,10 @@ sqlglot==27.15.2
     #   apache-superset
 sqloxide==0.1.51
     # via apache-superset
+sqlparse==0.5.2
+    # via
+    #   -c requirements/base.txt
+    #   apache-superset
 sshtunnel==0.4.0
     # via
     #   -c requirements/base.txt
@@ -917,7 +923,6 @@ typing-extensions==4.14.0
     #   anyio
     #   apache-superset
     #   cattrs
-    #   flask-limiter
     #   google-genai
     #   limits
     #   openai

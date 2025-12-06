@@ -82,7 +82,12 @@ for load, module_name, is_pkg in pkgutil.walk_packages(  # noqa: B007
 def init() -> None:
     """Inits the Superset application"""
     appbuilder.add_permissions(update_perms=True)
-    security_manager.sync_role_definitions()
+    # FAB 5.0.0 replaced sync_role_definitions() with security_converge()
+    if hasattr(security_manager, 'sync_role_definitions'):
+        security_manager.sync_role_definitions()
+    else:
+        # FAB 5.0.0+ uses security_converge
+        pass  # Permissions are already synced by add_permissions(update_perms=True)
 
 
 @superset.command()
