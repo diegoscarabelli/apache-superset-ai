@@ -26,7 +26,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { css, t, styled, useTheme } from '@superset-ui/core';
 
 import { Button } from '@superset-ui/core/components';
-import Icons from 'src/components/Icons';
+import { Icons } from '@superset-ui/core/components';
 import {
     LOG_ACTIONS_AI_ASSISTANT_OPENED
 } from 'src/logger/LogUtils';
@@ -50,7 +50,7 @@ const StyledButton = styled.span`
   }
 `;
 
-const StyledIcon = styled(Icons.Lightbulb)`
+const StyledIcon = styled(Icons.BulbOutlined)`
   &:first-of-type {
     margin: 0;
     display: flex;
