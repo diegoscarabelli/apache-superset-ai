@@ -20,10 +20,6 @@
 // TODO: These tests should be made atomic in separate files
 
 import fetchMock from 'fetch-mock';
-<<<<<<< HEAD
-import userEvent from '@testing-library/user-event';
-import { render, screen, within, waitFor } from 'spec/helpers/testing-library';
-=======
 import {
   render,
   screen,
@@ -32,7 +28,6 @@ import {
   waitFor,
   fireEvent,
 } from 'spec/helpers/testing-library';
->>>>>>> 6.0.0rc4
 import { getExtensionsRegistry } from '@superset-ui/core';
 import setupExtensions from 'src/setup/setupExtensions';
 import * as hooks from 'src/views/CRUD/hooks';
@@ -338,12 +333,8 @@ describe('DatabaseModal', () => {
 
       // ---------- Components ----------
       // <TabHeader> - AntD header
-<<<<<<< HEAD
-      const closeButton = await screen.findByLabelText('Close');
-=======
       const closeButtons = await screen.findAllByLabelText('Close');
       const closeButton = closeButtons[0];
->>>>>>> 6.0.0rc4
       const step1Header = screen.getByRole('heading', {
         name: /connect a database/i,
       });
@@ -429,50 +420,7 @@ describe('DatabaseModal', () => {
       });
       // there should be a footer but it should not have any buttons in it
       expect(footer).toBeEmptyDOMElement();
-<<<<<<< HEAD
-=======
-    });
-
-    test('shows database options when pasting text in the select', async () => {
-      setup();
-
-      const modal = await screen.findByRole('dialog');
-      expect(modal).toBeInTheDocument();
-
-      // Find the select input (not opening the dropdown)
-      const selectInput = screen.getByRole('combobox');
-      expect(selectInput).toBeInTheDocument();
-
-      // Simulate focusing the input
-      userEvent.click(selectInput);
-
-      // Simulate pasting text into the input
-      expect(() =>
-        fireEvent.paste(selectInput, {
-          clipboardData: { getData: () => 'post' },
-        }),
-      ).not.toThrow();
->>>>>>> 6.0.0rc4
-    });
-
-    test('renders the "Basic" tab of SQL Alchemy form (step 2 of 2) correctly', async () => {
-      setup();
-
-      // On step 1, click dbButton to access SQL Alchemy form
-      userEvent.click(
-        await screen.findByRole('button', {
-          name: /sqlite/i,
-        }),
-      );
-      expect(await screen.findByText(/step 2 of 2/i)).toBeInTheDocument();
-
-      // ---------- Components ----------
-      // <TabHeader> - AntD header
-<<<<<<< HEAD
-      const closeButton = await screen.findByRole('button', { name: 'Close' });
-=======
       const closeButton = screen.getByRole('img', { name: 'close' });
->>>>>>> 6.0.0rc4
 
       const basicHeader = screen.getByRole('heading', {
         name: /connect a database/i,
@@ -662,15 +610,7 @@ describe('DatabaseModal', () => {
       // Click the "Advanced" tab
       userEvent.click(await screen.findByRole('tab', { name: /advanced/i }));
       // Click the "SQL Lab" tab
-<<<<<<< HEAD
-      userEvent.click(
-        await screen.findByRole('tab', {
-          name: /right sql lab adjust how this database will interact with sql lab\./i,
-        }),
-      );
-=======
       userEvent.click(screen.getByTestId('sql-lab-label-test'));
->>>>>>> 6.0.0rc4
       expect(await screen.findByText(/step 2 of 2/i)).toBeInTheDocument();
 
       // ----- BEGIN STEP 2 (ADVANCED - SQL LAB)

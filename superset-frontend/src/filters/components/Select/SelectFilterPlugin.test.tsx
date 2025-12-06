@@ -301,14 +301,6 @@ describe('SelectFilterPlugin', () => {
         coltypeMap={{ bval: 1 }}
         data={[{ bval: bigValue }]}
         setDataMask={jest.fn()}
-<<<<<<< HEAD
-      />,
-    );
-    userEvent.click(screen.getByRole('combobox'));
-    expect(await screen.findByRole('combobox')).toBeInTheDocument();
-    await userEvent.type(screen.getByRole('combobox'), '1');
-    expect(screen.queryByLabelText(String(bigValue))).toBeInTheDocument();
-=======
         showOverflow={false}
       />,
       {
@@ -681,6 +673,5 @@ describe('SelectFilterPlugin', () => {
     expect(options[0]).toHaveTextContent('zebra');
     expect(options[1]).toHaveTextContent('alpha');
     expect(options[2]).toHaveTextContent('beta');
->>>>>>> 6.0.0rc4
   });
 });

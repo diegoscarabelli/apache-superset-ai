@@ -191,8 +191,6 @@ describe('ExtraOptions Component', () => {
     fireEvent.change(input, { target: { value: '1000' } });
     expect(onExtraInputChange).toHaveBeenCalled();
   });
-<<<<<<< HEAD
-=======
 
   it('renders the collaps tab correctly and resets to default tab after closing', () => {
     const { rerender } = renderComponent();
@@ -221,5 +219,4 @@ describe('ExtraOptions Component', () => {
     );
     expect(sqlLabTab).toHaveAttribute('aria-expanded', 'false');
   });
->>>>>>> 6.0.0rc4
 });

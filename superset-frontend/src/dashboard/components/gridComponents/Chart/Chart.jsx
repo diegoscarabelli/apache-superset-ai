@@ -165,15 +165,12 @@ const Chart = props => {
       PLACEHOLDER_DATASOURCE,
   );
   const dashboardInfo = useSelector(state => state.dashboardInfo);
-<<<<<<< HEAD:superset-frontend/src/dashboard/components/gridComponents/Chart.jsx
-=======
 
   const isCached = useMemo(
     // eslint-disable-next-line camelcase
     () => queriesResponse?.map(({ is_cached }) => is_cached) || [],
     [queriesResponse],
   );
->>>>>>> 6.0.0rc4:superset-frontend/src/dashboard/components/gridComponents/Chart/Chart.jsx
 
   const [descriptionHeight, setDescriptionHeight] = useState(0);
   const [height, setHeight] = useState(props.height);

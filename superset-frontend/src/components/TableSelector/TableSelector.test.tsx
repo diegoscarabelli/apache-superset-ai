@@ -118,15 +118,8 @@ test('skips select all options', async () => {
   const tableSelect = screen.getByRole('combobox', {
     name: 'Select table or type to search tables',
   });
-<<<<<<< HEAD
-  userEvent.click(tableSelect);
-  expect(
-    await screen.findByRole('option', { name: 'test_schema.table_a' }),
-  ).toBeInTheDocument();
-=======
   await userEvent.click(tableSelect);
   expect(await screen.findByText('table_a')).toBeInTheDocument();
->>>>>>> 6.0.0rc4
   expect(
     screen.queryByRole('option', { name: /Select All/i }),
   ).not.toBeInTheDocument();
@@ -143,17 +136,6 @@ test('renders table options without Select All option', async () => {
   const tableSelect = screen.getByRole('combobox', {
     name: 'Select table or type to search tables',
   });
-<<<<<<< HEAD
-  userEvent.click(tableSelect);
-  expect(
-    await screen.findByRole('option', { name: 'test_schema.table_a' }),
-  ).toBeInTheDocument();
-  expect(
-    await screen.findByRole('option', { name: 'test_schema.table_b' }),
-  ).toBeInTheDocument();
-});
-=======
->>>>>>> 6.0.0rc4
 
   await act(async () => {
     await userEvent.click(tableSelect);
@@ -188,21 +170,8 @@ test('table select retain value if not in SQL Lab mode', async () => {
   expect(screen.queryByText('table_a')).not.toBeInTheDocument();
   expect(getSelectItemContainer(tableSelect)).toHaveLength(0);
 
-<<<<<<< HEAD
-  userEvent.click(tableSelect);
-
-  expect(
-    await screen.findByRole('option', { name: 'test_schema.table_a' }),
-  ).toBeInTheDocument();
-
-  await waitFor(() => {
-    const item = screen.getAllByText('table_a');
-    userEvent.click(item[item.length - 1]);
-    // userEvent.click(screen.getAllByText('table_a')[1]);
-=======
   await act(async () => {
     await userEvent.click(tableSelect);
->>>>>>> 6.0.0rc4
   });
 
   await waitFor(
@@ -285,16 +254,8 @@ test('table multi select retain all the values selected', async () => {
     await userEvent.click(item[item.length - 1]);
   });
 
-<<<<<<< HEAD
-  const selection1 = await screen.findByRole('option', { name: 'test_schema.table_b' });
-  expect(selection1).toHaveAttribute('aria-selected', 'true');
-
-  const selection2 = await screen.findByRole('option', { name: 'test_schema.table_c' });
-  expect(selection2).toHaveAttribute('aria-selected', 'true');
-=======
   const selections = await screen.findAllByRole('option', { selected: true });
   expect(selections).toHaveLength(2);
   expect(selections[0]).toHaveTextContent('table_b');
   expect(selections[1]).toHaveTextContent('table_c');
->>>>>>> 6.0.0rc4
 });

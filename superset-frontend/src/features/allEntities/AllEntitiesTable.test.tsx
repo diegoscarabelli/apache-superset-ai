@@ -127,11 +127,7 @@ describe('AllEntitiesTable', () => {
     expect(screen.queryByText('Add tag to entities')).not.toBeInTheDocument();
   });
 
-<<<<<<< HEAD
-  it('renders the correct tags for each object type, excluding the current tag', () => {
-=======
   it('renders the correct tags for each object type', () => {
->>>>>>> 6.0.0rc4
     render(
       <AllEntitiesTable
         search=""

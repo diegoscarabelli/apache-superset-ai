@@ -193,10 +193,7 @@ describe('QueryAutoRefresh', () => {
 
   it('Does NOT Attempt to refresh when given only completed queries', async () => {
     const store = mockStore({ sqlLab: { ...mockState } });
-<<<<<<< HEAD
-=======
 
->>>>>>> 6.0.0rc4
     fetchMock.get(refreshApi, {
       result: [{ id: runningQuery.id, status: 'success' }],
     });

@@ -79,14 +79,11 @@ const defaultState = {
     superset_can_share: false,
     superset_can_csv: false,
     common: { conf: { SUPERSET_WEBSERVER_TIMEOUT: 0, SQL_MAX_ROW: 666 } },
-<<<<<<< HEAD:superset-frontend/src/dashboard/components/gridComponents/Chart.test.jsx
-=======
   },
   dashboardLayout: {
     present: {},
     past: [],
     future: [],
->>>>>>> 6.0.0rc4:superset-frontend/src/dashboard/components/gridComponents/Chart/Chart.test.jsx
   },
 };
 

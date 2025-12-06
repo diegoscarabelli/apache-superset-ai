@@ -19,15 +19,8 @@
 import rison from 'rison';
 import { PureComponent, useCallback } from 'react';
 import PropTypes from 'prop-types';
-<<<<<<< HEAD
-import { Radio } from 'src/components/Radio';
-import Card from 'src/components/Card';
-import Alert from 'src/components/Alert';
-import Badge from 'src/components/Badge';
-=======
 import { connect } from 'react-redux';
 import { Radio } from '@superset-ui/core/components/Radio';
->>>>>>> 6.0.0rc4
 import {
   css,
   isFeatureEnabled,
@@ -81,11 +74,8 @@ import CollectionTable from './CollectionTable';
 import Fieldset from './Fieldset';
 import Field from './Field';
 import { fetchSyncedColumns, updateColumns } from './utils';
-<<<<<<< HEAD
-=======
 
 const extensionsRegistry = getExtensionsRegistry();
->>>>>>> 6.0.0rc4
 
 const DatasourceContainer = styled.div`
   .change-warning {
@@ -812,8 +802,6 @@ class DatasourceEditor extends PureComponent {
     });
   }
 
-<<<<<<< HEAD
-=======
   async formatSql() {
     const { datasource } = this.state;
     if (!datasource.sql) {
@@ -839,7 +827,6 @@ class DatasourceEditor extends PureComponent {
     }
   }
 
->>>>>>> 6.0.0rc4
   async syncMetadata() {
     const { datasource } = this.state;
     this.setState({ metadataLoading: true });
@@ -1288,17 +1275,6 @@ class DatasourceEditor extends PureComponent {
                         'columns in your dataset will be synced when saving the dataset.',
                     )}
                     control={
-<<<<<<< HEAD
-                      <TextAreaControl
-                        language="sql"
-                        offerEditInModal={false}
-                        minLines={20}
-                        maxLines={Infinity}
-                        readOnly={!this.state.isEditMode}
-                        resize="both"
-                        tooltipOptions={sqlTooltipOptions}
-                      />
-=======
                       this.props.database?.isLoading ? (
                         <>
                           {this.renderSqlEditorOverlay()}
@@ -1374,7 +1350,6 @@ class DatasourceEditor extends PureComponent {
                           icon={<Icons.CaretRightFilled iconSize="s" />}
                         />
                       </div>
->>>>>>> 6.0.0rc4
                     }
                   />
                   {this.props.database?.queryResult && (

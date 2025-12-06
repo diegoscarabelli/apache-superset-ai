@@ -66,12 +66,6 @@ describe('DashboardState reducer', () => {
       const request = setActiveTab('tab1');
       const thunkAction = request(store.dispatch, store.getState);
 
-<<<<<<< HEAD
-      expect(dashboardStateReducer({ activeTabs: [] }, thunkAction)).toEqual({
-        activeTabs: ['tab1'],
-        inactiveTabs: [],
-      });
-=======
       expect(
         typedDashboardStateReducer(
           createMockDashboardState({ activeTabs: [] }),
@@ -83,15 +77,10 @@ describe('DashboardState reducer', () => {
           inactiveTabs: [],
         }),
       );
->>>>>>> 6.0.0rc4
 
       const request2 = setActiveTab('tab2', 'tab1');
       const thunkAction2 = request2(store.dispatch, store.getState);
       expect(
-<<<<<<< HEAD
-        dashboardStateReducer({ activeTabs: ['tab1'] }, thunkAction2),
-      ).toEqual({ activeTabs: ['tab2'], inactiveTabs: [] });
-=======
         typedDashboardStateReducer(
           createMockDashboardState({ activeTabs: ['tab1'] }),
           thunkAction2,
@@ -99,7 +88,6 @@ describe('DashboardState reducer', () => {
       ).toEqual(
         expect.objectContaining({ activeTabs: ['tab2'], inactiveTabs: [] }),
       );
->>>>>>> 6.0.0rc4
     });
 
     it('switches a multi-depth tab', () => {
@@ -119,16 +107,6 @@ describe('DashboardState reducer', () => {
       });
       let request = setActiveTab('TAB-B', 'TAB-A');
       let thunkAction = request(store.dispatch, store.getState);
-<<<<<<< HEAD
-      let result = dashboardStateReducer(
-        { activeTabs: ['TAB-1', 'TAB-A', 'TAB-__a'] },
-        thunkAction,
-      );
-      expect(result).toEqual({
-        activeTabs: expect.arrayContaining(['TAB-1', 'TAB-B']),
-        inactiveTabs: ['TAB-__a'],
-      });
-=======
       let result = typedDashboardStateReducer(
         createMockDashboardState({ activeTabs: ['TAB-1', 'TAB-A', 'TAB-__a'] }),
         thunkAction,
@@ -139,19 +117,11 @@ describe('DashboardState reducer', () => {
           inactiveTabs: ['TAB-__a'],
         }),
       );
->>>>>>> 6.0.0rc4
       request = setActiveTab('TAB-2', 'TAB-1');
       thunkAction = request(store.dispatch, () => ({
         ...(store.getState() ?? {}),
         dashboardState: result,
       }));
-<<<<<<< HEAD
-      result = dashboardStateReducer(result, thunkAction);
-      expect(result).toEqual({
-        activeTabs: ['TAB-2'],
-        inactiveTabs: expect.arrayContaining(['TAB-B', 'TAB-__a']),
-      });
-=======
       result = typedDashboardStateReducer(result, thunkAction);
       expect(result).toEqual(
         expect.objectContaining({
@@ -159,19 +129,11 @@ describe('DashboardState reducer', () => {
           inactiveTabs: expect.arrayContaining(['TAB-B', 'TAB-__a']),
         }),
       );
->>>>>>> 6.0.0rc4
       request = setActiveTab('TAB-1', 'TAB-2');
       thunkAction = request(store.dispatch, () => ({
         ...(store.getState() ?? {}),
         dashboardState: result,
       }));
-<<<<<<< HEAD
-      result = dashboardStateReducer(result, thunkAction);
-      expect(result).toEqual({
-        activeTabs: expect.arrayContaining(['TAB-1', 'TAB-B']),
-        inactiveTabs: ['TAB-__a'],
-      });
-=======
       result = typedDashboardStateReducer(result, thunkAction);
       expect(result).toEqual(
         expect.objectContaining({
@@ -179,19 +141,11 @@ describe('DashboardState reducer', () => {
           inactiveTabs: ['TAB-__a'],
         }),
       );
->>>>>>> 6.0.0rc4
       request = setActiveTab('TAB-A', 'TAB-B');
       thunkAction = request(store.dispatch, () => ({
         ...(store.getState() ?? {}),
         dashboardState: result,
       }));
-<<<<<<< HEAD
-      result = dashboardStateReducer(result, thunkAction);
-      expect(result).toEqual({
-        activeTabs: expect.arrayContaining(['TAB-1', 'TAB-A', 'TAB-__a']),
-        inactiveTabs: [],
-      });
-=======
       result = typedDashboardStateReducer(result, thunkAction);
       expect(result).toEqual(
         expect.objectContaining({
@@ -199,19 +153,11 @@ describe('DashboardState reducer', () => {
           inactiveTabs: [],
         }),
       );
->>>>>>> 6.0.0rc4
       request = setActiveTab('TAB-2', 'TAB-1');
       thunkAction = request(store.dispatch, () => ({
         ...(store.getState() ?? {}),
         dashboardState: result,
       }));
-<<<<<<< HEAD
-      result = dashboardStateReducer(result, thunkAction);
-      expect(result).toEqual({
-        activeTabs: expect.arrayContaining(['TAB-2']),
-        inactiveTabs: ['TAB-A', 'TAB-__a'],
-      });
-=======
       result = typedDashboardStateReducer(result, thunkAction);
       expect(result).toEqual(
         expect.objectContaining({
@@ -219,19 +165,11 @@ describe('DashboardState reducer', () => {
           inactiveTabs: ['TAB-A', 'TAB-__a'],
         }),
       );
->>>>>>> 6.0.0rc4
       request = setActiveTab('TAB-1', 'TAB-2');
       thunkAction = request(store.dispatch, () => ({
         ...(store.getState() ?? {}),
         dashboardState: result,
       }));
-<<<<<<< HEAD
-      result = dashboardStateReducer(result, thunkAction);
-      expect(result).toEqual({
-        activeTabs: expect.arrayContaining(['TAB-1', 'TAB-A', 'TAB-__a']),
-        inactiveTabs: [],
-      });
-=======
       result = typedDashboardStateReducer(result, thunkAction);
       expect(result).toEqual(
         expect.objectContaining({
@@ -239,7 +177,6 @@ describe('DashboardState reducer', () => {
           inactiveTabs: [],
         }),
       );
->>>>>>> 6.0.0rc4
     });
   });
   it('SET_ACTIVE_TABS', () => {

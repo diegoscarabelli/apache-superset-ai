@@ -24,17 +24,6 @@ export interface VisualProps {
   position: 'bottom' | 'top';
 }
 
-<<<<<<< HEAD
-const StyledToastPresenter = styled.div<VisualProps>`
-  max-width: 600px;
-  position: fixed;
-  ${({ position }) => (position === 'bottom' ? 'bottom' : 'top')}: 0px;
-  right: 0px;
-  margin-right: 50px;
-  margin-bottom: 50px;
-  z-index: ${({ theme }) => theme.zIndex.max + 1};
-  word-break: break-word;
-=======
 const StyledToastPresenter = styled.div<VisualProps>(
   ({ theme, position }) =>
     // Single access to theme, using dot notation
@@ -47,7 +36,6 @@ const StyledToastPresenter = styled.div<VisualProps>(
     margin-bottom: 50px;
     z-index: ${theme.zIndexPopupBase + 1};
     word-break: break-word;
->>>>>>> 6.0.0rc4
 
     .toast {
       padding: ${theme.sizeUnit * 4}px;

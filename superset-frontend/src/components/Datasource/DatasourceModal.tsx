@@ -16,18 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-<<<<<<< HEAD
-import { FunctionComponent, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Alert from 'src/components/Alert';
-import Button from 'src/components/Button';
-import {
-  isDefined,
-=======
 import { FunctionComponent, useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import {
->>>>>>> 6.0.0rc4
   styled,
   SupersetClient,
   getClientErrorObject,
@@ -46,22 +37,9 @@ import {
   AsyncEsmComponent,
 } from '@superset-ui/core/components';
 import withToasts from 'src/components/MessageToasts/withToasts';
-<<<<<<< HEAD
-import {
-  startMetaDataLoading,
-  stopMetaDataLoading,
-  syncDatasourceMetadata,
-} from 'src/explore/actions/exploreActions';
-import {
-  fetchSyncedColumns,
-  updateColumns,
-} from 'src/components/Datasource/utils';
-import { DatasetObject } from '../../features/datasets/types';
-=======
 import { ErrorMessageWithStackTrace } from 'src/components';
 import type { DatasetObject } from 'src/features/datasets/types';
 import type { DatasourceModalProps } from './types';
->>>>>>> 6.0.0rc4
 
 const DatasourceEditor = AsyncEsmComponent(() => import('./DatasourceEditor'));
 
@@ -90,19 +68,6 @@ const StyledDatasourceModal = styled(Modal)`
   }
 `;
 
-<<<<<<< HEAD
-interface DatasourceModalProps {
-  addSuccessToast: (msg: string) => void;
-  addDangerToast: (msg: string) => void;
-  datasource: DatasetObject;
-  onChange: () => {};
-  onDatasourceSave: (datasource: object, errors?: Array<any>) => {};
-  onHide: () => {};
-  show: boolean;
-}
-
-=======
->>>>>>> 6.0.0rc4
 function buildExtraJsonObject(
   item: DatasetObject['metrics'][0] | DatasetObject['columns'][0],
 ) {
@@ -127,14 +92,9 @@ const DatasourceModal: FunctionComponent<DatasourceModalProps> = ({
   onHide,
   show,
 }) => {
-<<<<<<< HEAD
-  const dispatch = useDispatch();
-  const [currentDatasource, setCurrentDatasource] = useState(datasource);
-=======
   const theme = useTheme();
   const [currentDatasource, setCurrentDatasource] = useState(datasource);
   const [syncColumns, setSyncColumns] = useState(false);
->>>>>>> 6.0.0rc4
   const currencies = useSelector<
     {
       common: {
@@ -147,73 +107,6 @@ const DatasourceModal: FunctionComponent<DatasourceModalProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [modal, contextHolder] = Modal.useModal();
-<<<<<<< HEAD
-  const buildPayload = (datasource: Record<string, any>) => ({
-    table_name: datasource.table_name,
-    database_id: datasource.database?.id,
-    sql: datasource.sql,
-    filter_select_enabled: datasource.filter_select_enabled,
-    fetch_values_predicate: datasource.fetch_values_predicate,
-    schema:
-      datasource.tableSelector?.schema ||
-      datasource.databaseSelector?.schema ||
-      datasource.schema,
-    description: datasource.description,
-    main_dttm_col: datasource.main_dttm_col,
-    normalize_columns: datasource.normalize_columns,
-    always_filter_main_dttm: datasource.always_filter_main_dttm,
-    offset: datasource.offset,
-    default_endpoint: datasource.default_endpoint,
-    cache_timeout:
-      datasource.cache_timeout === '' ? null : datasource.cache_timeout,
-    is_sqllab_view: datasource.is_sqllab_view,
-    template_params: datasource.template_params,
-    extra: datasource.extra,
-    is_managed_externally: datasource.is_managed_externally,
-    external_url: datasource.external_url,
-    metrics: datasource?.metrics?.map((metric: DatasetObject['metrics'][0]) => {
-      const metricBody: any = {
-        expression: metric.expression,
-        description: metric.description,
-        metric_name: metric.metric_name,
-        metric_type: metric.metric_type,
-        d3format: metric.d3format || null,
-        currency: !isDefined(metric.currency)
-          ? null
-          : JSON.stringify(metric.currency),
-        verbose_name: metric.verbose_name,
-        warning_text: metric.warning_text,
-        uuid: metric.uuid,
-        extra: buildExtraJsonObject(metric),
-      };
-      if (!Number.isNaN(Number(metric.id))) {
-        metricBody.id = metric.id;
-      }
-      return metricBody;
-    }),
-    columns: datasource?.columns?.map(
-      (column: DatasetObject['columns'][0]) => ({
-        id: typeof column.id === 'number' ? column.id : undefined,
-        column_name: column.column_name,
-        type: column.type,
-        advanced_data_type: column.advanced_data_type,
-        verbose_name: column.verbose_name,
-        description: column.description,
-        expression: column.expression,
-        filterable: column.filterable,
-        groupby: column.groupby,
-        is_active: column.is_active,
-        is_dttm: column.is_dttm,
-        python_date_format: column.python_date_format || null,
-        uuid: column.uuid,
-        extra: buildExtraJsonObject(column),
-      }),
-    ),
-    owners: datasource.owners.map(
-      (o: Record<string, number>) => o.value || o.id,
-    ),
-  });
-=======
   const buildPayload = (datasource: Record<string, any>) => {
     const payload: Record<string, any> = {
       table_name: datasource.table_name,
@@ -289,47 +182,15 @@ const DatasourceModal: FunctionComponent<DatasourceModalProps> = ({
     }
     return payload;
   };
->>>>>>> 6.0.0rc4
   const onConfirmSave = async () => {
     // Pull out extra fields into the extra object
     setIsSaving(true);
     try {
       await SupersetClient.put({
-<<<<<<< HEAD
-        endpoint: `/api/v1/dataset/${currentDatasource.id}`,
-        jsonPayload: buildPayload(currentDatasource),
-      });
-      if (datasource.sql !== currentDatasource.sql) {
-        // if sql has changed, save a second time with synced columns
-        dispatch(startMetaDataLoading());
-        try {
-          const columnJson = await fetchSyncedColumns(currentDatasource);
-          const columnChanges = updateColumns(
-            currentDatasource.columns,
-            columnJson,
-            addSuccessToast,
-          );
-          currentDatasource.columns = columnChanges.finalColumns;
-          dispatch(syncDatasourceMetadata(currentDatasource));
-          dispatch(stopMetaDataLoading());
-          addSuccessToast(t('Metadata has been synced'));
-        } catch (error) {
-          dispatch(stopMetaDataLoading());
-          addDangerToast(
-            t('An error has occurred while syncing virtual dataset columns'),
-          );
-        }
-        await SupersetClient.put({
-          endpoint: `/api/v1/dataset/${currentDatasource.id}`,
-          jsonPayload: buildPayload(currentDatasource),
-        });
-      }
-=======
         endpoint: `/api/v1/dataset/${currentDatasource.id}?override_columns=${syncColumns}`,
         jsonPayload: buildPayload(currentDatasource),
       });
 
->>>>>>> 6.0.0rc4
       const { json } = await SupersetClient.get({
         endpoint: `/api/v1/dataset/${currentDatasource?.id}`,
       });

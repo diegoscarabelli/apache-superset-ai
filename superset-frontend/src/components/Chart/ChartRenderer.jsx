@@ -381,10 +381,7 @@ class ChartRenderer extends Component {
             postTransformProps={postTransformProps}
             emitCrossFilters={emitCrossFilters}
             legendState={this.state.legendState}
-<<<<<<< HEAD
-=======
             enableNoResults={bypassNoResult}
->>>>>>> 6.0.0rc4
             legendIndex={this.state.legendIndex}
             {...drillToDetailProps}
           />

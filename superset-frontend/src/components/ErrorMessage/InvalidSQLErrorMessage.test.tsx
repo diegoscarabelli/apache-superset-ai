@@ -81,13 +81,8 @@ describe('InvalidSQLErrorMessage', () => {
     expect(getByText(missingExtraProps.error.message)).toBeInTheDocument();
   });
 
-<<<<<<< HEAD
-  it('displays the SQL error line and column indicator', () => {
-    const { getByText, container } = renderComponent();
-=======
   it('displays the SQL error line and column indicator', async () => {
     const { getByText, container, unmount } = renderComponent();
->>>>>>> 6.0.0rc4
 
     // Validate SQL and caret indicator
     expect(getByText('SELECT * FFROM table')).toBeInTheDocument();

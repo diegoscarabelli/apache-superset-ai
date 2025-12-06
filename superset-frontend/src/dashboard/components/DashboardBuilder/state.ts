@@ -32,14 +32,9 @@ export const useNativeFilters = () => {
   const dispatch = useDispatch();
 
   const [isInitialized, setIsInitialized] = useState(false);
-<<<<<<< HEAD
-  const showNativeFilters = useSelector<RootState, boolean>(
-    state => getUrlParam(URL_PARAMS.showFilters) ?? true,
-=======
 
   const showNativeFilters = useSelector<RootState, boolean>(
     () => getUrlParam(URL_PARAMS.showFilters) ?? true,
->>>>>>> 6.0.0rc4
   );
   const canEdit = useSelector<RootState, boolean>(
     ({ dashboardInfo }) => dashboardInfo.dash_edit_perm,

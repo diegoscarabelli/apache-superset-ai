@@ -603,11 +603,7 @@ test('should hide edit button and navbar, and show Exit fullscreen when in fulls
 test('should show Exit fullscreen when in fullscreen mode', async () => {
   setup();
 
-<<<<<<< HEAD
-  fireEvent.click(screen.getByTestId('actions-trigger'));
-=======
   userEvent.click(screen.getByTestId('actions-trigger'));
->>>>>>> 6.0.0rc4
 
   expect(await screen.findByText('Exit fullscreen')).toBeInTheDocument();
 });

@@ -16,14 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-<<<<<<< HEAD
-import { useRef, useState } from 'react';
-import { SupersetTheme, t } from '@superset-ui/core';
-import { Button, AntdSelect } from 'src/components';
-import InfoTooltip from 'src/components/InfoTooltip';
-import FormLabel from 'src/components/Form/FormLabel';
-import Icons from 'src/components/Icons';
-=======
 import { useState, useEffect } from 'react';
 import { SupersetTheme, css, t } from '@superset-ui/core';
 import {
@@ -36,7 +28,6 @@ import {
 } from '@superset-ui/core/components';
 import { Icons } from '@superset-ui/core/components/Icons';
 import { useToasts } from 'src/components/MessageToasts/withToasts';
->>>>>>> 6.0.0rc4
 import { DatabaseParameters, FieldPropTypes } from '../../types';
 import { infoTooltip, CredentialInfoForm } from '../styles';
 
@@ -59,11 +50,7 @@ export const EncryptedField = ({
   db,
   editNewDb,
 }: FieldPropTypes) => {
-<<<<<<< HEAD
-  const selectedFileInputRef = useRef<HTMLInputElement | null>(null);
-=======
   const [fileList, setFileList] = useState<UploadFile[]>([]);
->>>>>>> 6.0.0rc4
   const [uploadOption, setUploadOption] = useState<number>(
     CredentialInfoOptions.JsonUpload.valueOf(),
   );
@@ -147,49 +134,7 @@ export const EncryptedField = ({
             className="input-container"
             css={(theme: SupersetTheme) => infoTooltip(theme)}
           >
-<<<<<<< HEAD
-            <div css={{ display: 'flex', alignItems: 'center' }}>
-              <FormLabel required>{t('Upload Credentials')}</FormLabel>
-              <InfoTooltip
-                tooltip={t(
-                  'Use the JSON file you automatically downloaded when creating your service account.',
-                )}
-                viewBox="0 0 24 24"
-              />
-            </div>
-
-            {!fileToUpload && (
-              <Button
-                className="input-upload-btn"
-                onClick={() => selectedFileInputRef.current?.click()}
-              >
-                {t('Choose File')}
-              </Button>
-            )}
-            {fileToUpload && (
-              <div className="input-upload-current">
-                {fileToUpload}
-                <Icons.DeleteFilled
-                  iconSize="m"
-                  onClick={() => {
-                    setFileToUpload(null);
-                    changeMethods.onParametersChange({
-                      target: {
-                        name: encryptedField,
-                        value: '',
-                      },
-                    });
-                  }}
-                />
-              </div>
-            )}
-
-            <input
-              ref={selectedFileInputRef}
-              id="selectedFile"
-=======
             <Upload
->>>>>>> 6.0.0rc4
               accept=".json"
               maxCount={1}
               fileList={fileList}
@@ -203,13 +148,7 @@ export const EncryptedField = ({
                     value: '',
                   },
                 });
-<<<<<<< HEAD
-                if (selectedFileInputRef.current) {
-                  selectedFileInputRef.current.value = null as any;
-                }
-=======
                 return true;
->>>>>>> 6.0.0rc4
               }}
               onChange={async info => {
                 const file = info.fileList?.[0]?.originFileObj;
