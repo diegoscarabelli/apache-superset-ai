@@ -8,7 +8,7 @@ import { InfoTooltip, Collapse } from '@superset-ui/core/components';
 import IndeterminateCheckbox from 'src/components/IndeterminateCheckbox';
 import { Switch } from 'src/components/Switch';
 import { useDatabaseTables } from 'src/hooks/apiResources';
-import { Select as AntdSelect } from 'antd';
+import { Select } from 'src/components';
 import {
   StyledContextError,
   StyledContextWrapper,
@@ -134,8 +134,7 @@ const AIAssistantOptions = ({
           <StyledInputContainer className="mb-8">
             <div className="control-label">{t('Language model provider')}</div>
             <div className="input-container">
-              <AntdSelect
-                style={{ width: '100%' }}
+              <Select
                 options={
                   llmDefaults ?
                   Object.keys(llmDefaults).map(provider => ({
@@ -166,8 +165,7 @@ const AIAssistantOptions = ({
               <StyledInputContainer className="mb-8">
                 <div className="control-label">{t('Model')}</div>
                 <div className="input-container">
-                  <AntdSelect
-                    style={{ width: '100%' }}
+                  <Select
                     options={
                       (llmDefaults && selectedProvider in llmDefaults)
                         ? Object.entries(llmDefaults[selectedProvider].models).map(([model, data]) => ({
