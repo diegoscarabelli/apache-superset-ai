@@ -19,30 +19,31 @@
 import { Menu, MainNav } from '.';
 
 export default {
-  title: 'Menu',
+  title: 'Components/Menu',
   component: Menu as React.FC,
 };
 
 export const MainNavigation = (args: any) => (
-  <MainNav mode="horizontal" {...args}>
-    <Menu.Item>
-      <a href="/">Dashboards</a>
-    </Menu.Item>
-    <Menu.Item>
-      <a href="/">Charts</a>
-    </Menu.Item>
-    <Menu.Item>
-      <a href="/">Datasets</a>
-    </Menu.Item>
-  </MainNav>
+  <MainNav
+    mode="horizontal"
+    items={[
+      { key: 'dashboards', label: 'Dashboards', href: '/' },
+      { key: 'charts', label: 'Charts', href: '/' },
+      { key: 'datasets', label: 'Datasets', href: '/' },
+    ]}
+    {...args}
+  />
 );
 
 export const InteractiveMenu = (args: any) => (
-  <Menu {...args}>
-    <Menu.Item>Dashboards</Menu.Item>
-    <Menu.Item>Charts</Menu.Item>
-    <Menu.Item>Datasets</Menu.Item>
-  </Menu>
+  <Menu
+    items={[
+      { label: 'Dashboards', key: '1' },
+      { label: 'Charts', key: '2' },
+      { label: 'Datasets', key: '3' },
+    ]}
+    {...args}
+  />
 );
 
 InteractiveMenu.args = {

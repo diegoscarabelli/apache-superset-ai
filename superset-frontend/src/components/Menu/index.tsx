@@ -18,8 +18,8 @@
  */
 import { addAlpha, styled } from '@superset-ui/core';
 import { ReactElement } from 'react';
-import { Menu as AntdMenu } from 'antd-v5';
-import { MenuProps as AntdMenuProps } from 'antd-v5/es/menu';
+import { Menu as AntdMenu } from 'antd';
+import { MenuProps as AntdMenuProps } from 'antd/es/menu';
 
 export type MenuProps = AntdMenuProps;
 
@@ -44,7 +44,7 @@ const StyledMenuItem = styled(AntdMenu.Item)`
   a {
     text-decoration: none;
   }
-  &.antd5-menu-item {
+  &.ant-menu-item {
     div {
       display: flex;
       align-items: center;
@@ -76,11 +76,11 @@ const StyledMenuItem = styled(AntdMenu.Item)`
 // TODO: @geido - Move this to theme after fully migrating dropdown to Antd5
 const StyledMenu = styled(AntdMenu)`
   ${({ theme }) => `
-    &.antd5-menu-horizontal {
+    &.ant-menu-horizontal {
       background-color: inherit;
       border-bottom: 1px solid transparent;
     }
-    &.antd5-menu-vertical,
+    &.ant-menu-vertical,
     &.ant-dropdown-menu {
       box-shadow:
         0 3px 6px -4px ${addAlpha(theme.colors.grayscale.dark2, 0.12)},
@@ -97,7 +97,7 @@ const StyledNav = styled(AntdMenu)`
   align-items: center;
   height: 100%;
   gap: 0;
-  &.antd5-menu-horizontal > .antd5-menu-item {
+  &.ant-menu-horizontal > .ant-menu-item {
     height: 100%;
     display: flex;
     align-items: center;
@@ -114,23 +114,23 @@ const StyledNav = styled(AntdMenu)`
       }
     }
   }
-  &.antd5-menu-horizontal > .antd5-menu-item-selected {
+  &.ant-menu-horizontal > .ant-menu-item-selected {
     box-sizing: border-box;
     border-bottom: 2px solid ${({ theme }) => theme.colors.primary.base};
   }
 `;
 
 const StyledSubMenu = styled(AntdMenu.SubMenu)`
-  .antd5-menu-submenu-open,
-  .antd5-menu-submenu-active {
-    .antd5-menu-submenu-title {
+  .ant-menu-submenu-open,
+  .ant-menu-submenu-active {
+    .ant-menu-submenu-title {
       &:after {
         opacity: 1;
         width: calc(100% - 1);
       }
     }
   }
-  .antd5-menu-submenu-title {
+  .ant-menu-submenu-title {
     display: flex;
     flex-direction: row-reverse;
     &:after {
