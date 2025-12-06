@@ -119,6 +119,7 @@ export interface TableOption {
   label: JSX.Element;
   text: string;
   value: string;
+  schema: string;
 }
 
 export const TableOption = ({ table }: { table: Table }) => {
@@ -218,6 +219,7 @@ const TableSelector: FunctionComponent<TableSelectorProps> = ({
       data
         ? data.options.map(table => ({
             value: table.value,
+            schema: table.schema,
             label: customTableOptionLabelRenderer ? (
               customTableOptionLabelRenderer(table)
             ) : (
@@ -258,8 +260,7 @@ const TableSelector: FunctionComponent<TableSelectorProps> = ({
     const parseOption = (
       option: TableOption,
     ): TableValue => {
-      const nameParts = option.value.split('.');
-      return { value: nameParts[1], schema: nameParts[0] };
+      return { value: option.value, schema: option.schema };
     };
     if (currentSchema) {
       onTableSelectChange?.(
