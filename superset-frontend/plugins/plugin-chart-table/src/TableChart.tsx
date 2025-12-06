@@ -716,15 +716,11 @@ export default function TableChart<D extends DataRecord = DataRecord>(
       const startPosition = value[0];
       const colSpan = value.length;
       // Retrieve the originalLabel from the first column in this group
-<<<<<<< HEAD
-      const originalLabel = columnsMeta[value[0]]?.originalLabel || key;
-=======
       const firstColumnInGroup = filteredColumnsMeta[startPosition];
       const originalLabel = firstColumnInGroup
         ? columnsMeta.find(col => col.key === firstColumnInGroup.key)
             ?.originalLabel || key
         : key;
->>>>>>> 6.0.0rc4
 
       // Add placeholder <th> for columns before this header
       for (let i = currentColumnIndex; i < startPosition; i += 1) {

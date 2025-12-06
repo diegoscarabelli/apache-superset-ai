@@ -212,9 +212,6 @@ def test_values_for_column_double_percents(
         called_conn = pd.read_sql_query.call_args.kwargs["con"]
 
         assert called_sql.compare(expected_sql) is True
-<<<<<<< HEAD
-        assert called_conn == engine
-=======
         assert called_conn.engine == engine
 
 
@@ -1612,4 +1609,3 @@ def test_adhoc_column_with_spaces_in_full_query(database: Database) -> None:
     # Verify SELECT and FROM clauses are present
     assert "SELECT" in sql
     assert "FROM" in sql
->>>>>>> 6.0.0rc4

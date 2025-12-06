@@ -74,24 +74,12 @@ export const getLayer: GetLayerType<ArcLayer> = function ({
 
   return new ArcLayer({
     data,
-<<<<<<< HEAD
-    getSourceColor: (d: any) =>
-      d.sourceColor || d.color || [sc.r, sc.g, sc.b, 255 * sc.a],
-    getTargetColor: (d: any) =>
-      d.targetColor || d.color || [tc.r, tc.g, tc.b, 255 * tc.a],
-    id: `path-layer-${fd.slice_id}` as const,
-    getWidth: fd.stroke_width ? fd.stroke_width : 3,
-    ...commonLayerProps(fd, setTooltip, setTooltipContent(fd)),
-  });
-}
-=======
     getSourceColor: (d: JsonObject) => {
       if (colorSchemeType === COLOR_SCHEME_TYPES.fixed_color) {
         return [sc.r, sc.g, sc.b, 255 * sc.a];
       }
->>>>>>> 6.0.0rc4
 
-      return d.targetColor || d.color;
+      return d.sourceColor || d.color;
     },
     getTargetColor: (d: any) => {
       if (colorSchemeType === COLOR_SCHEME_TYPES.fixed_color) {

@@ -255,79 +255,6 @@ describe('plugin-chart-table', () => {
         ?.formatter?.(0.123456);
       expect(formattedPercentMetric).toBe('0.123');
     });
-<<<<<<< HEAD
-
-    it('should set originalLabel for comparison columns when time_compare and comparison_type are set', () => {
-      const transformedProps = transformProps(testData.comparison);
-
-      // Check if comparison columns are processed
-      const comparisonColumns = transformedProps.columns.filter(
-        col =>
-          col.label === 'Main' ||
-          col.label === '#' ||
-          col.label === '△' ||
-          col.label === '%',
-      );
-
-      expect(comparisonColumns.length).toBeGreaterThan(0);
-      expect(comparisonColumns.some(col => col.label === 'Main')).toBe(true);
-      expect(comparisonColumns.some(col => col.label === '#')).toBe(true);
-      expect(comparisonColumns.some(col => col.label === '△')).toBe(true);
-      expect(comparisonColumns.some(col => col.label === '%')).toBe(true);
-
-      // Verify originalLabel for metric_1 comparison columns
-      const mainMetric1 = transformedProps.columns.find(
-        col => col.key === 'Main metric_1',
-      );
-      expect(mainMetric1).toBeDefined();
-      expect(mainMetric1?.originalLabel).toBe('metric_1');
-
-      const hashMetric1 = transformedProps.columns.find(
-        col => col.key === '# metric_1',
-      );
-      expect(hashMetric1).toBeDefined();
-      expect(hashMetric1?.originalLabel).toBe('metric_1');
-
-      const deltaMetric1 = transformedProps.columns.find(
-        col => col.key === '△ metric_1',
-      );
-      expect(deltaMetric1).toBeDefined();
-      expect(deltaMetric1?.originalLabel).toBe('metric_1');
-
-      const percentMetric1 = transformedProps.columns.find(
-        col => col.key === '% metric_1',
-      );
-      expect(percentMetric1).toBeDefined();
-      expect(percentMetric1?.originalLabel).toBe('metric_1');
-
-      // Verify originalLabel for metric_2 comparison columns
-      const mainMetric2 = transformedProps.columns.find(
-        col => col.key === 'Main metric_2',
-      );
-      expect(mainMetric2).toBeDefined();
-      expect(mainMetric2?.originalLabel).toBe('metric_2');
-
-      const hashMetric2 = transformedProps.columns.find(
-        col => col.key === '# metric_2',
-      );
-      expect(hashMetric2).toBeDefined();
-      expect(hashMetric2?.originalLabel).toBe('metric_2');
-
-      const deltaMetric2 = transformedProps.columns.find(
-        col => col.key === '△ metric_2',
-      );
-      expect(deltaMetric2).toBeDefined();
-      expect(deltaMetric2?.originalLabel).toBe('metric_2');
-
-      const percentMetric2 = transformedProps.columns.find(
-        col => col.key === '% metric_2',
-      );
-      expect(percentMetric2).toBeDefined();
-      expect(percentMetric2?.originalLabel).toBe('metric_2');
-    });
-  });
-=======
->>>>>>> 6.0.0rc4
 
     test('should set originalLabel for comparison columns when time_compare and comparison_type are set', () => {
       const transformedProps = transformProps(testData.comparison);
@@ -584,51 +511,175 @@ describe('plugin-chart-table', () => {
         expect(screen.getByText('No records found')).toBeInTheDocument();
       });
 
-<<<<<<< HEAD
-      render(
-        ProviderWrapper({
-          children: (
-            <TableChart
-              {...transformProps({
-                ...testData.advanced,
-                queriesData: [dataWithEmptyCell],
-                rawFormData: {
-                  ...testData.advanced.rawFormData,
-                  conditional_formatting: [
-                    {
-                      colorScheme: '#ACE1C4',
-                      column: 'sum__num',
-                      operator: '<',
-                      targetValue: 12342,
-                    },
-                  ],
-                },
-              })}
-            />
-          ),
-        }),
-      );
-      expect(getComputedStyle(screen.getByTitle('2467')).background).toBe(
-        'rgba(172, 225, 196, 0.812)',
-      );
-      expect(getComputedStyle(screen.getByTitle('2467063')).background).toBe(
-        '',
-      );
-      expect(getComputedStyle(screen.getByText('N/A')).background).toBe('');
-    });
-    it('should display originalLabel in grouped headers', () => {
-      render(
-        <ThemeProvider theme={supersetTheme}>
-          <TableChart {...transformProps(testData.comparison)} sticky={false} />
-        </ThemeProvider>,
-      );
+    describe('TableChart', () => {
+      test('render basic data', () => {
+        render(
+          <TableChart {...transformProps(testData.basic)} sticky={false} />,
+        );
 
-      const groupHeaders = screen.getAllByRole('columnheader');
-      expect(groupHeaders[0]).toHaveTextContent('metric_1');
-      expect(groupHeaders[1]).toHaveTextContent('metric_2');
-    });
-  });
-=======
+        const firstDataRow = screen.getAllByRole('rowgroup')[1];
+        const cells = firstDataRow.querySelectorAll('td');
+        expect(cells).toHaveLength(12);
+        expect(cells[0]).toHaveTextContent('2020-01-01 12:34:56');
+        expect(cells[1]).toHaveTextContent('Michael');
+        // number is not in `metrics` list, so it should output raw value
+        // (in real world Superset, this would mean the column is used in GROUP BY)
+        expect(cells[2]).toHaveTextContent('2467063');
+        // should not render column with `.` in name as `undefined`
+        expect(cells[3]).toHaveTextContent('foo');
+        expect(cells[6]).toHaveTextContent('2467');
+        expect(cells[8]).toHaveTextContent('N/A');
+      });
+
+      test('render advanced data', () => {
+        render(
+          <TableChart {...transformProps(testData.advanced)} sticky={false} />,
+        );
+        const secondColumnHeader = screen.getByText('Sum of Num');
+        expect(secondColumnHeader).toBeInTheDocument();
+        expect(secondColumnHeader?.getAttribute('data-column-name')).toEqual(
+          '1',
+        );
+
+        const firstDataRow = screen.getAllByRole('rowgroup')[1];
+        const cells = firstDataRow.querySelectorAll('td');
+        expect(cells[0]).toHaveTextContent('Michael');
+        expect(cells[2]).toHaveTextContent('12.346%');
+        expect(cells[4]).toHaveTextContent('2.47k');
+      });
+
+      test('render advanced data with currencies', () => {
+        render(
+          ProviderWrapper({
+            children: (
+              <TableChart
+                {...transformProps(testData.advancedWithCurrency)}
+                sticky={false}
+              />
+            ),
+          }),
+        );
+        const cells = document.querySelectorAll('td');
+        expect(document.querySelectorAll('th')[1]).toHaveTextContent(
+          'Sum of Num',
+        );
+        expect(cells[0]).toHaveTextContent('Michael');
+        expect(cells[2]).toHaveTextContent('12.346%');
+        expect(cells[4]).toHaveTextContent('$ 2.47k');
+      });
+
+      test('render data with a bigint value in a raw record mode', () => {
+        render(
+          ProviderWrapper({
+            children: (
+              <TableChart
+                {...transformProps(testData.bigint)}
+                sticky={false}
+                isRawRecords
+              />
+            ),
+          }),
+        );
+        const cells = document.querySelectorAll('td');
+        expect(document.querySelectorAll('th')[0]).toHaveTextContent('name');
+        expect(document.querySelectorAll('th')[1]).toHaveTextContent('id');
+        expect(cells[0]).toHaveTextContent('Michael');
+        expect(cells[1]).toHaveTextContent('4312');
+        expect(cells[2]).toHaveTextContent('John');
+        expect(cells[3]).toHaveTextContent('1234567890123456789');
+      });
+
+      test('render raw data', () => {
+        const props = transformProps({
+          ...testData.raw,
+          rawFormData: { ...testData.raw.rawFormData },
+        });
+        render(
+          ProviderWrapper({
+            children: <TableChart {...props} sticky={false} />,
+          }),
+        );
+        const cells = document.querySelectorAll('td');
+        expect(document.querySelectorAll('th')[0]).toHaveTextContent('num');
+        expect(cells[0]).toHaveTextContent('1234');
+        expect(cells[1]).toHaveTextContent('10000');
+        expect(cells[1]).toHaveTextContent('0');
+      });
+
+      test('render raw data with currencies', () => {
+        const props = transformProps({
+          ...testData.raw,
+          rawFormData: {
+            ...testData.raw.rawFormData,
+            column_config: {
+              num: {
+                currencyFormat: { symbol: 'USD', symbolPosition: 'prefix' },
+              },
+            },
+          },
+        });
+        render(
+          ProviderWrapper({
+            children: <TableChart {...props} sticky={false} />,
+          }),
+        );
+        const cells = document.querySelectorAll('td');
+
+        expect(document.querySelectorAll('th')[0]).toHaveTextContent('num');
+        expect(cells[0]).toHaveTextContent('$ 1.23k');
+        expect(cells[1]).toHaveTextContent('$ 10k');
+        expect(cells[2]).toHaveTextContent('$ 0');
+      });
+
+      test('render small formatted data with currencies', () => {
+        const props = transformProps({
+          ...testData.raw,
+          rawFormData: {
+            ...testData.raw.rawFormData,
+            column_config: {
+              num: {
+                d3SmallNumberFormat: '.2r',
+                currencyFormat: { symbol: 'USD', symbolPosition: 'prefix' },
+              },
+            },
+          },
+          queriesData: [
+            {
+              ...testData.raw.queriesData[0],
+              data: [
+                {
+                  num: 1234,
+                },
+                {
+                  num: 0.5,
+                },
+                {
+                  num: 0.61234,
+                },
+              ],
+            },
+          ],
+        });
+        render(
+          ProviderWrapper({
+            children: <TableChart {...props} sticky={false} />,
+          }),
+        );
+        const cells = document.querySelectorAll('td');
+
+        expect(document.querySelectorAll('th')[0]).toHaveTextContent('num');
+        expect(cells[0]).toHaveTextContent('$ 1.23k');
+        expect(cells[1]).toHaveTextContent('$ 0.50');
+        expect(cells[2]).toHaveTextContent('$ 0.61');
+      });
+
+      test('render empty data', () => {
+        render(
+          <TableChart {...transformProps(testData.empty)} sticky={false} />,
+        );
+        expect(screen.getByText('No records found')).toBeInTheDocument();
+      });
+
       test('render color with column color formatter', () => {
         render(
           ProviderWrapper({
@@ -652,7 +703,6 @@ describe('plugin-chart-table', () => {
             ),
           }),
         );
->>>>>>> 6.0.0rc4
 
         expect(getComputedStyle(screen.getByTitle('2467063')).background).toBe(
           'rgba(172, 225, 196, 1)',

@@ -18,20 +18,12 @@
  */
 import { useState, FC } from 'react';
 
-<<<<<<< HEAD:superset-frontend/src/components/CachedLabel/index.tsx
 import { css, t } from '@superset-ui/core';
-import Label from 'src/components/Label';
-import { Tooltip } from 'src/components/Tooltip';
-import { TooltipContent } from './TooltipContent';
-import Icons from '../Icons';
-=======
-import { t } from '@superset-ui/core';
 import { Icons } from '@superset-ui/core/components/Icons';
 import { Label } from '../Label';
 import { Tooltip } from '../Tooltip';
 import { TooltipContent } from './TooltipContent';
 import type { CacheLabelProps } from './types';
->>>>>>> 6.0.0rc4:superset-frontend/packages/superset-ui-core/src/components/CachedLabel/index.tsx
 
 export const CachedLabel: FC<CacheLabelProps> = ({
   className,
@@ -58,10 +50,6 @@ export const CachedLabel: FC<CacheLabelProps> = ({
         icon={<Icons.SyncOutlined iconSize="m" />}
       >
         {t('Cached')}
-<<<<<<< HEAD:superset-frontend/src/components/CachedLabel/index.tsx
-        <Icons.SyncOutlined iconSize="m" />
-=======
->>>>>>> 6.0.0rc4:superset-frontend/packages/superset-ui-core/src/components/CachedLabel/index.tsx
       </Label>
     </Tooltip>
   );

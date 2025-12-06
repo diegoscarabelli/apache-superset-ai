@@ -43,17 +43,6 @@ export const renameOperator: PostProcessingFactory<PostProcessingRename> = (
 
   // remove or rename top level of column name(metric name) in the MultiIndex when
   // 1) at least 1 metric
-<<<<<<< HEAD
-  // 2) dimension exist
-  // 3) xAxis exist
-  // 4) truncate_metric in form_data and truncate_metric is true
-  if (
-    metrics.length > 0 &&
-    columns.length > 0 &&
-    xAxisLabel &&
-    truncate_metric !== undefined &&
-    !!truncate_metric
-=======
   // 2) xAxis exist
   // 3a) isTimeComparisonValue
   // 3b-1) dimension exist or multiple time shift metrics exist
@@ -65,7 +54,6 @@ export const renameOperator: PostProcessingFactory<PostProcessingRename> = (
       ((columns.length > 0 || timeOffsets.length > 1) &&
         truncate_metric !== undefined &&
         !!truncate_metric))
->>>>>>> 6.0.0rc4
   ) {
     const renamePairs: [string, string | null][] = [];
     if (
@@ -99,12 +87,8 @@ export const renameOperator: PostProcessingFactory<PostProcessingRename> = (
         ComparisonType.Percentage,
         ComparisonType.Ratio,
       ].includes(formData.comparison_type) &&
-<<<<<<< HEAD
-      metrics.length === 1
-=======
       metrics.length === 1 &&
       renamePairs.length === 0
->>>>>>> 6.0.0rc4
     ) {
       renamePairs.push([getMetricLabel(metrics[0]), null]);
     }

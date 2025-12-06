@@ -24,10 +24,7 @@ import pandas as pd
 import pytest
 from flask import current_app
 from pandas.api.types import is_datetime64_dtype
-<<<<<<< HEAD
-=======
 from pytest_mock import MockerFixture
->>>>>>> 6.0.0rc4
 
 from superset.exceptions import SupersetException
 from superset.utils.core import (
@@ -37,13 +34,9 @@ from superset.utils.core import (
     generic_find_constraint_name,
     generic_find_fk_constraint_name,
     get_datasource_full_name,
-<<<<<<< HEAD
-    get_stacktrace,
-=======
     get_query_source_from_request,
     get_stacktrace,
     get_user_agent,
->>>>>>> 6.0.0rc4
     is_test,
     merge_extra_filters,
     merge_request_params,
@@ -608,8 +601,6 @@ def test_get_datasource_full_name():
     )
 
 
-<<<<<<< HEAD
-=======
 @pytest.mark.parametrize(
     "referrer,expected",
     [
@@ -664,7 +655,6 @@ def test_get_user_agent_custom(mocker: MockerFixture, app_context: None) -> None
     )
 
 
->>>>>>> 6.0.0rc4
 def test_merge_extra_filters():
     # does nothing if no extra filters
     form_data = {"A": 1, "B": 2, "c": "test"}

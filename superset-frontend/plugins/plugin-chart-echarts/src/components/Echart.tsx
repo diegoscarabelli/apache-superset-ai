@@ -31,11 +31,7 @@ import { merge } from 'lodash';
 
 import { useSelector } from 'react-redux';
 
-<<<<<<< HEAD
-import { styled } from '@superset-ui/core';
-=======
 import { styled, useTheme } from '@superset-ui/core';
->>>>>>> 6.0.0rc4
 import { use, init, EChartsType, registerLocale } from 'echarts/core';
 import {
   SankeyChart,
@@ -178,14 +174,11 @@ function Echart(
       if (!chartRef.current) {
         chartRef.current = init(divRef.current, null, { locale });
       }
-<<<<<<< HEAD
-=======
       // did mount
       handleSizeChange({ width, height });
->>>>>>> 6.0.0rc4
       setDidMount(true);
     });
-  }, [locale]);
+  }, [locale, handleSizeChange, width, height]);
 
   useEffect(() => {
     if (didMount) {
@@ -199,14 +192,6 @@ function Echart(
         chartRef.current?.getZr().on(name, handler);
       });
 
-<<<<<<< HEAD
-      chartRef.current?.setOption(echartOptions, true);
-
-      // did mount
-      handleSizeChange({ width, height });
-    }
-  }, [didMount, echartOptions, eventHandlers, zrEventHandlers]);
-=======
       const getEchartsTheme = (options: any) => {
         const antdTheme = theme;
         const echartsTheme = {
@@ -260,7 +245,6 @@ function Echart(
       chartRef.current?.setOption(themedEchartOptions, true);
     }
   }, [didMount, echartOptions, eventHandlers, zrEventHandlers, theme]);
->>>>>>> 6.0.0rc4
 
   useEffect(() => () => chartRef.current?.dispose(), []);
 

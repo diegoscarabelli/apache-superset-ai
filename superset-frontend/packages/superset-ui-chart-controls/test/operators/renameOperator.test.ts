@@ -107,8 +107,6 @@ test('should add renameOperator', () => {
   });
 });
 
-<<<<<<< HEAD
-=======
 test('should add renameOperator if a metric exists and multiple time shift', () => {
   expect(
     renameOperator(
@@ -129,7 +127,6 @@ test('should add renameOperator if a metric exists and multiple time shift', () 
   });
 });
 
->>>>>>> 6.0.0rc4
 test('should add renameOperator if exists derived metrics', () => {
   [
     ComparisonType.Difference,
@@ -160,8 +157,6 @@ test('should add renameOperator if exists derived metrics', () => {
         level: 0,
       },
     });
-<<<<<<< HEAD
-=======
   });
 });
 
@@ -200,7 +195,6 @@ test('should add renameOperator if isTimeComparisonValue without columns', () =>
         level: 0,
       },
     });
->>>>>>> 6.0.0rc4
   });
 });
 

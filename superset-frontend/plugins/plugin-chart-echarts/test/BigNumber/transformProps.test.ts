@@ -176,10 +176,7 @@ describe('BigNumberWithTrendline', () => {
               metric_name: 'value',
               d3format: '.2f',
               currency: { symbol: 'USD', symbolPosition: 'prefix' },
-<<<<<<< HEAD
-=======
               uuid: '1',
->>>>>>> 6.0.0rc4
             },
           ],
         },

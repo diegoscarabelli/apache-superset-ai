@@ -29,19 +29,11 @@ const TooltipSectionWrapper = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
 
-<<<<<<< HEAD
-    font-size: ${theme.typography.sizes.s}px;
-    line-height: 1.2;
-
-    &:not(:last-of-type) {
-      margin-bottom: ${theme.gridUnit * 2}px;
-=======
     font-size: ${theme.fontSizeSM}px;
     line-height: 1.2;
 
     &:not(:last-of-type) {
       margin-bottom: ${theme.sizeUnit * 2}px;
->>>>>>> 6.0.0rc4
     }
   `}
 `;

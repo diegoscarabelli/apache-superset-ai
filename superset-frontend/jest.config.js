@@ -76,9 +76,5 @@ module.exports = {
       },
     ],
   ],
-<<<<<<< HEAD
-  testTimeout: 10000,
-=======
   testTimeout: 20000,
->>>>>>> 6.0.0rc4
 };

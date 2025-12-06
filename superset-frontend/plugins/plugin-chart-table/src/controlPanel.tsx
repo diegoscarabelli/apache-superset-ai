@@ -413,8 +413,6 @@ const config: ControlPanelConfig = {
         ],
         [
           {
-<<<<<<< HEAD
-=======
             name: 'row_limit',
             config: {
               type: 'SelectControl',
@@ -464,7 +462,6 @@ const config: ControlPanelConfig = {
 
         [
           {
->>>>>>> 6.0.0rc4
             name: 'show_totals',
             config: {
               type: 'CheckboxControl',
@@ -572,15 +569,8 @@ const config: ControlPanelConfig = {
                 return true;
               },
               mapStateToProps(explore, _, chart) {
-<<<<<<< HEAD
-                const timeComparisonStatus = !isEmpty(
-                  explore?.controls?.time_compare?.value,
-                );
-
-=======
                 const timeComparisonValue =
                   explore?.controls?.time_compare?.value;
->>>>>>> 6.0.0rc4
                 const { colnames: _colnames, coltypes: _coltypes } =
                   chart?.queriesResponse?.[0] ?? {};
                 let colnames: string[] = _colnames || [];

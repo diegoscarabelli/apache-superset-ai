@@ -16,17 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-<<<<<<< HEAD:superset-frontend/src/components/Tooltip/index.tsx
-import { supersetTheme } from '@superset-ui/core';
-import { Tooltip as AntdTooltip } from 'antd-v5';
-import { TooltipProps, TooltipPlacement } from 'antd-v5/lib/tooltip';
-
-export { TooltipProps, TooltipPlacement };
-=======
 import { Tooltip as AntdTooltip } from 'antd';
 
 import type { TooltipProps, TooltipPlacement } from './types';
->>>>>>> 6.0.0rc4:superset-frontend/packages/superset-ui-core/src/components/Tooltip/index.tsx
 
 export const Tooltip = ({ overlayStyle, ...props }: TooltipProps) => (
   <AntdTooltip

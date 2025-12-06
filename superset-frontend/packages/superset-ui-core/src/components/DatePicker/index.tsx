@@ -16,14 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-<<<<<<< HEAD:superset-frontend/src/components/DatePicker/index.tsx
-import { DatePicker as AntdDatePicker, DatePickerProps } from 'antd-v5';
-import { css } from '@superset-ui/core';
-=======
 import { DatePicker as AntdDatePicker } from 'antd';
 import { css } from '@superset-ui/core';
 import type { DatePickerProps, RangePickerProps } from './types';
->>>>>>> 6.0.0rc4:superset-frontend/packages/superset-ui-core/src/components/DatePicker/index.tsx
 
 export const DatePicker = (props: DatePickerProps) => (
   <AntdDatePicker

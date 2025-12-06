@@ -122,10 +122,6 @@ const config: ControlPanelConfig = {
               label: t('X Axis Title'),
               renderTrigger: true,
               default: '',
-<<<<<<< HEAD
-              description: t('Changing this control takes effect instantly'),
-=======
->>>>>>> 6.0.0rc4
             },
           },
         ],
@@ -151,10 +147,6 @@ const config: ControlPanelConfig = {
               label: t('Y Axis Title'),
               renderTrigger: true,
               default: '',
-<<<<<<< HEAD
-              description: t('Changing this control takes effect instantly'),
-=======
->>>>>>> 6.0.0rc4
             },
           },
         ],

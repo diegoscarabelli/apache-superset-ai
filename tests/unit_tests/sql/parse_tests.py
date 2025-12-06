@@ -1421,12 +1421,6 @@ def test_firebolt_old_escape_string() -> None:
     # but they normalize to ''
     assert (
         SQLStatement(sql, "firebolt").format()
-<<<<<<< HEAD
-        == """SELECT
-  'foo''bar',
-  'foo''bar'"""
-    )
-=======
         == """
 SELECT
   'foo''bar',
@@ -2983,4 +2977,3 @@ def test_has_subquery(sql: str, engine: str, expected: bool) -> None:
     Test the `has_subquery` method.
     """
     assert SQLStatement(sql, engine).has_subquery() == expected
->>>>>>> 6.0.0rc4

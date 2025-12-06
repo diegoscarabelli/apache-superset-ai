@@ -106,11 +106,8 @@ export interface ChartPropsConfig {
   theme: SupersetTheme;
   /* legend index */
   legendIndex?: number;
-<<<<<<< HEAD
-=======
   inContextMenu?: boolean;
   emitCrossFilters?: boolean;
->>>>>>> 6.0.0rc4
 }
 
 const DEFAULT_WIDTH = 800;

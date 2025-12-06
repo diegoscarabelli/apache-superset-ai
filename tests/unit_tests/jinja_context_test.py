@@ -225,11 +225,7 @@ def test_get_filters_is_null_operator() -> None:
     Test the ``get_filters`` macro with a IS_NULL operator,
     which doesn't have a comparator
     """
-<<<<<<< HEAD
-    with app.test_request_context(
-=======
     with current_app.test_request_context(
->>>>>>> 6.0.0rc4
         data={
             "form_data": json.dumps(
                 {
@@ -899,11 +895,7 @@ def test_metric_macro_no_dataset_id_no_context(mocker: MockerFixture) -> None:
     mock_g = mocker.patch("superset.jinja_context.g")
     mock_g.form_data = {}
     env = SandboxedEnvironment(undefined=DebugUndefined)
-<<<<<<< HEAD
-    with app.test_request_context():
-=======
     with current_app.test_request_context():
->>>>>>> 6.0.0rc4
         with pytest.raises(SupersetTemplateException) as excinfo:
             metric_macro(env, {}, "macro_key")
         assert str(excinfo.value) == (
@@ -924,11 +916,7 @@ def test_metric_macro_no_dataset_id_with_context_missing_info(
     mock_g.form_data = {"queries": []}
 
     env = SandboxedEnvironment(undefined=DebugUndefined)
-<<<<<<< HEAD
-    with app.test_request_context(
-=======
     with current_app.test_request_context(
->>>>>>> 6.0.0rc4
         data={
             "form_data": json.dumps(
                 {
@@ -975,11 +963,7 @@ def test_metric_macro_no_dataset_id_with_context_datasource_id(
 
     # Getting the data from the request context
     env = SandboxedEnvironment(undefined=DebugUndefined)
-<<<<<<< HEAD
-    with app.test_request_context(
-=======
     with current_app.test_request_context(
->>>>>>> 6.0.0rc4
         data={
             "form_data": json.dumps(
                 {
@@ -1006,11 +990,7 @@ def test_metric_macro_no_dataset_id_with_context_datasource_id(
             }
         ],
     }
-<<<<<<< HEAD
-    with app.test_request_context():
-=======
     with current_app.test_request_context():
->>>>>>> 6.0.0rc4
         assert metric_macro(env, {}, "macro_key") == "COUNT(*)"
 
 
@@ -1026,11 +1006,7 @@ def test_metric_macro_no_dataset_id_with_context_datasource_id_none(
 
     # Getting the data from the request context
     env = SandboxedEnvironment(undefined=DebugUndefined)
-<<<<<<< HEAD
-    with app.test_request_context(
-=======
     with current_app.test_request_context(
->>>>>>> 6.0.0rc4
         data={
             "form_data": json.dumps(
                 {
@@ -1096,11 +1072,7 @@ def test_metric_macro_no_dataset_id_with_context_chart_id(
 
     # Getting the data from the request context
     env = SandboxedEnvironment(undefined=DebugUndefined)
-<<<<<<< HEAD
-    with app.test_request_context(
-=======
     with current_app.test_request_context(
->>>>>>> 6.0.0rc4
         data={
             "form_data": json.dumps(
                 {
@@ -1127,11 +1099,7 @@ def test_metric_macro_no_dataset_id_with_context_chart_id(
             }
         ],
     }
-<<<<<<< HEAD
-    with app.test_request_context():
-=======
     with current_app.test_request_context():
->>>>>>> 6.0.0rc4
         assert metric_macro(env, {}, "macro_key") == "COUNT(*)"
 
 
@@ -1147,11 +1115,7 @@ def test_metric_macro_no_dataset_id_with_context_slice_id_none(
 
     # Getting the data from the request context
     env = SandboxedEnvironment(undefined=DebugUndefined)
-<<<<<<< HEAD
-    with app.test_request_context(
-=======
     with current_app.test_request_context(
->>>>>>> 6.0.0rc4
         data={
             "form_data": json.dumps(
                 {
@@ -1204,11 +1168,7 @@ def test_metric_macro_no_dataset_id_with_context_deleted_chart(
 
     # Getting the data from the request context
     env = SandboxedEnvironment(undefined=DebugUndefined)
-<<<<<<< HEAD
-    with app.test_request_context(
-=======
     with current_app.test_request_context(
->>>>>>> 6.0.0rc4
         data={
             "form_data": json.dumps(
                 {
@@ -1270,11 +1230,7 @@ def test_metric_macro_no_dataset_id_available_in_request_form_data(
 
     # Getting the data from the request context
     env = SandboxedEnvironment(undefined=DebugUndefined)
-<<<<<<< HEAD
-    with app.test_request_context(
-=======
     with current_app.test_request_context(
->>>>>>> 6.0.0rc4
         data={
             "form_data": json.dumps(
                 {
@@ -1292,10 +1248,6 @@ def test_metric_macro_no_dataset_id_available_in_request_form_data(
         "datasource": "1__table",
     }
 
-<<<<<<< HEAD
-    with app.test_request_context():
-        assert metric_macro(env, {}, "macro_key") == "COUNT(*)"
-=======
     with current_app.test_request_context():
         assert metric_macro(env, {}, "macro_key") == "COUNT(*)"
 
@@ -1371,7 +1323,6 @@ def test_metric_macro_embedded_user_skips_base_filter(mocker: MockerFixture) -> 
 
     # Verify that find_by_id was called with skip_base_filter=True
     DatasetDAO.find_by_id.assert_called_once_with(1, skip_base_filter=True)
->>>>>>> 6.0.0rc4
 
 
 @pytest.mark.parametrize(

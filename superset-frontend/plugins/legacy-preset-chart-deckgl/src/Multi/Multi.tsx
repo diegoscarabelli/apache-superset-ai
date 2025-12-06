@@ -274,87 +274,21 @@ const DeckMulti = (props: DeckMultiProps) => {
   );
 
   const loadLayers = useCallback(
-<<<<<<< HEAD
-    (formData: QueryFormData, payload: JsonObject, viewport?: Viewport) => {
-=======
     (
       formData: QueryFormData,
       payload: JsonObject,
       viewport?: Viewport,
     ): void => {
->>>>>>> 6.0.0rc4
       setViewport(getAdjustedViewport());
       setSubSlicesLayers({});
 
       payload.data.slices.forEach(
-<<<<<<< HEAD
-        (subslice: { slice_id: number } & JsonObject) => {
-          // Filters applied to multi_deck are passed down to underlying charts
-          // note that dashboard contextual information (filter_immune_slices and such) aren't
-          // taken into consideration here
-          const extra_filters = [
-            ...(subslice.form_data.extra_filters || []),
-            ...(formData.extra_filters || []),
-            ...(formData.extra_form_data?.filters || []),
-          ];
-
-          const adhoc_filters = [
-            ...(formData.adhoc_filters || []),
-            ...(subslice.formData?.adhoc_filters || []),
-            ...(formData.extra_form_data?.adhoc_filters || []),
-          ];
-
-          const subsliceCopy = {
-            ...subslice,
-            form_data: {
-              ...subslice.form_data,
-              extra_filters,
-              adhoc_filters,
-            },
-          };
-
-          const url = getExploreLongUrl(subsliceCopy.form_data, 'json');
-
-          if (url) {
-            SupersetClient.get({
-              endpoint: url,
-            })
-              .then(({ json }) => {
-                // @ts-ignore TODO(hainenber): define proper type for `form_data.viz_type` and call signature for functions in layerGenerators.
-                const layer = layerGenerators[subsliceCopy.form_data.viz_type](
-                  subsliceCopy.form_data,
-                  json,
-                  props.onAddFilter,
-                  setTooltip,
-                  props.datasource,
-                  [],
-                  props.onSelect,
-                );
-                setSubSlicesLayers(subSlicesLayers => ({
-                  ...subSlicesLayers,
-                  [subsliceCopy.slice_id]: layer,
-                }));
-              })
-              .catch(() => {});
-          }
-        },
-      );
-    },
-    [
-      props.datasource,
-      props.onAddFilter,
-      props.onSelect,
-      setTooltip,
-      getAdjustedViewport,
-    ],
-=======
         (subslice: { slice_id: number } & JsonObject, payloadIndex: number) => {
           loadSingleLayer(subslice, formData, payloadIndex);
         },
       );
     },
     [getAdjustedViewport, loadSingleLayer],
->>>>>>> 6.0.0rc4
   );
 
   const prevDeckSlices = usePrevious(props.formData.deck_slices);

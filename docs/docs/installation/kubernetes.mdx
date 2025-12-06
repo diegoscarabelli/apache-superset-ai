@@ -162,15 +162,9 @@ The following example installs the drivers for BigQuery and Elasticsearch, allow
 ```yaml
 bootstrapScript: |
   #!/bin/bash
-<<<<<<< HEAD
-  uv pip install psycopg2==2.9.6 \
-    sqlalchemy-bigquery==1.6.1 \
-    elasticsearch-dbapi==0.2.5 &&\
-=======
   uv pip install .[postgres] \
     .[bigquery] \
     .[elasticsearch] &&\
->>>>>>> 6.0.0rc4
   if [ ! -f ~/bootstrap ]; then echo "Running Superset with uid {{ .Values.runAsUser }}" > ~/bootstrap; fi
 ```
 
