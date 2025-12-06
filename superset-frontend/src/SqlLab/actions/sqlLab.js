@@ -1086,7 +1086,9 @@ export function runTablePreviewQuery(newTable, runPreviewOnly) {
 
 export function syncTable(table, tableMetadata, finalQueryEditorId) {
   return function (dispatch) {
-    const finalTable = { ...table, queryEditorId: finalQueryEditorId };
+    const finalTable = finalQueryEditorId
+      ? { ...table, queryEditorId: finalQueryEditorId }
+      : table;
     const sync = isFeatureEnabled(FeatureFlag.SqllabBackendPersistence)
       ? SupersetClient.post({
           endpoint: encodeURI('/tableschemaview/'),
