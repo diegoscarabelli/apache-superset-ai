@@ -94,6 +94,8 @@ const StyledToolbar = styled.div`
         border-radius: ${theme.borderRadiusSM}px;
         font-size: ${theme.fontSize}px;
         line-height: 1.5;
+        background-color: ${theme.colorBgContainer};
+        color: ${theme.colorText};
 
         &:focus {
           outline: none;
