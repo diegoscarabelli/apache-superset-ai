@@ -42,7 +42,7 @@ export const StyledIcon = styled(AntdIconComponent)<IconType>`
   }
   font-size: ${({ iconSize, theme }) =>
     iconSize
-      ? `${theme.typography.sizes[iconSize] || theme.typography.sizes.m}px`
+      ? `${theme.fontSize}px`
       : '24px'};
 `;
 

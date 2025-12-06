@@ -62,11 +62,11 @@ const StyledMenuItem = styled(AntdMenu.Item)`
         opacity: 0;
         transform: translateX(-50%);
         transition: all ${({ theme }) => theme.transitionTiming}s;
-        background-color: ${({ theme }) => theme.colors.primary.base};
+        background-color: ${({ theme }) => theme.colorPrimary};
       }
       &:focus {
         @media (max-width: 767px) {
-          background-color: ${({ theme }) => theme.colors.primary.light5};
+          background-color: ${({ theme }) => theme.colorPrimaryBg};
         }
       }
     }
@@ -83,11 +83,11 @@ const StyledMenu = styled(AntdMenu)`
     &.ant-menu-vertical,
     &.ant-dropdown-menu {
       box-shadow:
-        0 3px 6px -4px ${addAlpha(theme.colors.grayscale.dark2, 0.12)},
+        0 3px 6px -4px ${addAlpha(theme.colorTextSecondary, 0.12)},
         0 6px 16px 0
-      ${addAlpha(theme.colors.grayscale.dark2, 0.08)},
+      ${addAlpha(theme.colorTextSecondary, 0.08)},
         0 9px 28px 8px
-      ${addAlpha(theme.colors.grayscale.dark2, 0.05)};
+      ${addAlpha(theme.colorTextSecondary, 0.05)};
     }
     `}
 `;
@@ -106,7 +106,7 @@ const StyledNav = styled(AntdMenu)`
     padding: ${({ theme }) => theme.gridUnit * 2}px
       ${({ theme }) => theme.gridUnit * 4}px;
     &:hover {
-      background-color: ${({ theme }) => theme.colors.primary.light5};
+      background-color: ${({ theme }) => theme.colorPrimaryBg};
       border-bottom: 2px solid transparent;
       & a:after {
         opacity: 1;
@@ -116,7 +116,7 @@ const StyledNav = styled(AntdMenu)`
   }
   &.ant-menu-horizontal > .ant-menu-item-selected {
     box-sizing: border-box;
-    border-bottom: 2px solid ${({ theme }) => theme.colors.primary.base};
+    border-bottom: 2px solid ${({ theme }) => theme.colorPrimary};
   }
 `;
 
