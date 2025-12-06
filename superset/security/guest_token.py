@@ -16,7 +16,13 @@
 # under the License.
 from typing import Optional, TypedDict, Union
 
-from flask_appbuilder.security.sqla.models import Group, Role
+# Workaround for flask-appbuilder 5.0.0 compatibility
+try:
+    from flask_appbuilder.security.sqla.models import Group, Role
+except ImportError:
+    from flask_appbuilder.security.sqla.models import Role
+    Group = None  # type: ignore
+
 from flask_login import AnonymousUserMixin
 
 from superset.utils.backports import StrEnum

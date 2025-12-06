@@ -27,17 +27,34 @@ from flask import current_app, Flask, g, Request
 from flask_appbuilder import Model
 from flask_appbuilder.security.sqla.apis import RoleApi, UserApi
 from flask_appbuilder.security.sqla.manager import SecurityManager
-from flask_appbuilder.security.sqla.models import (
-    assoc_group_role,
-    assoc_permissionview_role,
-    assoc_user_group,
-    assoc_user_role,
-    Permission,
-    PermissionView,
-    Role,
-    User,
-    ViewMenu,
-)
+
+# Workaround for flask-appbuilder 5.0.0 compatibility
+try:
+    from flask_appbuilder.security.sqla.models import (
+        assoc_group_role,
+        assoc_permissionview_role,
+        assoc_user_group,
+        assoc_user_role,
+        Permission,
+        PermissionView,
+        Role,
+        User,
+        ViewMenu,
+    )
+except ImportError:
+    # Some assoc tables may not exist in flask-appbuilder 5.0.0
+    from flask_appbuilder.security.sqla.models import (
+        assoc_permissionview_role,
+        Permission,
+        PermissionView,
+        Role,
+        User,
+        ViewMenu,
+    )
+    # Define dummy variables for unused imports
+    assoc_group_role = None  # type: ignore
+    assoc_user_group = None  # type: ignore
+    assoc_user_role = None  # type: ignore
 from flask_appbuilder.security.views import (
     PermissionModelView,
     PermissionViewModelView,
