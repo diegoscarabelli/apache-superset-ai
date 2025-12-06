@@ -84,7 +84,7 @@ const StyledToolbar = styled.div`
       display: flex;
       justify-content: space-between;
       align-items: center;
-      column-gap: ${theme.gridUnit}px;
+      gap: ${theme.gridUnit * 2}px;
 
       input.form-control {
         flex: 1;
@@ -106,6 +106,13 @@ const StyledToolbar = styled.div`
           cursor: not-allowed;
         }
       }
+
+      button {
+        height: ${theme.gridUnit * 8}px;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+      }
     }
 
     form {
@@ -113,8 +120,11 @@ const StyledToolbar = styled.div`
     }
 
     .label {
+      flex-shrink: 0;
       width: ${theme.gridUnit * 25}px;
-      height: 100%;
+      height: ${theme.gridUnit * 8}px;
+      display: flex;
+      align-items: center;
       color: ${theme.colorText};
       font-size: ${theme.fontSize}px;
     }
