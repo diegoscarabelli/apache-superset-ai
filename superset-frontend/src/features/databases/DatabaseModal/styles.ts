@@ -232,6 +232,12 @@ export const StyledInputContainer = styled.div`
       padding-top: ${theme.sizeUnit * 2}px;
     }
 
+    .control-label {
+      color: ${theme.colorText};
+      font-size: ${theme.fontSizeSM}px;
+      margin-bottom: ${theme.sizeUnit * 2}px;
+    }
+
     .input-container {
       display: flex;
       align-items: top;
