@@ -309,7 +309,7 @@ const AIAssistantOptions = ({
                 name="instructions"
                 value={contextSettings?.instructions || llmDefaults?.[selectedProvider || '']?.instructions || ''}
                 onChange={(e) => handleContextOptionsChange('instructions', e.target.value)}
-                style={{ flex: 1 }}
+                style={{ width: '100%' }}
               />
             </div>
           </StyledInputContainer>
