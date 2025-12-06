@@ -16,7 +16,7 @@ const Container = styled.div`
     margin: 0 auto;
     padding: ${theme.gridUnit * 1.5}px ${theme.gridUnit * 2}px;
     border-style: none;
-    border: 1px solid ${theme.colors.grayscale.light2};
+    border: 1px solid ${theme.colorBorder};
     border-radius: ${theme.gridUnit}px;
   
     input {
@@ -35,7 +35,7 @@ const SchemaList = styled.div`
 
 const SchemaItem = styled.div`
   ${({ theme }) => css`
-    border-bottom: 1px solid ${theme.colors.grayscale.light2};
+    border-bottom: 1px solid ${theme.colorBorder};
     padding-bottom: ${theme.gridUnit * 1.5}px;
   `}
 `;
@@ -82,7 +82,7 @@ const CheckboxContainer = styled.div`
 
   label.disabled {
     font-weight: 400;
-    color: ${props => props.theme.colors.grayscale.light1};
+    color: ${props => props.theme.colorTextDisabled};
   }
 `;
 
@@ -105,7 +105,7 @@ const StatusBar = styled.div`
   ${({ theme }) => css`
     margin-top: ${theme.gridUnit * 2}px;
     font-size: 0.875rem;
-    color: ${theme.colors.grayscale.dark1};
+    color: ${theme.colorText};
   `}
 `;
 
@@ -114,11 +114,11 @@ const Header = styled.div`
     margin-bottom: ${theme.gridUnit * 2}px;
     font-size: ${theme.typography.sizes.m}px;
     font-weight: 600;
-    color: ${theme.colors.grayscale.dark1};
+    color: ${theme.colorText};
     display: flex;
 
     div {
-      border-right: 1px solid ${theme.colors.grayscale.light2};
+      border-right: 1px solid ${theme.colorBorder};
       padding-right: ${theme.gridUnit * 2}px;
       padding-left: ${theme.gridUnit * 2}px;
 
@@ -275,7 +275,7 @@ const SchemaSelector = ({
                 padding: '2px 8px',
                 border: 'none',
                 borderRadius: 0,
-                borderBottom: `1px solid ${theme.colors.grayscale.light2}`,
+                borderBottom: `1px solid ${theme.colorBorder}`,
                 minWidth: 180,
               }}
               value={filterText}
