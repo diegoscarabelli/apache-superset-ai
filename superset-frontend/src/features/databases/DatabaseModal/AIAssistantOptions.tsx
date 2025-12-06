@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   t,
   SupersetClient,
@@ -40,6 +40,7 @@ const AIAssistantOptions = ({
   const [contextError, setContextError] = useState<string | null>(null);
   const [llmDefaults, setLlmDefaults] = useState<LlmDefaults | null>(null);
   const [selectedModelTokenLimit, setSelectedModelTokenLimit] = useState<number | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const tables = useDatabaseTables(db?.id || 0);
   const contextSettings = db?.llm_context_options;
 
@@ -92,6 +93,15 @@ const AIAssistantOptions = ({
   const onSchemasChange = (value: string[]) => {
     handleContextOptionsChange('schemas', JSON.stringify(value));
   };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <>
@@ -323,7 +333,10 @@ const AIAssistantOptions = ({
                   body: JSON.stringify({ database_id: db?.id || 0 }),
                   headers: { 'Content-Type': 'application/json' },
                 }).finally(() => {
-                  setTimeout(() => {
+                  if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current);
+                  }
+                  timeoutRef.current = setTimeout(() => {
                     setRegenerating(savedContext?.status === 'building');
                   }, 10000);
                   contextStatus.refetch();
