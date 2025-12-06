@@ -25,8 +25,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { css, t, styled, useTheme } from '@superset-ui/core';
 
-import { Button } from '@superset-ui/core/components';
-import { Icons } from '@superset-ui/core/components';
+import { Button, Input, Icons } from '@superset-ui/core/components';
 import {
     LOG_ACTIONS_AI_ASSISTANT_OPENED
 } from 'src/logger/LogUtils';
@@ -43,12 +42,6 @@ export interface AiAssistantEditorProps {
   schema?: string | string[];
   disabledMessage?: string;
 }
-
-const StyledButton = styled.span`
-  button {
-    line-height: 20px;
-  }
-`;
 
 const StyledIcon = styled(Icons.BulbOutlined)`
   &:first-of-type {
@@ -85,48 +78,11 @@ const StyledToolbar = styled.div`
       justify-content: space-between;
       align-items: center;
       gap: ${theme.gridUnit * 2}px;
-
-      input.form-control {
-        flex: 1;
-        height: ${theme.gridUnit * 8}px;
-        padding: ${theme.gridUnit * 1.5}px ${theme.gridUnit * 2}px;
-        border: 1px solid ${theme.colorBorder};
-        border-radius: ${theme.borderRadiusSM}px;
-        font-size: ${theme.fontSize}px;
-        line-height: 1.5;
-        background-color: ${theme.colorBgContainer};
-        color: ${theme.colorText};
-
-        &:focus {
-          outline: none;
-          border-color: ${theme.colorPrimary};
-        }
-
-        &:disabled {
-          background-color: ${theme.colorBgContainerDisabled};
-          color: ${theme.colorTextDisabled};
-          cursor: not-allowed;
-        }
-      }
-
-      button {
-        height: ${theme.gridUnit * 8}px;
-        display: flex;
-        align-items: center;
-        white-space: nowrap;
-      }
-    }
-
-    form {
-      margin-block-end: 0;
     }
 
     .label {
       flex-shrink: 0;
       width: ${theme.gridUnit * 25}px;
-      height: ${theme.gridUnit * 8}px;
-      display: flex;
-      align-items: center;
       color: ${theme.colorText};
       font-size: ${theme.fontSize}px;
     }
@@ -191,11 +147,10 @@ const AiAssistantEditor = ({
     <StyledToolbar>
       <div className='assist-input'>
         <span className="label">AI Assist</span>
-        <input
-          type="text"
+        <Input
           onChange={changePrompt}
           value={prompt}
-          className="form-control input-md"
+          className="form-control input-sm"
           placeholder={t('How many employees are located in Bath?')}
           disabled={isDisabled}
           onKeyDown={(e) => {
@@ -206,21 +161,19 @@ const AiAssistantEditor = ({
             }
           }}
         />
-        <StyledButton>
-          <Button
-            buttonSize='small'
-            onClick={() => {
-              onClick(logAction);
-              onGenerateSql(prompt);
-            }}
-            tooltip={t('Generate SQL with AI') as string
-            }
-            disabled={isDisabled}
-          >
-            <StyledIcon iconColor={theme.colorPrimary} iconSize="xl" />
-            {isGeneratingSql ? t('Generating...') : t('Generate SQL')}
-          </Button>
-        </StyledButton>
+        <Button
+          buttonSize='small'
+          onClick={() => {
+            onClick(logAction);
+            onGenerateSql(prompt);
+          }}
+          tooltip={t('Generate SQL with AI') as string
+          }
+          disabled={isDisabled}
+        >
+          <StyledIcon iconColor={theme.colorPrimary} iconSize="xl" />
+          {isGeneratingSql ? t('Generating...') : t('Generate SQL')}
+        </Button>
       </div>
       {disabledMessage ? (
         <DisabledMessage>
