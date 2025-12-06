@@ -183,9 +183,9 @@ const TableSelector: FunctionComponent<TableSelectorProps> = ({
   const [currentCatalog, setCurrentCatalog] = useState<
     string | null | undefined
   >(catalog);
-  const [currentSchema, setCurrentSchema] = useState<string | string[] | undefined>(
-    schema,
-  );
+  const [currentSchema, setCurrentSchema] = useState<
+    string | string[] | undefined
+  >(schema);
   const [tableSelectValue, setTableSelectValue] = useState<
     SelectValue | undefined
   >(undefined);
@@ -218,7 +218,7 @@ const TableSelector: FunctionComponent<TableSelectorProps> = ({
     () =>
       data
         ? data.options.map(table => ({
-            value: table.value,
+            value: `${table.schema}.${table.value}`,
             schema: table.schema,
             label: customTableOptionLabelRenderer ? (
               customTableOptionLabelRenderer(table)
@@ -257,19 +257,22 @@ const TableSelector: FunctionComponent<TableSelectorProps> = ({
   const internalTableChange = (
     selectedOptions: TableOption | TableOption[] | undefined,
   ) => {
-    const parseOption = (
-      option: TableOption,
-    ): TableValue => {
-      return { value: option.value, schema: option.schema };
+    const parseOption = (option: TableOption): TableValue => {
+      // Extract schema and table name from "schema.table" format in the value field
+      // We can't rely on option.schema because antd Select doesn't preserve custom fields
+      const parts = option.value.split('.');
+      const schemaName = parts[0];
+      const tableName = parts.slice(1).join('.'); // Rejoin in case table name has dots
+      return { value: tableName, schema: schemaName };
     };
     if (currentSchema) {
       onTableSelectChange?.(
         Array.isArray(selectedOptions)
           ? selectedOptions.map(option => parseOption(option))
           : selectedOptions !== undefined
-          ? parseOption(selectedOptions)
-          : undefined,
-        currentCatalog
+            ? parseOption(selectedOptions)
+            : undefined,
+        currentCatalog,
       );
     } else {
       setTableSelectValue(selectedOptions);
@@ -375,7 +378,7 @@ const TableSelector: FunctionComponent<TableSelectorProps> = ({
         sqlLabMode={sqlLabMode}
         isDatabaseSelectEnabled={isDatabaseSelectEnabled && !readOnly}
         readOnly={readOnly}
-        schemaSelectMode='multiple'
+        schemaSelectMode="multiple"
       />
       {sqlLabMode && !formMode && <div className="divider" />}
       {renderTableSelect()}

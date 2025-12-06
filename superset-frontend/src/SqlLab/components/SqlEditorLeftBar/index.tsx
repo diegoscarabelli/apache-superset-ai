@@ -149,7 +149,9 @@ const SqlEditorLeftBar = ({
       // Use tableValue.schema if available, otherwise fall back to currently selected schema
       // Normalize to string since schema can be string | string[] but backend expects string
       const tableSchema = normalizeSchema(tableValue.schema || schema);
-      dispatch(addTable(queryEditor, tableValue.value, catalogName, tableSchema));
+      dispatch(
+        addTable(queryEditor, tableValue.value, catalogName, tableSchema),
+      );
     });
 
     dispatch(removeTables(currentTables));
