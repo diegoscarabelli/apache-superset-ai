@@ -85,6 +85,27 @@ const StyledToolbar = styled.div`
       justify-content: space-between;
       align-items: center;
       column-gap: ${theme.gridUnit}px;
+
+      input.form-control {
+        flex: 1;
+        height: ${theme.gridUnit * 8}px;
+        padding: ${theme.gridUnit * 1.5}px ${theme.gridUnit * 2}px;
+        border: 1px solid ${theme.colorBorder};
+        border-radius: ${theme.borderRadiusSM}px;
+        font-size: ${theme.fontSize}px;
+        line-height: 1.5;
+
+        &:focus {
+          outline: none;
+          border-color: ${theme.colorPrimary};
+        }
+
+        &:disabled {
+          background-color: ${theme.colorBgContainerDisabled};
+          color: ${theme.colorTextDisabled};
+          cursor: not-allowed;
+        }
+      }
     }
 
     form {
