@@ -21,7 +21,7 @@ import {
 import { DatabaseObject } from '../types';
 import SchemaSelector from './SchemaSelector';
 import { wideButton } from './styles';
-import Button from 'src/components/Button';
+import { Button } from '@superset-ui/core/components';
 import { LlmDefaults, SavedContextStatus, useLlmContextStatus, useLlmDefaults } from 'src/hooks/apiResources';
 
 

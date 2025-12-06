@@ -25,7 +25,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { css, t, styled, useTheme } from '@superset-ui/core';
 
-import Button from 'src/components/Button';
+import { Button } from '@superset-ui/core/components';
 import Icons from 'src/components/Icons';
 import {
     LOG_ACTIONS_AI_ASSISTANT_OPENED

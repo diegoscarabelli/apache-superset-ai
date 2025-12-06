@@ -21,7 +21,7 @@ import { Tooltip } from 'src/components/Tooltip';
 import { Input } from 'src/components/Input';
 import InfoTooltip from 'src/components/InfoTooltip';
 import Icons from 'src/components/Icons';
-import Button from 'src/components/Button';
+import { Button } from '@superset-ui/core/components';
 import errorIcon from 'src/assets/images/icons/error.svg';
 import FormItem from './FormItem';
 import FormLabel from './FormLabel';
