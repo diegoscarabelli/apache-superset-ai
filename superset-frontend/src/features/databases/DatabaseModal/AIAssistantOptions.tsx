@@ -41,11 +41,12 @@ const AIAssistantOptions = ({
   const [llmDefaults, setLlmDefaults] = useState<LlmDefaults | null>(null);
   const [selectedModelTokenLimit, setSelectedModelTokenLimit] = useState<number | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const tables = useDatabaseTables(db?.id || 0);
+  const dbId = db?.id;
+  const tables = useDatabaseTables(dbId || 0);
   const contextSettings = db?.llm_context_options;
 
   const contextStatus = useLlmContextStatus({
-    dbId: db?.id || 0,
+    dbId: dbId || 0,
     onSuccess: result => {
       setRegenerating(result.status === 'building');
       if (result.context) {
@@ -56,7 +57,7 @@ const AIAssistantOptions = ({
   });
 
   useLlmDefaults({
-    dbId: db?.id || 0,
+    dbId: dbId || 0,
     onSuccess: result => {
       if (result) {
         setLlmDefaults(result);
