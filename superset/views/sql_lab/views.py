@@ -227,7 +227,10 @@ class TableSchemaView(BaseSupersetView):
     @expose("/", methods=("POST",))
     def post(self) -> FlaskResponse:
         try:
+            logger.info(f"TableSchemaView.post() - request.form: {dict(request.form)}")
             table = json.loads(request.form["table"])
+            logger.info(f"TableSchemaView.post() - parsed table: {table}")
+            logger.info(f"TableSchemaView.post() - queryEditorId: {table.get('queryEditorId')}")
 
             # delete any existing table schema
             db.session.query(TableSchema).filter(
@@ -251,6 +254,7 @@ class TableSchemaView(BaseSupersetView):
             db.session.commit()
             return json_success(json.dumps({"id": table_schema.id}))
         except Exception as ex:  # pylint: disable=broad-except
+            logger.error(f"TableSchemaView.post() - Exception: {ex}", exc_info=True)
             db.session.rollback()
             return json_error_response(error_msg_from_exception(ex), 400)
 

@@ -1086,13 +1086,37 @@ export function runTablePreviewQuery(newTable, runPreviewOnly) {
 
 export function syncTable(table, tableMetadata, finalQueryEditorId) {
   return function (dispatch) {
+    console.log('=== syncTable DEBUG ===');
+    console.log('table param:', JSON.stringify(table, null, 2));
+    console.log('table.schema:', table.schema);
+    console.log('tableMetadata keys:', Object.keys(tableMetadata || {}));
+    console.log('tableMetadata.schema:', (tableMetadata || {}).schema);
+
     const finalTable = finalQueryEditorId
       ? { ...table, queryEditorId: finalQueryEditorId }
       : table;
+
+    console.log('finalTable.schema:', finalTable.schema);
+
+    // Merge metadata with table, ensuring critical fields from table are preserved
+    const mergedPayload = {
+      ...tableMetadata,
+      ...finalTable,
+      // Explicitly preserve required fields from table
+      dbId: finalTable.dbId,
+      queryEditorId: finalTable.queryEditorId,
+      catalog: finalTable.catalog,
+      schema: finalTable.schema,
+      name: finalTable.name,
+    };
+
+    console.log('mergedPayload.schema:', mergedPayload.schema);
+    console.log('mergedPayload keys:', Object.keys(mergedPayload));
+
     const sync = isFeatureEnabled(FeatureFlag.SqllabBackendPersistence)
       ? SupersetClient.post({
           endpoint: encodeURI('/tableschemaview/'),
-          postPayload: { table: { ...tableMetadata, ...finalTable } },
+          postPayload: { table: mergedPayload },
         })
       : Promise.resolve({ json: { id: table.id } });
 
