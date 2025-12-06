@@ -112,7 +112,7 @@ const StatusBar = styled.div`
 const Header = styled.div`
   ${({ theme }) => css`
     margin-bottom: ${theme.gridUnit * 2}px;
-    font-size: ${theme.typography.sizes.m}px;
+    font-size: ${theme.fontSize}px;
     font-weight: 600;
     color: ${theme.colorText};
     display: flex;

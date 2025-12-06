@@ -75,8 +75,8 @@ const StyledInfoIcon = styled(Icons.InfoCircleOutlined)`
 const StyledToolbar = styled.div`
   ${({ theme }) => css`
     padding: ${theme.gridUnit * 2}px;
-    background: ${theme.colors.grayscale.light5};
-    border: 1px solid ${theme.colors.grayscale.light2};
+    background: ${theme.colorBgLayout};
+    border: 1px solid ${theme.colorBorder};
     border-bottom: 0;
     margin-bottom: 0;
 
@@ -94,28 +94,28 @@ const StyledToolbar = styled.div`
     .label {
       width: ${theme.gridUnit * 25}px;
       height: 100%;
-      color: ${theme.colors.grayscale.base};
-      font-size: ${theme.typography.sizes.m}px;
+      color: ${theme.colorText};
+      font-size: ${theme.fontSize}px;
     }
   `}
 `;
 
 const DisabledMessage = styled.div`
   ${({ theme }) => css`
-    color: ${theme.colors.error.base};
+    color: ${theme.colorError};
     margin-top: ${theme.gridUnit * 2}px;
     margin-left: ${theme.gridUnit * 2}px;
-    font-size: ${theme.typography.sizes.s}px;
+    font-size: ${theme.fontSizeSM}px;
     padding: ${theme.gridUnit * 2}px;
   `}
 `;
 
 const SelectedSchemaMessage = styled.div`
   ${({ theme }) => css`
-    color: ${theme.colors.grayscale.base};
+    color: ${theme.colorText};
     margin-top: ${theme.gridUnit * 2}px;
     margin-left: ${theme.gridUnit * 2}px;
-    font-size: ${theme.typography.sizes.s}px;
+    font-size: ${theme.fontSizeSM}px;
     padding: ${theme.gridUnit * 2}px;
     display: flex;
     align-items: center;
@@ -184,7 +184,7 @@ const AiAssistantEditor = ({
             }
             disabled={isDisabled}
           >
-            <StyledIcon iconColor={theme.colors.primary.base} iconSize="xl" />
+            <StyledIcon iconColor={theme.colorPrimary} iconSize="xl" />
             {isGeneratingSql ? t('Generating...') : t('Generate SQL')}
           </Button>
         </StyledButton>
