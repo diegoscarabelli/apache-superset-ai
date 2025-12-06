@@ -124,6 +124,7 @@ const AIAssistantOptions = ({
             <div className="control-label">{t('Language model provider')}</div>
             <div className="input-container">
               <AntdSelect
+                style={{ width: '100%' }}
                 options={
                   llmDefaults ?
                   Object.keys(llmDefaults).map(provider => ({
@@ -155,6 +156,7 @@ const AIAssistantOptions = ({
                 <div className="control-label">{t('Model')}</div>
                 <div className="input-container">
                   <AntdSelect
+                    style={{ width: '100%' }}
                     options={
                       (llmDefaults && selectedProvider in llmDefaults)
                         ? Object.entries(llmDefaults[selectedProvider].models).map(([model, data]) => ({
