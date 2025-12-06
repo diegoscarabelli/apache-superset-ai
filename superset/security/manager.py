@@ -375,10 +375,15 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
         ("menu_access", "Query Search"),
         ("can_read", "SqlLabPermalinkRestApi"),
         ("can_write", "SqlLabPermalinkRestApi"),
-        query = self.session.query(self.role_model).filter(
-            self.role_model.id.in_(role_ids)
-        )
-        return query.all()
+        ("can_post", "TableSchemaView"),
+        ("can_expanded", "TableSchemaView"),
+        ("can_delete", "TableSchemaView"),
+    }
+
+    SQLLAB_EXTRA_PERMISSION_VIEWS = {
+        ("can_csv", "Superset"),  # Deprecated permission remove on 3.0.0
+        ("can_read", "Superset"),
+    }
 
     def copy_role(
         self, role_from_name: str, role_to_name: str, merge: bool = True

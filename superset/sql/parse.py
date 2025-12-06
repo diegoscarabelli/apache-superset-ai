@@ -33,22 +33,22 @@ from sqlglot.dialects.dialect import (
     Dialect,
     Dialects,
 )
-from sqlglot.dialects.singlestore import SingleStore
+
+try:
+    from sqlglot.dialects.singlestore import SingleStore
+except ImportError:
+    # SingleStore dialect may not be available in all sqlglot versions
+    SingleStore = None  # type: ignore
+
 from sqlglot.errors import ParseError
 from sqlglot.expressions import Func
 from sqlglot.optimizer.pushdown_predicates import pushdown_predicates
 from sqlglot.optimizer.scope import Scope, ScopeType, traverse_scope
-from sqlglot.optimizer.pushdown_predicates import (
-pushdown_predicates,
-)
-from sqlglot.optimizer.scope import (
-Scope,
-ScopeType,
-traverse_scope,
+
 from superset.exceptions import QueryClauseValidationException, SupersetParseError
 from superset.sql.dialects import Dremio, Firebolt, Pinot
 if TYPE_CHECKING:
-from superset.models.core import Database
+    from superset.models.core import Database
 
 
 logger = logging.getLogger(__name__)
@@ -115,6 +115,9 @@ SQLGLOT_DIALECTS = {
     "vertica": Dialects.POSTGRES,
     "yql": Dialects.CLICKHOUSE,
 }
+
+# Remove None values if SingleStore dialect is not available
+SQLGLOT_DIALECTS = {k: v for k, v in SQLGLOT_DIALECTS.items() if v is not None}
 
 
 class LimitMethod(enum.Enum):

@@ -15,45 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 """Helpers for loading Superset example datasets.
-<<<<<<< HEAD
 
 All Superset example data files (CSV, JSON, etc.) are fetched via the
 jsDelivr CDN instead of raw.githubusercontent.com to avoid GitHub API
 rate limits (60 anonymous requests/hour/IP).
 
 jsDelivr is a multi‑CDN front for public GitHub repos and supports
-arbitrary paths including nested folders. It doesn’t use the GitHub REST API
-and advertises unlimited bandwidth for open-source use.
-
-Example URL::
-
-    https://cdn.jsdelivr.net/gh/apache-superset/examples-data@master/datasets/examples/slack/messages.csv
-
-Environment knobs
------------------
-``SUPERSET_EXAMPLES_DATA_REF``  (default: ``master``)
-    Tag / branch / SHA to pin so builds remain reproducible.
-
-``SUPERSET_EXAMPLES_BASE_URL``
-    Override the base completely if you want to host the files elsewhere
-    (internal mirror, S3 bucket, ASF downloads, …).  **Include any query
-    string required by your hosting (e.g. ``?raw=true`` if you point back
-    to a GitHub *blob* URL).**
-"""
-
-from __future__ import annotations
-
-import os
-from typing import Any
-=======
->>>>>>> 6.0.0rc4
-
-All Superset example data files (CSV, JSON, etc.) are fetched via the
-jsDelivr CDN instead of raw.githubusercontent.com to avoid GitHub API
-rate limits (60 anonymous requests/hour/IP).
-
-jsDelivr is a multi‑CDN front for public GitHub repos and supports
-arbitrary paths including nested folders. It doesn’t use the GitHub REST API
+arbitrary paths including nested folders. It doesn't use the GitHub REST API
 and advertises unlimited bandwidth for open-source use.
 
 Example URL::
@@ -87,17 +55,6 @@ from superset.connectors.sqla.models import SqlaTable
 from superset.models.slice import Slice
 from superset.utils import json
 
-<<<<<<< HEAD
-# ---------------------------------------------------------------------------
-# Public sample‑data mirror configuration
-# ---------------------------------------------------------------------------
-BASE_COMMIT: str = os.getenv("SUPERSET_EXAMPLES_DATA_REF", "master")
-BASE_URL: str = os.getenv(
-    "SUPERSET_EXAMPLES_BASE_URL",
-    f"https://cdn.jsdelivr.net/gh/apache-superset/examples-data@{BASE_COMMIT}/",
-)
-
-=======
 EXAMPLES_PROTOCOL = "examples://"
 
 # ---------------------------------------------------------------------------
@@ -109,7 +66,6 @@ BASE_URL: str = os.getenv(
     f"https://cdn.jsdelivr.net/gh/apache-superset/examples-data@{BASE_COMMIT}/",
 )
 
->>>>>>> 6.0.0rc4
 # Slices assembled into a 'Misc Chart' dashboard
 misc_dash_slices: set[str] = set()
 
@@ -125,11 +81,7 @@ def get_table_connector_registry() -> Any:
 
 def get_examples_folder() -> str:
     """Return local path to the examples folder (when vendored)."""
-<<<<<<< HEAD
-    return os.path.join(app.config["BASE_DIR"], "examples")
-=======
     return os.path.join(current_app.config["BASE_DIR"], "examples")
->>>>>>> 6.0.0rc4
 
 
 def update_slice_ids(pos: dict[Any, Any]) -> list[Slice]:
@@ -174,8 +126,6 @@ def get_example_url(filepath: str) -> str:
     paths like ``datasets/examples/slack/messages.csv``.
     """
     return f"{BASE_URL}{filepath}"
-<<<<<<< HEAD
-=======
 
 
 def normalize_example_data_url(url: str) -> str:
@@ -218,4 +168,3 @@ def read_example_data(
                 time.sleep(sleep_time)
             else:
                 raise
->>>>>>> 6.0.0rc4

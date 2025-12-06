@@ -121,6 +121,14 @@ def get_channels_with_search(
     search_string: str = "",
     types: Optional[list[SlackChannelTypes]] = None,
     exact_match: bool = False,
+    force: bool = False,
+) -> list[SlackChannelSchema]:
+    """
+    The slack api is paginated but does not include search, so we need to fetch
+    all channels and filter them ourselves
+    This will search by slack name or id
+    """
+    try:
         channels = get_channels(
             force=force,
             cache_timeout=app.config["SLACK_CACHE_TIMEOUT"],

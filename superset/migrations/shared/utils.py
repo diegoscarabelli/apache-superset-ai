@@ -478,8 +478,6 @@ def create_fks_for_table(
             remote_cols,
             ondelete=ondelete,
         )
-<<<<<<< HEAD
-=======
 
 
 def cast_text_column_to_json(
@@ -611,5 +609,3 @@ def cast_json_column_to_text(
         new_column_name=column,
     )
 
-    return
->>>>>>> 6.0.0rc4

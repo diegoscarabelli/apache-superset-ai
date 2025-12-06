@@ -760,6 +760,314 @@ class BaseTemplateProcessor:
 
         kwargs.update(self._context)
         context = validate_template_context(self.engine, kwargs)
+
+        try:
+            return template.render(context)
+        except RecursionError as ex:
+            raise SupersetTemplateException(
+                "Infinite recursion detected in template"
+            ) from ex
+
+
+class JinjaTemplateProcessor(BaseTemplateProcessor):
+    def _parse_datetime(self, dttm: str) -> datetime | None:
+        """
+        Try to parse a datetime and default to None in the worst case.
+
+        Since this may have been rendered by different engines, the datetime may
+        vary slightly in format. We try to make it consistent, and if all else
+        fails, just return None.
+        """
+        try:
+            return dateutil.parser.parse(dttm)
+        except dateutil.parser.ParserError:
+            return None
+
+    def set_context(self, **kwargs: Any) -> None:
+        super().set_context(**kwargs)
+        extra_cache = ExtraCache(
+            extra_cache_keys=self._extra_cache_keys,
+            applied_filters=self._applied_filters,
+            removed_filters=self._removed_filters,
+            database=self._database,
+            dialect=self._database.get_dialect(),
+            table=self._table,
+        )
+
+        from_dttm = (
+            self._parse_datetime(dttm)
+            if (dttm := self._context.get("from_dttm"))
+            else None
+        )
+        to_dttm = (
+            self._parse_datetime(dttm)
+            if (dttm := self._context.get("to_dttm"))
+            else None
+        )
+
+        dataset_macro_with_context = partial(
+            dataset_macro,
+            from_dttm=from_dttm,
+            to_dttm=to_dttm,
+        )
+
+        self._context.update(
+            {
+                "url_param": partial(safe_proxy, extra_cache.url_param),
+                "current_user_id": partial(safe_proxy, extra_cache.current_user_id),
+                "current_username": partial(safe_proxy, extra_cache.current_username),
+                "current_user_email": partial(
+                    safe_proxy, extra_cache.current_user_email
+                ),
+                "current_user_roles": partial(
+                    safe_proxy, extra_cache.current_user_roles
+                ),
+                "current_user_rls_rules": partial(
+                    safe_proxy, extra_cache.current_user_rls_rules
+                ),
+                "cache_key_wrapper": partial(safe_proxy, extra_cache.cache_key_wrapper),
+                "filter_values": partial(safe_proxy, extra_cache.filter_values),
+                "get_filters": partial(safe_proxy, extra_cache.get_filters),
+                "dataset": partial(safe_proxy, dataset_macro_with_context),
+                "get_time_filter": partial(safe_proxy, extra_cache.get_time_filter),
+            }
+        )
+
+        # The `metric` filter needs the full context, in order to expand other filters
+        self._context["metric"] = partial(
+            safe_proxy,
+            metric_macro,
+            self.env,
+            self._context,
+        )
+
+
+class NoOpTemplateProcessor(BaseTemplateProcessor):
+    def process_template(self, sql: str, **kwargs: Any) -> str:
+        """
+        Makes processing a template a noop
+        """
+        return str(sql)
+
+
+class PrestoTemplateProcessor(JinjaTemplateProcessor):
+    """Presto Jinja context
+
+    The methods described here are namespaced under ``presto`` in the
+    jinja context as in ``SELECT '{{ presto.some_macro_call() }}'``
+    """
+
+    engine = "presto"
+
+    def set_context(self, **kwargs: Any) -> None:
+        super().set_context(**kwargs)
+        self._context[self.engine] = {
+            "first_latest_partition": partial(safe_proxy, self.first_latest_partition),
+            "latest_partitions": partial(safe_proxy, self.latest_partitions),
+            "latest_sub_partition": partial(safe_proxy, self.latest_sub_partition),
+            "latest_partition": partial(safe_proxy, self.latest_partition),
+        }
+
+    @staticmethod
+    def _schema_table(table_name: str, schema: str | None) -> tuple[str, str | None]:
+        if "." in table_name:
+            schema, table_name = table_name.split(".")
+        return table_name, schema
+
+    def first_latest_partition(self, table_name: str) -> str | None:
+        """
+        Gets the first value in the array of all latest partitions
+
+        :param table_name: table name in the format `schema.table`
+        :return: the first (or only) value in the latest partition array
+        :raises IndexError: If no partition exists
+        """
+
+        latest_partitions = self.latest_partitions(table_name)
+        return latest_partitions[0] if latest_partitions else None
+
+    def latest_partitions(self, table_name: str) -> list[str] | None:
+        """
+        Gets the array of all latest partitions
+
+        :param table_name: table name in the format `schema.table`
+        :return: the latest partition array
+        """
+
+        # pylint: disable=import-outside-toplevel
+        from superset.db_engine_specs.presto import PrestoEngineSpec
+
+        table_name, schema = self._schema_table(table_name, self._schema)
+        return cast(PrestoEngineSpec, self._database.db_engine_spec).latest_partition(
+            database=self._database, table=Table(table_name, schema)
+        )[1]
+
+    def latest_sub_partition(self, table_name: str, **kwargs: Any) -> Any:
+        table_name, schema = self._schema_table(table_name, self._schema)
+
+        # pylint: disable=import-outside-toplevel
+        from superset.db_engine_specs.presto import PrestoEngineSpec
+
+        return cast(
+            PrestoEngineSpec, self._database.db_engine_spec
+        ).latest_sub_partition(
+            database=self._database, table=Table(table_name, schema), **kwargs
+        )
+
+    latest_partition = first_latest_partition
+
+
+class HiveTemplateProcessor(PrestoTemplateProcessor):
+    engine = "hive"
+
+
+class SparkTemplateProcessor(HiveTemplateProcessor):
+    engine = "spark"
+
+    def process_template(self, sql: str, **kwargs: Any) -> str:
+        template = self.env.from_string(sql)
+        kwargs.update(self._context)
+
+        # Backwards compatibility if migrating from Hive.
+        context = validate_template_context(self.engine, kwargs)
+        context["hive"] = context["spark"]
+        return template.render(context)
+
+
+class TrinoTemplateProcessor(PrestoTemplateProcessor):
+    engine = "trino"
+
+    def process_template(self, sql: str, **kwargs: Any) -> str:
+        template = self.env.from_string(sql)
+        kwargs.update(self._context)
+
+        # Backwards compatibility if migrating from Presto.
+        context = validate_template_context(self.engine, kwargs)
+        context["presto"] = context["trino"]
+        return template.render(context)
+
+
+DEFAULT_PROCESSORS = {
+    "presto": PrestoTemplateProcessor,
+    "hive": HiveTemplateProcessor,
+    "spark": SparkTemplateProcessor,
+    "trino": TrinoTemplateProcessor,
+}
+
+
+@lru_cache(maxsize=LRU_CACHE_MAX_SIZE)
+def get_template_processors() -> dict[str, Any]:
+    processors = current_app.config.get("CUSTOM_TEMPLATE_PROCESSORS", {})
+    for engine, processor in DEFAULT_PROCESSORS.items():
+        # do not overwrite engine-specific CUSTOM_TEMPLATE_PROCESSORS
+        if engine not in processors:
+            processors[engine] = processor
+
+    return processors
+
+
+def get_template_processor(
+    database: "Database",
+    table: "SqlaTable" | None = None,
+    query: "Query" | None = None,
+    **kwargs: Any,
+) -> BaseTemplateProcessor:
+    if feature_flag_manager.is_feature_enabled("ENABLE_TEMPLATE_PROCESSING"):
+        template_processor = get_template_processors().get(
+            database.backend, JinjaTemplateProcessor
+        )
+    else:
+        template_processor = NoOpTemplateProcessor
+    return template_processor(database=database, table=table, query=query, **kwargs)
+
+
+def dataset_macro(
+    dataset_id: int,
+    include_metrics: bool = False,
+    columns: list[str] | None = None,
+    from_dttm: datetime | None = None,
+    to_dttm: datetime | None = None,
+) -> str:
+    """
+    Given a dataset ID, return the SQL that represents it.
+
+    The generated SQL includes all columns (including computed) by default. Optionally
+    the user can also request metrics to be included, and columns to group by.
+
+    The from_dttm and to_dttm parameters are filled in from filter values in explore
+    views, and we take them to make those properties available to jinja templates in
+    the underlying dataset.
+    """
+    # pylint: disable=import-outside-toplevel
+    from superset.daos.dataset import DatasetDAO
+
+    dataset = DatasetDAO.find_by_id(dataset_id)
+    if not dataset:
+        raise DatasetNotFoundError(f"Dataset {dataset_id} not found!")
+
+    columns = columns or [column.column_name for column in dataset.columns]
+    metrics = [metric.metric_name for metric in dataset.metrics]
+    query_obj = {
+        "is_timeseries": False,
+        "filter": [],
+        "metrics": metrics if include_metrics else None,
+        "columns": columns,
+        "from_dttm": from_dttm,
+        "to_dttm": to_dttm,
+    }
+    sqla_query = dataset.get_query_str_extended(query_obj, mutate=False)
+    sql = sqla_query.sql
+    return f"(\n{sql}\n) AS dataset_{dataset_id}"
+
+
+def get_dataset_id_from_context(metric_key: str) -> int:
+    """
+    Retrieves the Dataset ID from the request context.
+
+    :param metric_key: the metric key.
+    :returns: the dataset ID.
+    """
+    # pylint: disable=import-outside-toplevel
+    from superset.daos.chart import ChartDAO
+    from superset.views.utils import loads_request_json
+
+    form_data: dict[str, Any] = {}
+    exc_message = _(
+        "Please specify the Dataset ID for the ``%(name)s`` metric in the Jinja macro.",
+        name=metric_key,
+    )
+
+    if has_request_context():
+        if payload := request.get_json(cache=True) if request.is_json else None:
+            if dataset_id := payload.get("datasource", {}).get("id"):
+                return dataset_id
+            form_data.update(payload.get("form_data", {}))
+        request_form = loads_request_json(request.form.get("form_data"))
+        form_data.update(request_form)
+        request_args = loads_request_json(request.args.get("form_data"))
+        form_data.update(request_args)
+
+    if form_data := (form_data or getattr(g, "form_data", {})):
+        if datasource_info := form_data.get("datasource"):
+            if isinstance(datasource_info, dict):
+                return datasource_info["id"]
+            return datasource_info.split("__")[0]
+        url_params = form_data.get("queries", [{}])[0].get("url_params", {})
+        if dataset_id := url_params.get("datasource_id"):
+            return dataset_id
+        if chart_id := (form_data.get("slice_id") or url_params.get("slice_id")):
+            chart_data = ChartDAO.find_by_id(chart_id)
+            if not chart_data:
+                raise SupersetTemplateException(exc_message)
+            return chart_data.datasource_id
+
+    raise SupersetTemplateException(exc_message)
+
+
+def metric_macro(
+    env: Environment,
+    context: dict[str, Any],
+    metric_key: str,
     dataset_id: int | None = None,
 ) -> str:
     """
