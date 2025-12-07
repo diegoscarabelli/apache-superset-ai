@@ -85,25 +85,12 @@ def get_table_metadata(database: Any, table: Table) -> TableMetadataResponse:
     indexes = get_indexes_metadata(database, table)
     keys += foreign_keys + indexes
 
-    # DEBUG: Log keys to diagnose missing column icons
-    logger.info(f"[get_table_metadata] Table: {table.schema}.{table.table}")
-    logger.info(f"[get_table_metadata] Primary key: {primary_key}")
-    logger.info(f"[get_table_metadata] Foreign keys: {foreign_keys}")
-    logger.info(f"[get_table_metadata] Indexes: {indexes}")
-    logger.info(f"[get_table_metadata] All keys: {keys}")
     payload_columns: list[TableMetadataColumnsResponse] = []
     table_comment = database.get_table_comment(table)
     for col in columns:
         dtype = get_col_type(col)
         col_name = col["column_name"]
         col_keys = [k for k in keys if col_name in k.get("column_names", [])]
-
-        # DEBUG: Log column key matching
-        if col_keys or any(col_name in str(k) for k in keys):
-            logger.info(f"[get_table_metadata] Column '{col_name}': matched {len(col_keys)} keys")
-            for k in keys:
-                k_col_names = k.get("column_names", [])
-                logger.info(f"  Key type={k.get('type')}, column_names={k_col_names}, match={col_name in k_col_names}")
 
         payload_columns.append(
             {
