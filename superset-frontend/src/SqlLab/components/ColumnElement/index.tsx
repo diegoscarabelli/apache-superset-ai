@@ -20,6 +20,12 @@ import { ReactNode } from 'react';
 import { ClassNames } from '@emotion/react';
 import { styled, useTheme, t } from '@superset-ui/core';
 import { Flex, Tooltip } from '@superset-ui/core/components';
+import {
+  KeyOutlined,
+  LinkOutlined,
+  BookOutlined,
+  CommentOutlined,
+} from '@ant-design/icons';
 
 const StyledTooltip = (props: any) => {
   const theme = useTheme();
@@ -57,11 +63,11 @@ const Hr = styled.hr`
   margin-top: ${({ theme }) => theme.sizeUnit * 1.5}px;
 `;
 
-const iconMap = {
-  pk: 'fa-key',
-  fk: 'fa-link',
-  index: 'fa-bookmark',
-  comment: 'fa-comment',
+const iconComponentMap = {
+  pk: KeyOutlined,
+  fk: LinkOutlined,
+  index: BookOutlined,
+  comment: CommentOutlined,
 };
 
 const tooltipTitleMap = {
@@ -91,40 +97,44 @@ const ColumnElement = ({ column }: ColumnElementProps) => {
   let icons: ReactNode[] = [];
   if (column.keys && column.keys.length > 0) {
     columnName = <strong>{column.name}</strong>;
-    icons = column.keys.map((key, i) => (
-      <span key={i} className="ColumnElement">
+    icons = column.keys.map((key, i) => {
+      const IconComponent = iconComponentMap[key.type];
+      return (
+        <span key={i} className="ColumnElement" style={{ marginLeft: 8 }}>
+          <StyledTooltip
+            placement="right"
+            title={
+              <>
+                <strong>{tooltipTitleMap[key.type]}</strong>
+                <Hr />
+                <pre className="text-small">
+                  {JSON.stringify(key, null, '  ')}
+                </pre>
+              </>
+            }
+          >
+            <IconComponent style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
+          </StyledTooltip>
+        </span>
+      );
+    });
+  }
+  if (column.comment) {
+    icons.push(
+      <span key="comment" className="ColumnElement" style={{ marginLeft: 8 }}>
         <StyledTooltip
           placement="right"
           title={
             <>
-              <strong>{tooltipTitleMap[key.type]}</strong>
+              <strong>{tooltipTitleMap.comment}</strong>
               <Hr />
-              <pre className="text-small">
-                {JSON.stringify(key, null, '  ')}
-              </pre>
+              <p className="text-small">{column.comment}</p>
             </>
           }
         >
-          <i className={`fa text-muted m-l-2 ${iconMap[key.type]}`} />
+          <CommentOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
         </StyledTooltip>
-      </span>
-    ));
-  }
-  if (column.comment) {
-    icons.push(
-      <StyledTooltip
-        key="comment"
-        placement="right"
-        title={
-          <>
-            <strong>{tooltipTitleMap.comment}</strong>
-            <Hr />
-            <p className="text-small">{column.comment}</p>
-          </>
-        }
-      >
-        <i className="fa text-muted m-l-2 fa-comment" />
-      </StyledTooltip>,
+      </span>,
     );
   }
   return (
