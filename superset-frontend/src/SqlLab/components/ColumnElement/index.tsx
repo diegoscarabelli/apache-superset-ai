@@ -105,8 +105,7 @@ const ColumnElement = ({ column }: ColumnElementProps) => {
             </>
           }
         >
-          {' '}
-          <i className={`fa text-muted ${iconMap[key.type]}`} />
+          <i className={`fa text-muted m-l-2 ${iconMap[key.type]}`} />
         </StyledTooltip>
       </span>
     ));
