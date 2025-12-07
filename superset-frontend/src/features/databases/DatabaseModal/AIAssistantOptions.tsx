@@ -4,9 +4,8 @@ import {
   SupersetClient,
   SupersetTheme,
 } from '@superset-ui/core';
-import { InfoTooltip, Collapse, Select } from '@superset-ui/core/components';
+import { InfoTooltip, Collapse, Select, Switch } from '@superset-ui/core/components';
 import IndeterminateCheckbox from 'src/components/IndeterminateCheckbox';
-import { Switch } from 'src/components/Switch';
 import { useDatabaseTables } from 'src/hooks/apiResources';
 import {
   StyledContextError,

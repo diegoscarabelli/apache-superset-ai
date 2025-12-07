@@ -206,10 +206,6 @@ beforeEach(() => {
   window.history.pushState({}, 'Test page', '/dashboard?standalone=1');
 });
 
-beforeEach(() => {
-  window.history.pushState({}, 'Test page', '/dashboard?standalone=1');
-});
-
 test('should render', () => {
   const { container } = setup();
   expect(container).toBeInTheDocument();

@@ -173,27 +173,4 @@ describe('AllEntitiesTable', () => {
     expect(screen.getByText('Monthly Revenue')).toBeInTheDocument();
     expect(screen.queryByText('Queries')).not.toBeInTheDocument();
   });
-
-  it('Only list asset types that have entities', () => {
-    const mockObjects = {
-      dashboard: [],
-      chart: [mockObjectsWithTags.chart[0]],
-      query: [],
-    };
-
-    render(
-      <AllEntitiesTable
-        search=""
-        setShowTagModal={mockSetShowTagModal}
-        objects={mockObjects}
-        canEditTag
-      />,
-      { useRouter: true },
-    );
-
-    expect(screen.queryByText('Dashboards')).not.toBeInTheDocument();
-    expect(screen.getByText('Charts')).toBeInTheDocument();
-    expect(screen.getByText('Monthly Revenue')).toBeInTheDocument();
-    expect(screen.queryByText('Queries')).not.toBeInTheDocument();
-  });
 });

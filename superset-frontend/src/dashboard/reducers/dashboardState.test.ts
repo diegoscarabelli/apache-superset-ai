@@ -53,9 +53,6 @@ const createMockDashboardState = (
   ...overrides,
 });
 
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
-
 describe('DashboardState reducer', () => {
   describe('SET_ACTIVE_TAB', () => {
     it('switches a single tab', () => {
