@@ -84,6 +84,13 @@ def get_table_metadata(database: Any, table: Table) -> TableMetadataResponse:
     foreign_keys = get_foreign_keys_metadata(database, table)
     indexes = get_indexes_metadata(database, table)
     keys += foreign_keys + indexes
+
+    # DEBUG: Log keys to diagnose missing column icons
+    logger.info(f"[get_table_metadata] Table: {table.schema}.{table.table}")
+    logger.info(f"[get_table_metadata] Primary key: {primary_key}")
+    logger.info(f"[get_table_metadata] Foreign keys: {foreign_keys}")
+    logger.info(f"[get_table_metadata] Indexes: {indexes}")
+    logger.info(f"[get_table_metadata] All keys: {keys}")
     payload_columns: list[TableMetadataColumnsResponse] = []
     table_comment = database.get_table_comment(table)
     for col in columns:
