@@ -63,6 +63,7 @@ const TABS_KEYS = {
 const StyledPane = styled.div<StyledPaneProps>`
   width: 100%;
   height: ${props => props.height}px;
+  padding-left: ${({ theme }) => theme.sizeUnit * 2}px;
   .ant-tabs .ant-tabs-content-holder {
     overflow: visible;
   }

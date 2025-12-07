@@ -23,7 +23,7 @@ import {
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { css, t, styled, useTheme } from '@superset-ui/core';
+import { css, t, styled } from '@superset-ui/core';
 
 import { Button, Input, Icons } from '@superset-ui/core/components';
 import {
@@ -43,46 +43,29 @@ export interface AiAssistantEditorProps {
   disabledMessage?: string;
 }
 
-const StyledIcon = styled(Icons.BulbOutlined)`
-  &:first-of-type {
-    margin: 0;
-    display: flex;
-    svg {
-      margin: 0;
-    }
-  }
-`;
-
-const StyledInfoIcon = styled(Icons.InfoCircleOutlined)`
-  &:first-of-type {
-    margin: 0;
-    display: flex;
-    svg {
-      margin: 0;
-      width: 16px;
-      height: 16px;
-    }
-  }
+const StyledContainer = styled.div`
+  ${({ theme }) => css`
+    border: 1px solid ${theme.colorBorder};
+    border-bottom: 0;
+    background: ${theme.colorBgContainer};
+  `}
 `;
 
 const StyledToolbar = styled.div`
   ${({ theme }) => css`
-    padding: ${theme.gridUnit * 2}px;
-    background: ${theme.colorBgLayout};
-    border: 1px solid ${theme.colorBorder};
-    border-bottom: 0;
-    margin-bottom: 0;
+    padding: ${theme.sizeUnit * 2}px;
+    display: flex;
+    align-items: center;
+    gap: ${theme.sizeUnit * 2}px;
 
-    .assist-input {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: ${theme.gridUnit * 2}px;
+    input {
+      flex: 1;
+      min-width: 300px;
     }
 
     .label {
       flex-shrink: 0;
-      width: ${theme.gridUnit * 25}px;
+      width: ${theme.sizeUnit * 25}px;
       color: ${theme.colorText};
       font-size: ${theme.fontSize}px;
     }
@@ -92,23 +75,24 @@ const StyledToolbar = styled.div`
 const DisabledMessage = styled.div`
   ${({ theme }) => css`
     color: ${theme.colorError};
-    margin-top: ${theme.gridUnit * 2}px;
-    margin-left: ${theme.gridUnit * 2}px;
+    border-top: 1px solid ${theme.colorBorder};
     font-size: ${theme.fontSizeSM}px;
-    padding: ${theme.gridUnit * 2}px;
+    padding: ${theme.sizeUnit * 2}px;
+    display: flex;
+    align-items: center;
+    column-gap: ${theme.sizeUnit}px;
   `}
 `;
 
 const SelectedSchemaMessage = styled.div`
   ${({ theme }) => css`
     color: ${theme.colorText};
-    margin-top: ${theme.gridUnit * 2}px;
-    margin-left: ${theme.gridUnit * 2}px;
+    border-top: 1px solid ${theme.colorBorder};
     font-size: ${theme.fontSizeSM}px;
-    padding: ${theme.gridUnit * 2}px;
+    padding: ${theme.sizeUnit * 2}px;
     display: flex;
     align-items: center;
-    column-gap: ${theme.gridUnit}px;
+    column-gap: ${theme.sizeUnit}px;
   `}
 `;
 
@@ -125,7 +109,6 @@ const AiAssistantEditor = ({
   schema = [],
   disabledMessage,
 }: AiAssistantEditorProps) => {
-  const theme = useTheme();
   const dispatch = useDispatch();
   const logAction = useLogAction({ queryEditorId });
 
@@ -144,8 +127,8 @@ const AiAssistantEditor = ({
   const isDisabled = isGeneratingSql || !!disabledMessage;
 
   return (
-    <StyledToolbar>
-      <div className='assist-input'>
+    <StyledContainer>
+      <StyledToolbar>
         <span className="label">AI Assist</span>
         <Input
           onChange={changePrompt}
@@ -162,30 +145,31 @@ const AiAssistantEditor = ({
           }}
         />
         <Button
-          buttonSize='small'
+          buttonSize="small"
+          buttonStyle="secondary"
+          icon={<Icons.BulbOutlined />}
           onClick={() => {
             onClick(logAction);
             onGenerateSql(prompt);
           }}
-          tooltip={t('Generate SQL with AI') as string
-          }
+          tooltip={t('Generate SQL with AI') as string}
           disabled={isDisabled}
         >
-          <StyledIcon iconColor={theme.colorPrimary} iconSize="xl" />
           {isGeneratingSql ? t('Generating...') : t('Generate SQL')}
         </Button>
-      </div>
+      </StyledToolbar>
       {disabledMessage ? (
         <DisabledMessage>
+          <Icons.InfoCircleOutlined />
           {disabledMessage}
         </DisabledMessage>
       ) : schema && schema.length > 0 ? (
         <SelectedSchemaMessage>
-          <StyledInfoIcon />
+          <Icons.InfoCircleOutlined />
           {`Selecting schema will restrict the AI to generate SQL for only the selected schema. This will increase costs due to skipping the AI cache. Currently selected: ${Array.isArray(schema) ? schema.join(', ') : schema}`}
         </SelectedSchemaMessage>
       ) : null}
-    </StyledToolbar>
+    </StyledContainer>
   );
 };
 

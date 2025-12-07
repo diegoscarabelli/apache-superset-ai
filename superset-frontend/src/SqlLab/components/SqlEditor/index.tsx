@@ -200,6 +200,10 @@ const StyledSqlEditor = styled.div`
       overflow-x: scroll;
     }
 
+    .north-pane {
+      padding-left: ${theme.sizeUnit * 2}px;
+    }
+
     .schemaPane-enter-done,
     .schemaPane-exit {
       transform: translateX(0);
