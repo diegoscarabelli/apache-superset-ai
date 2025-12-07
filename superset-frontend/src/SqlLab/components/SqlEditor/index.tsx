@@ -281,7 +281,7 @@ const SqlEditor: FC<Props> = ({
   ]);
   const [savedLlmContext, setSavedLlmContext] = useState<SavedContextStatus | null>(null);
   const [contextError, setContextError] = useState<string | null>(null);
-  useLlmContextStatus({
+  const llmContextStatus = useLlmContextStatus({
     dbId: storedQueryEditor.dbId || 0,
     onSuccess: result => {
       if (result.context) {
@@ -934,11 +934,12 @@ const SqlEditor: FC<Props> = ({
   };
 
   const renderAiAssistantEditor = () => {
+    const isLoading = llmContextStatus.isLoading || llmContextStatus.isFetching;
     const disabledMessage = savedLlmContext && contextError
       ? t('Context build error; falling back to an older context')
       : !savedLlmContext && contextError
       ? t('AI Assistant is unavailable due to a context build error')
-      : !savedLlmContext && !contextError
+      : !savedLlmContext && !contextError && !isLoading
       ? t('AI Assistant is unavailable - please try again in a few minutes')
       : undefined;
 
