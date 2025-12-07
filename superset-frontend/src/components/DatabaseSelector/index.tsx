@@ -160,11 +160,13 @@ export function DatabaseSelector({
     } else {
       setCurrentSchema(
         Array.isArray(schema)
-          ? schema.map(schema => ({
-            label: schema,
-            value: schema,
-            title: schema,
-          }))
+          ? schema
+            .filter(s => s && s.trim()) // Filter out empty strings
+            .map(schema => ({
+              label: schema,
+              value: schema,
+              title: schema,
+            }))
           : typeof schema === 'string' && schema
           ? [{ label: schema, value: schema, title: schema }]
           : [],
@@ -256,7 +258,9 @@ export function DatabaseSelector({
   function changeSchema(schema?: SchemaOption | SchemaOption[]) {
     setCurrentSchema(schema);
     if (Array.isArray(schema)) {
-      const schema_values = schema.map(schema => schema.value);
+      const schema_values = schema
+        .map(schema => schema.value)
+        .filter(v => v && v.trim()); // Filter out empty values
       if (onSchemaChange && schema_values !== schemaRef.current) {
         onSchemaChange(schema_values);
       }

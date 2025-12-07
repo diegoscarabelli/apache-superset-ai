@@ -163,12 +163,20 @@ const AiAssistantEditor = ({
           <Icons.InfoCircleOutlined />
           {disabledMessage}
         </DisabledMessage>
-      ) : schema && schema.length > 0 ? (
-        <SelectedSchemaMessage>
-          <Icons.InfoCircleOutlined />
-          {`Selecting schema will restrict the AI to generate SQL for only the selected schema. This will increase costs due to skipping the AI cache. Currently selected: ${Array.isArray(schema) ? schema.join(', ') : schema}`}
-        </SelectedSchemaMessage>
-      ) : null}
+      ) : (() => {
+          // Check if schema has meaningful content (not empty string or array of empty strings)
+          const hasSchema = schema &&
+            (Array.isArray(schema)
+              ? schema.filter(s => s && s.trim()).length > 0
+              : schema.trim().length > 0);
+
+          return hasSchema ? (
+            <SelectedSchemaMessage>
+              <Icons.InfoCircleOutlined />
+              {`Selecting schema will restrict the AI to generate SQL for only the selected schema. This will increase costs due to skipping the AI cache. Currently selected: ${Array.isArray(schema) ? schema.filter(s => s && s.trim()).join(', ') : schema}`}
+            </SelectedSchemaMessage>
+          ) : null;
+        })()}
     </StyledContainer>
   );
 };
