@@ -107,6 +107,14 @@ const TableElement = ({ table, ...props }: TableElementProps) => {
     ...tableMetadata,
     ...tableExtendedMetadata,
   };
+
+  // DEBUG: Log table metadata to diagnose missing column keys
+  if (tableMetadata?.columns) {
+    console.log('[TableElement] Table:', name);
+    console.log('[TableElement] Columns:', tableMetadata.columns);
+    console.log('[TableElement] First column keys:', tableMetadata.columns[0]?.keys);
+    console.log('[TableElement] Indexes:', tableMetadata.indexes);
+  }
   const queryEditors = useSelector<SqlLabRootState, QueryEditor[]>(
     state => state.sqlLab.queryEditors,
   );
