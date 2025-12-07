@@ -95,12 +95,22 @@ def get_table_metadata(database: Any, table: Table) -> TableMetadataResponse:
     table_comment = database.get_table_comment(table)
     for col in columns:
         dtype = get_col_type(col)
+        col_name = col["column_name"]
+        col_keys = [k for k in keys if col_name in k.get("column_names", [])]
+
+        # DEBUG: Log column key matching
+        if col_keys or any(col_name in str(k) for k in keys):
+            logger.info(f"[get_table_metadata] Column '{col_name}': matched {len(col_keys)} keys")
+            for k in keys:
+                k_col_names = k.get("column_names", [])
+                logger.info(f"  Key type={k.get('type')}, column_names={k_col_names}, match={col_name in k_col_names}")
+
         payload_columns.append(
             {
-                "name": col["column_name"],
+                "name": col_name,
                 "type": dtype.split("(")[0] if "(" in dtype else dtype,
                 "longType": dtype,
-                "keys": [k for k in keys if col["column_name"] in k["column_names"]],
+                "keys": col_keys,
                 "comment": col.get("comment"),
             }
         )
