@@ -115,8 +115,8 @@ const SouthPane = ({
     ) ?? 'Results';
 
   const pinnedTables = useMemo(
-    () => tables.filter(({ queryEditorId: qeId }) => String(queryEditorId) === qeId),
-    [queryEditorId, tables],
+    () => tables.filter(({ queryEditorId: qeId }) => String(editorId) === qeId),
+    [editorId, tables],
   );
   const pinnedTableKeys = useMemo(
     () =>

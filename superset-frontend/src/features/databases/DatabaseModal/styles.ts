@@ -565,7 +565,7 @@ export const StyledLlmSwitch = styled.div`
 
     .control-label {
       font-family: ${theme.fontFamily};
-      font-size: ${theme.fontSizeMD}px;
+      font-size: ${theme.fontSize}px;
       margin-right: ${theme.sizeUnit * 4}px;
     }
 
@@ -619,7 +619,7 @@ export const StyledTopKForm = styled.div`
     margin-right: ${({ theme }) => theme.sizeUnit * 2}px;
     width: ${({ theme }) => theme.sizeUnit * 20}px;
   }
-  
+
   .helper {
     margin-top: 0;
   }

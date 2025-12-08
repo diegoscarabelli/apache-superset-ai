@@ -1,23 +1,20 @@
-import {
-  t, useTheme,
-} from '@superset-ui/core';
-import React, { useEffect, useState } from 'react';
+import { t, useTheme, css, styled } from '@superset-ui/core';
+import { useEffect, useState } from 'react';
 import {
   CaretDownFilled,
   CaretRightFilled,
-  LoadingOutlined
+  LoadingOutlined,
 } from '@ant-design/icons';
-import { css, styled } from '@superset-ui/core';
 import IndeterminateCheckbox from 'src/components/IndeterminateCheckbox';
 
 const Container = styled.div`
   ${({ theme }) => css`
     width: 100%;
     margin: 0 auto;
-    padding: ${theme.gridUnit * 1.5}px ${theme.gridUnit * 2}px;
+    padding: ${theme.sizeUnit * 1.5}px ${theme.sizeUnit * 2}px;
     border-style: none;
     border: 1px solid ${theme.colorBorder};
-    border-radius: ${theme.gridUnit}px;
+    border-radius: ${theme.sizeUnit}px;
     background-color: ${theme.colorBgContainer};
 
     input {
@@ -30,14 +27,14 @@ const SchemaList = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    gap: ${theme.gridUnit * 2}px;
+    gap: ${theme.sizeUnit * 2}px;
   `}
 `;
 
 const SchemaItem = styled.div`
   ${({ theme }) => css`
     border-bottom: 1px solid ${theme.colorBorder};
-    padding-bottom: ${theme.gridUnit * 1.5}px;
+    padding-bottom: ${theme.sizeUnit * 1.5}px;
   `}
 `;
 
@@ -48,7 +45,7 @@ const SchemaHeader = styled.div`
 
 const CaretButton = styled.button`
   ${({ theme }) => css`
-    margin-right: ${theme.gridUnit * 2}px;
+    margin-right: ${theme.sizeUnit * 2}px;
     background: none;
     border: none;
     cursor: pointer;
@@ -56,7 +53,7 @@ const CaretButton = styled.button`
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     &:focus {
       outline: none;
     }
@@ -67,7 +64,7 @@ const EmptyCaret = styled.div`
   ${({ theme }) => css`
     width: 14px;
     height: 14px;
-    margin-right: ${theme.gridUnit * 2}px;
+    margin-right: ${theme.sizeUnit * 2}px;
     padding: 0;
   `}
 `;
@@ -89,11 +86,11 @@ const CheckboxContainer = styled.div`
 
 const TablesList = styled.div`
   ${({ theme }) => css`
-    margin-left: ${theme.gridUnit * 8}px;
-    margin-top: ${theme.gridUnit}px;
+    margin-left: ${theme.sizeUnit * 8}px;
+    margin-top: ${theme.sizeUnit}px;
     display: flex;
     flex-direction: column;
-    gap: ${theme.gridUnit}px;
+    gap: ${theme.sizeUnit}px;
   `}
 `;
 
@@ -104,7 +101,7 @@ const TableItem = styled.div`
 
 const StatusBar = styled.div`
   ${({ theme }) => css`
-    margin-top: ${theme.gridUnit * 2}px;
+    margin-top: ${theme.sizeUnit * 2}px;
     font-size: 0.875rem;
     color: ${theme.colorText};
   `}
@@ -112,7 +109,7 @@ const StatusBar = styled.div`
 
 const Header = styled.div`
   ${({ theme }) => css`
-    margin-bottom: ${theme.gridUnit * 2}px;
+    margin-bottom: ${theme.sizeUnit * 2}px;
     font-size: ${theme.fontSize}px;
     font-weight: 600;
     color: ${theme.colorText};
@@ -120,8 +117,8 @@ const Header = styled.div`
 
     div {
       border-right: 1px solid ${theme.colorBorder};
-      padding-right: ${theme.gridUnit * 2}px;
-      padding-left: ${theme.gridUnit * 2}px;
+      padding-right: ${theme.sizeUnit * 2}px;
+      padding-left: ${theme.sizeUnit * 2}px;
 
       &:first-child {
         padding-left: 0;
@@ -138,10 +135,10 @@ const LoadingContainer = styled.div`
   ${({ theme }) => css`
     display: flex;
     align-items: center;
-    gap: ${theme.gridUnit}px;
+    gap: ${theme.sizeUnit}px;
 
     span {
-      margin-left: ${theme.gridUnit * 2}px;
+      margin-left: ${theme.sizeUnit * 2}px;
     }
   `}
 `;
@@ -163,27 +160,37 @@ const SchemaSelector = ({
 }) => {
   const theme = useTheme();
   const [expandedSchema, setExpandedSchema] = useState<string | null>(null);
-  const [selectedItems, setSelectedItems] = useState<{[key: string]: boolean}>({});
+  const [selectedItems, setSelectedItems] = useState<{
+    [key: string]: boolean;
+  }>({});
   const [filterText, setFilterText] = useState('');
-  const [filteredOptions, setFilteredOptions] = useState<Record<string, string[]>>({});
+  const [filteredOptions, setFilteredOptions] = useState<
+    Record<string, string[]>
+  >({});
   useEffect(() => {
-    const filtered = filterText ? Object.keys(options).reduce((acc, schema) => {
-      const filteredTables = options[schema].filter(table =>
-        table.toLowerCase().includes(filterText.toLowerCase())
-      );
-      if (filteredTables.length > 0) {
-        acc[schema] = filteredTables;
-      }
-      return acc;
-    }, {} as Record<string, string[]>) : options;
+    const filtered = filterText
+      ? Object.keys(options).reduce(
+          (acc, schema) => {
+            const filteredTables = options[schema].filter(table =>
+              table.toLowerCase().includes(filterText.toLowerCase()),
+            );
+            if (filteredTables.length > 0) {
+              acc[schema] = filteredTables;
+            }
+            return acc;
+          },
+          {} as Record<string, string[]>,
+        )
+      : options;
     setFilteredOptions(filtered);
   }, [options, filterText]);
 
   useEffect(() => {
-    const initialSelections: {[key: string]: boolean} = {};
+    const initialSelections: { [key: string]: boolean } = {};
     Object.keys(options).forEach(schema => {
       options[schema].forEach(table => {
-        initialSelections[`${schema}.${table}`] = value.indexOf(`${schema}.${table}`) !== -1;
+        initialSelections[`${schema}.${table}`] =
+          value.indexOf(`${schema}.${table}`) !== -1;
       });
     });
     setSelectedItems(initialSelections);
@@ -193,16 +200,12 @@ const SchemaSelector = ({
     if (options[schema].length === 0) {
       return false;
     }
-    return options[schema].every(
-      table => selectedItems[`${schema}.${table}`]
-    );
+    return options[schema].every(table => selectedItems[`${schema}.${table}`]);
   };
 
-  const areSomeChildrenSelected = (schema: string) => {
-    return options[schema].some(
-      table => selectedItems[`${schema}.${table}`]
-    ) && !areAllChildrenSelected(schema);
-  };
+  const areSomeChildrenSelected = (schema: string) =>
+    options[schema].some(table => selectedItems[`${schema}.${table}`]) &&
+    !areAllChildrenSelected(schema);
 
   const toggleExpanded = (schema: string) => {
     setExpandedSchema(expandedSchema === schema ? null : schema);
@@ -238,14 +241,13 @@ const SchemaSelector = ({
     const newSelectedItems = { ...selectedItems };
     Object.keys(newSelectedItems).forEach(key => {
       newSelectedItems[key] = selected;
-    }
-    );
+    });
     setSelectedItems(newSelectedItems);
     onSchemasChange(selectedItemsToValue(newSelectedItems));
   };
 
-  const selectedItemsToValue = (selected: {[key: string]: boolean}) => {
-    const value = []
+  const selectedItemsToValue = (selected: { [key: string]: boolean }) => {
+    const value = [];
     for (const key in selected) {
       if (selected[key]) {
         value.push(key);
@@ -253,51 +255,57 @@ const SchemaSelector = ({
     }
     return value;
   };
-  
+
   return (
     <Container>
-      { loading ? (
+      {loading ? (
         <LoadingContainer>
-          <LoadingOutlined/>
+          <LoadingOutlined />
           <span>{t('Loading schemas and tables...')}</span>
         </LoadingContainer>
       ) : error ? (
-        <p>{t('An error occurred while retrieving schemas for this connection')}</p>
+        <p>
+          {t('An error occurred while retrieving schemas for this connection')}
+        </p>
       ) : (
         <>
           <Header>
-            <div><a onClick={handleSelectAll}>Select all</a></div>
-            <div><a onClick={handleUnselectAll}>Select none</a></div>
+            <div>
+              <a onClick={handleSelectAll}>Select all</a>
+            </div>
+            <div>
+              <a onClick={handleUnselectAll}>Select none</a>
+            </div>
             <div style={{ flex: 1, textAlign: 'right' }}>
               <input
-              type="text"
-              placeholder={t('Filter tables')}
-              style={{
-                padding: '2px 8px',
-                border: 'none',
-                borderRadius: 0,
-                borderBottom: `1px solid ${theme.colorBorder}`,
-                minWidth: 180,
-                backgroundColor: 'transparent',
-                color: theme.colorText,
-              }}
-              value={filterText}
-              onChange={e => setFilterText(e.target.value)}
-              aria-label={t('Filter tables')}
+                type="text"
+                placeholder={t('Filter tables')}
+                style={{
+                  padding: '2px 8px',
+                  border: 'none',
+                  borderRadius: 0,
+                  borderBottom: `1px solid ${theme.colorBorder}`,
+                  minWidth: 180,
+                  backgroundColor: 'transparent',
+                  color: theme.colorText,
+                }}
+                value={filterText}
+                onChange={e => setFilterText(e.target.value)}
+                aria-label={t('Filter tables')}
               />
             </div>
           </Header>
-          
+
           <SchemaList
             style={
               maxContentHeight !== null
-              ? {
-                maxHeight: maxContentHeight,
-                overflowY: 'auto',
-                marginRight: `-${theme.gridUnit * 2}px`,
-                paddingRight: `${theme.gridUnit * 2}px`,
-              }
-              : undefined
+                ? {
+                    maxHeight: maxContentHeight,
+                    overflowY: 'auto',
+                    marginRight: `-${theme.sizeUnit * 2}px`,
+                    paddingRight: `${theme.sizeUnit * 2}px`,
+                  }
+                : undefined
             }
           >
             {Object.keys(filteredOptions).map(schema => (
@@ -306,17 +314,20 @@ const SchemaSelector = ({
                   {filteredOptions[schema].length > 0 ? (
                     <CaretButton
                       onClick={() => toggleExpanded(schema)}
-                      aria-label={expandedSchema === schema ? "Collapse" : "Expand"}
-                    >
-                      {expandedSchema === schema ?
-                        <CaretDownFilled size={18} /> :
-                        <CaretRightFilled size={18} />
+                      aria-label={
+                        expandedSchema === schema ? 'Collapse' : 'Expand'
                       }
+                    >
+                      {expandedSchema === schema ? (
+                        <CaretDownFilled size={18} />
+                      ) : (
+                        <CaretRightFilled size={18} />
+                      )}
                     </CaretButton>
                   ) : (
                     <EmptyCaret />
                   )}
-                  
+
                   <CheckboxContainer>
                     <IndeterminateCheckbox
                       id={`schema-${schema}`}
@@ -327,24 +338,28 @@ const SchemaSelector = ({
                     <label
                       htmlFor={`schema-${schema}`}
                       className={options[schema].length === 0 ? 'disabled' : ''}
-                      onClick={() => options[schema].length > 0 && toggleExpanded(schema)}
+                      onClick={() =>
+                        options[schema].length > 0 && toggleExpanded(schema)
+                      }
                     >
                       {schema}
                     </label>
                   </CheckboxContainer>
                 </SchemaHeader>
-                
+
                 {expandedSchema === schema && (
                   <TablesList>
                     {filteredOptions[schema].map(table => (
                       <TableItem key={table}>
-                      <IndeterminateCheckbox
-                        id="`${schema}-${table}`"
-                        indeterminate={false}
-                        checked={selectedItems[`${schema}.${table}`] || false}
-                        onChange={() => handleChildCheckboxChange(schema, table)}
-                        labelText={table}
-                      />
+                        <IndeterminateCheckbox
+                          id="`${schema}-${table}`"
+                          indeterminate={false}
+                          checked={selectedItems[`${schema}.${table}`] || false}
+                          onChange={() =>
+                            handleChildCheckboxChange(schema, table)
+                          }
+                          labelText={table}
+                        />
                       </TableItem>
                     ))}
                   </TablesList>
@@ -352,14 +367,14 @@ const SchemaSelector = ({
               </SchemaItem>
             ))}
           </SchemaList>
-          
+
           <StatusBar>
             {Object.values(selectedItems).filter(Boolean).length} items selected
           </StatusBar>
         </>
       )}
     </Container>
-  )
+  );
 };
 
 export default SchemaSelector;
