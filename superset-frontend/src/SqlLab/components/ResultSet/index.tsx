@@ -88,11 +88,11 @@ import {
 import { Icons } from '@superset-ui/core/components/Icons';
 import { findPermission } from 'src/utils/findPermission';
 import { ensureAppRoot } from 'src/utils/pathUtils';
+import { normalizeSchema } from 'src/SqlLab/utils/schemaUtils';
 import ExploreCtasResultsButton from '../ExploreCtasResultsButton';
 import ExploreResultsButton from '../ExploreResultsButton';
 import HighlightedSql from '../HighlightedSql';
 import QueryStateLabel from '../QueryStateLabel';
-import { normalizeSchema } from 'src/SqlLab/utils/schemaUtils';
 
 enum LimitingFactor {
   Query = 'QUERY',
@@ -472,7 +472,6 @@ const ResultSet = ({
               <Alert
                 closable
                 type="warning"
-                onClose={() => setAlertIsOpen(false)}
                 message={t(
                   'The number of rows displayed is limited to %(rows)d by the dropdown.',
                   { rows },
@@ -485,7 +484,6 @@ const ResultSet = ({
               <Alert
                 closable
                 type="warning"
-                onClose={() => setAlertIsOpen(false)}
                 message={
                   isAdmin
                     ? displayMaxRowsReachedMessage.withAdmin

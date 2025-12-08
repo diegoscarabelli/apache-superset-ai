@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { render, waitFor, screen, within } from 'spec/helpers/testing-library';
+import { render, waitFor, screen } from 'spec/helpers/testing-library';
 import SouthPane from 'src/SqlLab/components/SouthPane';
 import { STATUS_OPTIONS } from 'src/SqlLab/constants';
 import { initialState, table, defaultQueryEditor } from 'src/SqlLab/fixtures';
@@ -163,6 +163,8 @@ test('should remove tab', async () => {
   );
   const totalTabs = mockState.sqlLab.tables.length + 2;
   expect(tabs).toHaveLength(totalTabs);
+
+  console.log(tabs[2].parentElement?.innerHTML); // debug
 
   const removeButton = tabs[2].parentElement?.querySelector(
     'button[aria-label="remove"]',
