@@ -178,7 +178,7 @@ function Echart(
       handleSizeChange({ width, height });
       setDidMount(true);
     });
-  }, [locale, handleSizeChange, width, height]);
+  }, [locale]);
 
   useEffect(() => {
     if (didMount) {
