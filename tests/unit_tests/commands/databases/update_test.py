@@ -609,6 +609,38 @@ def test_update_with_catalog_change(mocker: MockerFixture) -> None:
 
     UpdateDatabaseCommand(1, {}).run()
 
+    update_catalog_attribute.assert_called_once_with(1, "project-B")
+
+
+def test_update_without_catalog_change(mocker: MockerFixture) -> None:
+    """
+    Test that assets are not updated when the main catalog doesn't change.
+    """
+    old_database = mocker.MagicMock(allow_multi_catalog=False)
+    old_database.database_name = "Ye Old DB"
+    old_database.get_default_catalog.return_value = "project-A"
+    old_database.id = 1
+
+    new_database = mocker.MagicMock(allow_multi_catalog=False)
+    new_database.database_name = "Fancy new DB"
+    new_database.get_default_catalog.return_value = "project-A"
+
+    database_dao = mocker.patch("superset.commands.database.update.DatabaseDAO")
+    database_dao.find_by_id.return_value = old_database
+    database_dao.update.return_value = new_database
+
+    mocker.patch("superset.commands.database.update.SyncPermissionsCommand")
+    mocker.patch.object(
+        UpdateDatabaseCommand,
+        "validate",
+    )
+    update_catalog_attribute = mocker.patch.object(
+        UpdateDatabaseCommand,
+        "_update_catalog_attribute",
+    )
+
+    UpdateDatabaseCommand(1, {}).run()
+
     update_catalog_attribute.assert_not_called()
 
 
