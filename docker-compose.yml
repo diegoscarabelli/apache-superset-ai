@@ -80,7 +80,7 @@ services:
     container_name: superset_db
     restart: unless-stopped
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:5434:5432"
     volumes:
       - db_home:/var/lib/postgresql/data
       - ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
@@ -112,7 +112,7 @@ services:
     container_name: superset_websocket
     build: ./superset-websocket
     ports:
-      - 8080:8080
+      - 8082:8080
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -262,33 +262,6 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "celery inspect ping -A superset.tasks.celery_app:app -d celery@$$HOSTNAME"]
   
-  celery-flower:
-    build:
-      <<: *common-build
-    container_name: celery_flower
-    command: ["/app/docker/docker-bootstrap.sh", "flower"]
-    env_file:
-      - path: docker/.env # default
-        required: true
-      - path: docker/.env-local # optional override
-        required: false
-    environment:
-      CELERYD_CONCURRENCY: 2
-      CYPRESS_CONFIG: "${CYPRESS_CONFIG:-}"
-      SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
-    restart: unless-stopped
-    ports:
-      - 5555:5555
-    depends_on:
-      superset-init:
-        condition: service_completed_successfully
-    user: *superset-user
-    volumes: *superset-volumes
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    healthcheck:
-      test: ["CMD-SHELL", "celery -A superset.tasks.celery_app:app inspect ping -d celery@$$HOSTNAME"]
-
 volumes:
   superset_home:
     external: false
