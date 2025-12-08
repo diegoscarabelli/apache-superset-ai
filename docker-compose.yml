@@ -80,7 +80,7 @@ services:
     container_name: superset_db
     restart: unless-stopped
     ports:
-      - "127.0.0.1:5434:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - db_home:/var/lib/postgresql/data
       - ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
@@ -112,7 +112,7 @@ services:
     container_name: superset_websocket
     build: ./superset-websocket
     ports:
-      - 8082:8080
+      - 8080:8080
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -261,7 +261,7 @@ services:
     volumes: *superset-volumes
     healthcheck:
       test: ["CMD-SHELL", "celery inspect ping -A superset.tasks.celery_app:app -d celery@$$HOSTNAME"]
-  
+
 volumes:
   superset_home:
     external: false
