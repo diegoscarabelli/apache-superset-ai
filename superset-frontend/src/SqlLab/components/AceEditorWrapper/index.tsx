@@ -28,6 +28,7 @@ import { FullSQLEditor as AceEditor } from '@superset-ui/core/components';
 import type { KeyboardShortcut } from 'src/SqlLab/components/KeyboardShortcutButton';
 import useQueryEditor from 'src/SqlLab/hooks/useQueryEditor';
 import { SqlLabRootState, type CursorPosition } from 'src/SqlLab/types';
+import { normalizeSchema } from 'src/SqlLab/utils/schemaUtils';
 import { useAnnotations } from './useAnnotations';
 import { useKeywords } from './useKeywords';
 
@@ -162,7 +163,7 @@ const AceEditorWrapper = ({
   const { data: annotations } = useAnnotations({
     dbId: queryEditor.dbId,
     catalog: queryEditor.catalog,
-    schema: queryEditor.schema,
+    schema: normalizeSchema(queryEditor.schema) || undefined,
     sql: currentSql,
     templateParams: queryEditor.templateParams,
   });
