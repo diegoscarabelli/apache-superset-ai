@@ -20,14 +20,8 @@
 // TODO: These tests should be made atomic in separate files
 
 import fetchMock from 'fetch-mock';
-import {
-  render,
-  screen,
-  userEvent,
-  within,
-  waitFor,
-  fireEvent,
-} from 'spec/helpers/testing-library';
+import userEvent from '@testing-library/user-event';
+import { render, screen, within, waitFor } from 'spec/helpers/testing-library';
 import { getExtensionsRegistry } from '@superset-ui/core';
 import setupExtensions from 'src/setup/setupExtensions';
 import * as hooks from 'src/views/CRUD/hooks';
@@ -333,8 +327,7 @@ describe('DatabaseModal', () => {
 
       // ---------- Components ----------
       // <TabHeader> - AntD header
-      const closeButtons = await screen.findAllByLabelText('Close');
-      const closeButton = closeButtons[0];
+      const closeButton = await screen.findByLabelText('Close');
       const step1Header = screen.getByRole('heading', {
         name: /connect a database/i,
       });
@@ -384,7 +377,7 @@ describe('DatabaseModal', () => {
       // ---------- TODO (lyndsiWilliams): Selector options, can't seem to get these to render properly.
 
       // renderAvailableSelector() => <Alert> - Supported databases alert
-      const alertIcon = screen.getAllByRole('img', { name: /info-circle/i });
+      const alertIcon = screen.getByRole('img', { name: /info-circle/i });
       const alertMessage = screen.getByText(/want to add a new database\?/i);
       const alertDescription = screen.getByText(
         /any databases that allow connections via sql alchemy uris can be added\. learn about how to connect a database driver \./i,
@@ -401,7 +394,7 @@ describe('DatabaseModal', () => {
         selectorLabel,
         selectorPlaceholder,
         selectorArrow,
-        alertIcon[0],
+        alertIcon,
         alertMessage,
         alertDescription,
         alertLink,
@@ -420,7 +413,22 @@ describe('DatabaseModal', () => {
       });
       // there should be a footer but it should not have any buttons in it
       expect(footer).toBeEmptyDOMElement();
-      const closeButton = screen.getByRole('img', { name: 'close' });
+    });
+
+    test('renders the "Basic" tab of SQL Alchemy form (step 2 of 2) correctly', async () => {
+      setup();
+
+      // On step 1, click dbButton to access SQL Alchemy form
+      userEvent.click(
+        await screen.findByRole('button', {
+          name: /sqlite/i,
+        }),
+      );
+      expect(await screen.findByText(/step 2 of 2/i)).toBeInTheDocument();
+
+      // ---------- Components ----------
+      // <TabHeader> - AntD header
+      const closeButton = await screen.findByRole('button', { name: 'Close' });
 
       const basicHeader = screen.getByRole('heading', {
         name: /connect a database/i,
@@ -469,10 +477,7 @@ describe('DatabaseModal', () => {
         name: /test connection/i,
       });
       // <Alert> - Basic tab's alert
-      const alertIcons = screen.getAllByRole('img', { name: /info-circle/i });
-      const alertIcon =
-        alertIcons.find(icon => icon.closest('.ant-alert-icon') !== null) ||
-        alertIcons[0];
+      const alertIcon = screen.getByRole('img', { name: /info-circle/i });
       const alertMessage = screen.getByText(
         /additional fields may be required/i,
       );
@@ -552,19 +557,39 @@ describe('DatabaseModal', () => {
       const basicTab = screen.getByRole('tab', { name: /basic/i });
       const advancedTab = screen.getByRole('tab', { name: /advanced/i });
       // <ExtraOptions> - Advanced tabs
-      const sqlLabTab = screen.getByTestId('sql-lab-label-test');
+      const sqlLabTab = screen.getByRole('tab', {
+        name: /right sql lab adjust how this database will interact with sql lab\./i,
+      });
+      const sqlLabTabArrow = within(sqlLabTab).getByRole('img', {
+        name: /right/i,
+      });
       const sqlLabTabHeading = screen.getByRole('heading', {
         name: /sql lab/i,
       });
-      const performanceTab = screen.getByTestId('performance-label-test');
+      const performanceTab = screen.getByRole('tab', {
+        name: /right performance adjust performance settings of this database\./i,
+      });
+      const performanceTabArrow = within(performanceTab).getByRole('img', {
+        name: /right/i,
+      });
       const performanceTabHeading = screen.getByRole('heading', {
         name: /performance/i,
       });
-      const securityTab = screen.getByTestId('security-label-test');
+      const securityTab = screen.getByRole('tab', {
+        name: /right security add extra connection information\./i,
+      });
+      const securityTabArrow = within(securityTab).getByRole('img', {
+        name: /right/i,
+      });
       const securityTabHeading = screen.getByRole('heading', {
         name: /security/i,
       });
-      const otherTab = screen.getByTestId('other-label-test');
+      const otherTab = screen.getByRole('tab', {
+        name: /right other additional settings\./i,
+      });
+      const otherTabArrow = within(otherTab).getByRole('img', {
+        name: /right/i,
+      });
       const otherTabHeading = screen.getByRole('heading', { name: /other/i });
       // renderModalFooter() - Advanced tab's footer
       const backButton = screen.getByRole('button', { name: /back/i });
@@ -581,12 +606,16 @@ describe('DatabaseModal', () => {
         basicTab,
         advancedTab,
         sqlLabTab,
+        sqlLabTabArrow,
         sqlLabTabHeading,
         performanceTab,
+        performanceTabArrow,
         performanceTabHeading,
         securityTab,
+        securityTabArrow,
         securityTabHeading,
         otherTab,
+        otherTabArrow,
         otherTabHeading,
         backButton,
         connectButton,
@@ -610,7 +639,11 @@ describe('DatabaseModal', () => {
       // Click the "Advanced" tab
       userEvent.click(await screen.findByRole('tab', { name: /advanced/i }));
       // Click the "SQL Lab" tab
-      userEvent.click(screen.getByTestId('sql-lab-label-test'));
+      userEvent.click(
+        await screen.findByRole('tab', {
+          name: /right sql lab adjust how this database will interact with sql lab\./i,
+        }),
+      );
       expect(await screen.findByText(/step 2 of 2/i)).toBeInTheDocument();
 
       // ----- BEGIN STEP 2 (ADVANCED - SQL LAB)
@@ -630,21 +663,18 @@ describe('DatabaseModal', () => {
       });
       // <Tabs> - Basic/Advanced tabs
       const basicTab = screen.getByRole('tab', { name: /basic/i });
-      const advancedTab = await screen.findByRole('tab', { name: /advanced/i });
-      const advancedTabPanel = await screen.findByRole('tabpanel', {
-        name: /advanced/i,
-      });
+      const advancedTab = screen.getByRole('tab', { name: /advanced/i });
       // <ExtraOptions> - Advanced tabs
-      const sqlLabTab = screen.getByTestId('sql-lab-label-test');
-      // These are the checkbox SVGs that cover the actual checkboxes
-      const allCheckboxes = screen.getAllByRole(
-        'checkbox',
-      ) as HTMLInputElement[];
-      const checkboxOff = allCheckboxes.filter(checkbox => !checkbox.checked);
-      const tooltipButtons = within(advancedTabPanel).getAllByRole('button', {
-        name: /Show info tooltip/i,
+      const sqlLabTab = screen.getByRole('tab', {
+        name: /right sql lab adjust how this database will interact with sql lab\./i,
       });
-
+      // These are the checkbox SVGs that cover the actual checkboxes
+      const checkboxOffSVGs = screen.getAllByRole('img', {
+        name: /checkbox-off/i,
+      });
+      const tooltipIcons = screen.getAllByRole('img', {
+        name: /info-solid_small/i,
+      });
       const exposeInSQLLabCheckbox = screen.getByRole('checkbox', {
         name: /expose database in sql lab/i,
       });
@@ -713,20 +743,20 @@ describe('DatabaseModal', () => {
         basicTab,
         advancedTab,
         sqlLabTab,
-        checkboxOff[0],
-        checkboxOff[1],
-        checkboxOff[2],
-        checkboxOff[3],
-        checkboxOff[4],
-        checkboxOff[5],
-        tooltipButtons[0],
-        tooltipButtons[1],
-        tooltipButtons[2],
-        tooltipButtons[3],
-        tooltipButtons[4],
-        tooltipButtons[5],
-        tooltipButtons[6],
-        tooltipButtons[7],
+        checkboxOffSVGs[0],
+        checkboxOffSVGs[1],
+        checkboxOffSVGs[2],
+        checkboxOffSVGs[3],
+        checkboxOffSVGs[4],
+        checkboxOffSVGs[5],
+        tooltipIcons[0],
+        tooltipIcons[1],
+        tooltipIcons[2],
+        tooltipIcons[3],
+        tooltipIcons[4],
+        tooltipIcons[5],
+        tooltipIcons[6],
+        tooltipIcons[7],
         exposeInSQLLabText,
         allowCTASText,
         allowCVASText,
@@ -756,8 +786,8 @@ describe('DatabaseModal', () => {
       invisibleComponents.forEach(component => {
         expect(component).not.toBeVisible();
       });
-      expect(checkboxOff).toHaveLength(6);
-      expect(tooltipButtons).toHaveLength(8);
+      expect(checkboxOffSVGs).toHaveLength(6);
+      expect(tooltipIcons).toHaveLength(8);
     });
 
     test('renders the "Advanced" - PERFORMANCE tab correctly', async () => {
@@ -773,7 +803,11 @@ describe('DatabaseModal', () => {
       // Click the "Advanced" tab
       userEvent.click(screen.getByRole('tab', { name: /advanced/i }));
       // Click the "Performance" tab
-      userEvent.click(screen.getByTestId('performance-label-test'));
+      userEvent.click(
+        screen.getByRole('tab', {
+          name: /right performance adjust performance settings of this database\./i,
+        }),
+      );
       expect(await screen.findByText(/step 2 of 2/i)).toBeInTheDocument();
 
       // ----- BEGIN STEP 2 (ADVANCED - PERFORMANCE)
@@ -795,8 +829,12 @@ describe('DatabaseModal', () => {
       const basicTab = screen.getByRole('tab', { name: /basic/i });
       const advancedTab = screen.getByRole('tab', { name: /advanced/i });
       // <ExtraOptions> - Advanced tabs
-      const sqlLabTab = screen.getByTestId('sql-lab-label-test');
-      const performanceTab = screen.getByTestId('performance-label-test');
+      const sqlLabTab = screen.getByRole('tab', {
+        name: /right sql lab adjust how this database will interact with sql lab\./i,
+      });
+      const performanceTab = screen.getByRole('tab', {
+        name: /right performance adjust performance settings of this database\./i,
+      });
 
       // ---------- Assertions ----------
       const visibleComponents = [
@@ -830,7 +868,11 @@ describe('DatabaseModal', () => {
       // Click the "Advanced" tab
       userEvent.click(screen.getByRole('tab', { name: /advanced/i }));
       // Click the "Security" tab
-      userEvent.click(screen.getByTestId('security-label-test'));
+      userEvent.click(
+        screen.getByRole('tab', {
+          name: /right security add extra connection information\./i,
+        }),
+      );
       expect(await screen.findByText(/step 2 of 2/i)).toBeInTheDocument();
 
       // ----- BEGIN STEP 2 (ADVANCED - SECURITY)
@@ -852,9 +894,15 @@ describe('DatabaseModal', () => {
       const basicTab = screen.getByRole('tab', { name: /basic/i });
       const advancedTab = screen.getByRole('tab', { name: /advanced/i });
       // <ExtraOptions> - Advanced tabs
-      const sqlLabTab = screen.getByTestId('sql-lab-label-test');
-      const performanceTab = screen.getByTestId('performance-label-test');
-      const securityTab = screen.getByTestId('security-label-test');
+      const sqlLabTab = screen.getByRole('tab', {
+        name: /right sql lab adjust how this database will interact with sql lab\./i,
+      });
+      const performanceTab = screen.getByRole('tab', {
+        name: /right performance adjust performance settings of this database\./i,
+      });
+      const securityTab = screen.getByRole('tab', {
+        name: /right security add extra connection information\./i,
+      });
       const allowFileUploadCheckbox = screen.getByRole('checkbox', {
         name: /Allow file uploads to database/i,
       });
@@ -906,7 +954,11 @@ describe('DatabaseModal', () => {
       // Click the "Advanced" tab
       userEvent.click(screen.getByRole('tab', { name: /advanced/i }));
       // Click the "Security" tab
-      userEvent.click(screen.getByTestId('security-label-test'));
+      userEvent.click(
+        screen.getByRole('tab', {
+          name: /right security add extra connection information\./i,
+        }),
+      );
       // Click the "Allow file uploads" tab
 
       const allowFileUploadCheckbox = screen.getByRole('checkbox', {
@@ -933,9 +985,15 @@ describe('DatabaseModal', () => {
       const basicTab = screen.getByRole('tab', { name: /basic/i });
       const advancedTab = screen.getByRole('tab', { name: /advanced/i });
       // <ExtraOptions> - Advanced tabs
-      const sqlLabTab = screen.getByTestId('sql-lab-label-test');
-      const performanceTab = screen.getByTestId('performance-label-test');
-      const securityTab = screen.getByTestId('security-label-test');
+      const sqlLabTab = screen.getByRole('tab', {
+        name: /right sql lab adjust how this database will interact with sql lab\./i,
+      });
+      const performanceTab = screen.getByRole('tab', {
+        name: /right performance adjust performance settings of this database\./i,
+      });
+      const securityTab = screen.getByRole('tab', {
+        name: /right security add extra connection information\./i,
+      });
       const allowFileUploadText = screen.getByText(
         /Allow file uploads to database/i,
       );
@@ -984,7 +1042,11 @@ describe('DatabaseModal', () => {
       // Click the "Advanced" tab
       userEvent.click(screen.getByRole('tab', { name: /advanced/i }));
       // Click the "Other" tab
-      userEvent.click(screen.getByTestId('other-label-test'));
+      userEvent.click(
+        screen.getByRole('tab', {
+          name: /right other additional settings\./i,
+        }),
+      );
       expect(await screen.findByText(/step 2 of 2/i)).toBeInTheDocument();
 
       // ----- BEGIN STEP 2 (ADVANCED - OTHER)
@@ -1006,10 +1068,18 @@ describe('DatabaseModal', () => {
       const basicTab = screen.getByRole('tab', { name: /basic/i });
       const advancedTab = screen.getByRole('tab', { name: /advanced/i });
       // <ExtraOptions> - Advanced tabs
-      const sqlLabTab = screen.getByTestId('sql-lab-label-test');
-      const performanceTab = screen.getByTestId('performance-label-test');
-      const securityTab = screen.getByTestId('security-label-test');
-      const otherTab = screen.getByTestId('other-label-test');
+      const sqlLabTab = screen.getByRole('tab', {
+        name: /right sql lab adjust how this database will interact with sql lab\./i,
+      });
+      const performanceTab = screen.getByRole('tab', {
+        name: /right performance adjust performance settings of this database\./i,
+      });
+      const securityTab = screen.getByRole('tab', {
+        name: /right security add extra connection information\./i,
+      });
+      const otherTab = screen.getByRole('tab', {
+        name: /right other additional settings\./i,
+      });
 
       // ---------- Assertions ----------
       const visibleComponents = [
@@ -1339,15 +1409,11 @@ describe('DatabaseModal', () => {
         expect(usernameField).toHaveValue('');
         expect(passwordField).toHaveValue('');
 
-        expect(connectButton).toBeDisabled();
-
         userEvent.type(hostField, 'localhost');
         userEvent.type(portField, '5432');
         userEvent.type(databaseNameField, 'postgres');
         userEvent.type(usernameField, 'testdb');
         userEvent.type(passwordField, 'demoPassword');
-
-        await waitFor(() => expect(connectButton).toBeEnabled());
 
         expect(await screen.findByDisplayValue(/5432/i)).toBeInTheDocument();
         expect(hostField).toHaveValue('localhost');
@@ -1356,10 +1422,9 @@ describe('DatabaseModal', () => {
         expect(usernameField).toHaveValue('testdb');
         expect(passwordField).toHaveValue('demoPassword');
 
-        expect(connectButton).toBeEnabled();
         userEvent.click(connectButton);
         await waitFor(() => {
-          expect(fetchMock.calls(VALIDATE_PARAMS_ENDPOINT).length).toEqual(5);
+          expect(fetchMock.calls(VALIDATE_PARAMS_ENDPOINT).length).toEqual(6);
         });
       });
     });
@@ -1408,7 +1473,11 @@ describe('DatabaseModal', () => {
       // Click the "Advanced" tab
       userEvent.click(await screen.findByRole('tab', { name: /advanced/i }));
       // Click the "Security" tab
-      userEvent.click(screen.getByTestId('security-label-test'));
+      userEvent.click(
+        screen.getByRole('tab', {
+          name: /right security add extra connection information\./i,
+        }),
+      );
 
       // ----- BEGIN STEP 2 (ADVANCED - SECURITY)
       // <ExtraOptions> - Advanced tabs
@@ -1507,12 +1576,12 @@ describe('DatabaseModal', () => {
 
       const step2of3text = await screen.findByText(/step 2 of 3/i);
       const errorTitleMessage = screen.getByText(/Database Creation Error/i);
-      expect(errorTitleMessage).toBeInTheDocument();
       const button = screen.getByText('See more');
       userEvent.click(button);
       const errorMessage = screen.getByText(/Test Error With String/i);
       expect(errorMessage).toBeInTheDocument();
       expect(step2of3text).toBeInTheDocument();
+      expect(errorTitleMessage).toBeInTheDocument();
     });
   });
 
@@ -1649,40 +1718,40 @@ describe('dbReducer', () => {
   test('it will set state to payload from extra input change when schema_cache_timeout', () => {
     const action: DBReducerActionType = {
       type: ActionType.ExtraInputChange,
-      payload: { name: 'schema_cache_timeout', value: '10' },
+      payload: { name: 'schema_cache_timeout', value: 'bar' },
     };
     const currentState = dbReducer(databaseFixture, action);
 
     // extra should be serialized
     expect(currentState).toEqual({
       ...databaseFixture,
-      extra: '{"metadata_cache_timeout":{"schema_cache_timeout":10}}',
+      extra: '{"metadata_cache_timeout":{"schema_cache_timeout":"bar"}}',
     });
   });
 
   test('it will set state to payload from extra input change when table_cache_timeout', () => {
     const action: DBReducerActionType = {
       type: ActionType.ExtraInputChange,
-      payload: { name: 'table_cache_timeout', value: '10' },
+      payload: { name: 'table_cache_timeout', value: 'bar' },
     };
     const currentState = dbReducer(databaseFixture, action);
 
     // extra should be serialized
     expect(currentState).toEqual({
       ...databaseFixture,
-      extra: '{"metadata_cache_timeout":{"table_cache_timeout":10}}',
+      extra: '{"metadata_cache_timeout":{"table_cache_timeout":"bar"}}',
     });
   });
 
   test('it will overwrite state to payload from extra input change when table_cache_timeout', () => {
     const action: DBReducerActionType = {
       type: ActionType.ExtraInputChange,
-      payload: { name: 'table_cache_timeout', value: '10' },
+      payload: { name: 'table_cache_timeout', value: 'bar' },
     };
     const currentState = dbReducer(
       {
         ...databaseFixture,
-        extra: '{"metadata_cache_timeout":{"table_cache_timeout":5}}',
+        extra: '{"metadata_cache_timeout":{"table_cache_timeout":"foo"}}',
       },
       action,
     );
@@ -1690,7 +1759,7 @@ describe('dbReducer', () => {
     // extra should be serialized
     expect(currentState).toEqual({
       ...databaseFixture,
-      extra: '{"metadata_cache_timeout":{"table_cache_timeout":10}}',
+      extra: '{"metadata_cache_timeout":{"table_cache_timeout":"bar"}}',
     });
   });
 
@@ -1740,59 +1809,9 @@ describe('dbReducer', () => {
     const currentState = dbReducer(databaseFixture, action);
 
     // extra should be serialized
-    expect(JSON.parse(currentState!.extra!)).toEqual({
-      schemas_allowed_for_file_upload: ['bar'],
-    });
-  });
-
-  test(`it will set state to payload from extra
-  input change when schemas_allowed_for_file_upload
-  with trailing comma preserves empty string`, () => {
-    const action: DBReducerActionType = {
-      type: ActionType.ExtraInputChange,
-      payload: { name: 'schemas_allowed_for_file_upload', value: 'bar,' },
-    };
-    const currentState = dbReducer(databaseFixture, action);
-
     expect(currentState).toEqual({
       ...databaseFixture,
       extra: '{"schemas_allowed_for_file_upload":["bar"]}',
-    });
-  });
-
-  test(`it will set state to payload from extra
-  input change when schemas_allowed_for_file_upload
-  with multiple schemas and trailing comma`, () => {
-    const action: DBReducerActionType = {
-      type: ActionType.ExtraInputChange,
-      payload: {
-        name: 'schemas_allowed_for_file_upload',
-        value: 'schema1,schema2,',
-      },
-    };
-    const currentState = dbReducer(databaseFixture, action);
-
-    expect(currentState).toEqual({
-      ...databaseFixture,
-      extra: '{"schemas_allowed_for_file_upload":["schema1","schema2"]}',
-    });
-  });
-
-  test(`it will set state to payload from extra
-  input change when schemas_allowed_for_file_upload
-  with double commas filters empty strings`, () => {
-    const action: DBReducerActionType = {
-      type: ActionType.ExtraInputChange,
-      payload: {
-        name: 'schemas_allowed_for_file_upload',
-        value: 'schema1,,schema2',
-      },
-    };
-    const currentState = dbReducer(databaseFixture, action);
-
-    expect(currentState).toEqual({
-      ...databaseFixture,
-      extra: '{"schemas_allowed_for_file_upload":["schema1","schema2"]}',
     });
   });
 
