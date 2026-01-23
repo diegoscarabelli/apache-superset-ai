@@ -6,6 +6,9 @@ services:
     image: custom/superset-extended:latest
   superset-init:
     image: custom/superset-extended:latest
+    depends_on:
+      redis:
+        condition: service_started
   superset-worker:
     image: custom/superset-extended:latest
   superset-worker-beat:

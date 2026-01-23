@@ -70,7 +70,7 @@ cp $HOME/custom_docker_compose_installation_files/docker_compose_overrides.yml $
 # This will create a Docker image - using the offical Dockerfile - named 'superset-local' and tag it as 'latest'.
 log-step "Building the stock Superset Docker image from the current Git checkout"
 cd $HOME/superset
-docker build -t superset-local .
+docker build --no-cache -t superset-local .
 docker tag superset-local custom/superset-local:latest
 
 # Build a custom Docker image on top of the stock image.
@@ -78,7 +78,7 @@ docker tag superset-local custom/superset-local:latest
 # The custom image is built using the Dockerfile-local.dockerfile file, which is a modified version of the stock Dockerfile.
 # The custom image includes additional Python dependencies specified in the requirements-local.txt file.
 log-step "Building custom extended Superset Docker image on top of the stock image"
-docker build --build-arg UPSTREAM=custom/superset-local --build-arg TAG=latest -t superset-extended -f Dockerfile-local.dockerfile .
+docker build --no-cache --build-arg UPSTREAM=custom/superset-local --build-arg TAG=latest -t superset-extended -f Dockerfile-local.dockerfile .
 docker tag superset-extended custom/superset-extended:latest
 
 # Start the Superset components using Docker Compose.
@@ -86,4 +86,4 @@ docker tag superset-extended custom/superset-extended:latest
 # - Loads environment variables from docker/.env-local.
 # - Runs all services in detached mode (-d).
 log-step "Starting the Superset components using docker-compose"
-docker compose -f docker-compose-image-tag.yml -f docker_compose_overrides.yml --env-file docker/.env-local up -d
+docker compose -f docker-compose-image-tag.yml -f docker_compose_overrides.yml --env-file docker/.env-local up -d --force-recreate
