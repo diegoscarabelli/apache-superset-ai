@@ -112,24 +112,24 @@ class GeminiLlm(BaseLlm):
     @staticmethod
     def get_models():
         return {
-            'models/gemini-1.5-flash-002': {
-                'name': 'Gemini 1.5 Flash',
-                'input_token_limit': 1000000
-            },
-            'models/gemini-2.0-flash': {
-                'name': 'Gemini 2.0 Flash',
+            'gemini-2.5-flash': {
+                'name': 'Gemini 2.5 Flash',
                 'input_token_limit': 1048576
             },
-            'models/gemini-2.0-flash-thinking-exp': {
-                'name': 'Gemini 2.5 Flash Preview',
+            'gemini-2.5-flash-lite': {
+                'name': 'Gemini 2.5 Flash Lite',
                 'input_token_limit': 1048576
             },
-            'models/gemini-1.5-pro-002': {
-                'name': 'Gemini 1.5 Pro',
-                'input_token_limit': 2000000
+            'gemini-2.5-pro': {
+                'name': 'Gemini 2.5 Pro',
+                'input_token_limit': 1048576
             },
-            'models/gemini-2.0-pro-exp': {
-                'name': 'Gemini 2.0 Pro Experimental',
+            'gemini-3-flash-preview': {
+                'name': 'Gemini 3 Flash (Preview)',
+                'input_token_limit': 1048576
+            },
+            'gemini-3-pro-preview': {
+                'name': 'Gemini 3 Pro (Preview)',
                 'input_token_limit': 1048576
             },
         }
