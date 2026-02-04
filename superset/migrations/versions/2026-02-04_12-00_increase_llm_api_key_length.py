@@ -27,27 +27,32 @@ Anthropic and OpenAI, which often exceed 100 characters.
 """
 
 # revision identifiers, used by Alembic.
-revision = 'b1c2d3e4f5g6'
-down_revision = 'a1b2c3d4e5f6'
+revision = "b1c2d3e4f5g6"
+down_revision = "a1b2c3d4e5f6"
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import mysql
+
 
 def upgrade():
     # Change api_key column from VARCHAR(100) to TEXT
-    with op.batch_alter_table('llm_connection') as batch_op:
-        batch_op.alter_column('api_key',
-                              existing_type=sa.VARCHAR(length=100),
-                              type_=sa.Text().with_variant(mysql.TEXT(), 'mysql'),
-                              existing_nullable=False)
+    with op.batch_alter_table("llm_connection") as batch_op:
+        batch_op.alter_column(
+            "api_key",
+            existing_type=sa.VARCHAR(length=100),
+            type_=sa.Text().with_variant(mysql.TEXT(), "mysql"),
+            existing_nullable=False,
+        )
 
 
 def downgrade():
     # Revert api_key column from TEXT back to VARCHAR(100)
     # WARNING: This may truncate data if any keys are longer than 100 characters
-    with op.batch_alter_table('llm_connection') as batch_op:
-        batch_op.alter_column('api_key',
-                              existing_type=sa.Text(),
-                              type_=sa.VARCHAR(length=100),
-                              existing_nullable=False)
+    with op.batch_alter_table("llm_connection") as batch_op:
+        batch_op.alter_column(
+            "api_key",
+            existing_type=sa.Text(),
+            type_=sa.VARCHAR(length=100),
+            existing_nullable=False,
+        )
