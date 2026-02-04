@@ -608,4 +608,3 @@ def cast_json_column_to_text(
         existing_type=String(length=length),
         new_column_name=column,
     )
-

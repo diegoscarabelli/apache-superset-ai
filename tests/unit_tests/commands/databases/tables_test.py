@@ -102,9 +102,9 @@ def test_tables_with_catalog(
     assert payload == {
         "count": 3,
         "result": [
-            {"value": "table1", "type": "table", "extra": {"foo": "bar"}},
-            {"value": "table2", "type": "table", "extra": None},
-            {"value": "view1", "type": "view"},
+            {"value": "table1", "type": "table", "extra": {"foo": "bar"}, "schema": "schema1"},
+            {"value": "table2", "type": "table", "extra": None, "schema": "schema1"},
+            {"value": "view1", "type": "view", "schema": "schema1"},
         ],
     }
 
@@ -168,9 +168,9 @@ def test_tables_without_catalog(
     assert payload == {
         "count": 3,
         "result": [
-            {"value": "table1", "type": "table", "extra": {"foo": "bar"}},
-            {"value": "table2", "type": "table", "extra": None},
-            {"value": "view1", "type": "view"},
+            {"value": "table1", "type": "table", "extra": {"foo": "bar"}, "schema": "schema1"},
+            {"value": "table2", "type": "table", "extra": None, "schema": "schema1"},
+            {"value": "view1", "type": "view", "schema": "schema1"},
         ],
     }
 

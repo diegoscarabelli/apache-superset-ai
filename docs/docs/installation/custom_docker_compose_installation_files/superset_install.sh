@@ -83,7 +83,7 @@ cp $HOME/custom_docker_compose_installation_files/requirements-local.txt $HOME/s
 cp $HOME/custom_docker_compose_installation_files/Dockerfile-local.dockerfile $HOME/superset/Dockerfile-local.dockerfile
 cp $HOME/custom_docker_compose_installation_files/docker_compose_overrides.yml $HOME/superset/docker_compose_overrides.yml
 
-# Build Superset from the current git branch and run it. 
+# Build Superset from the current git branch and run it.
 # This will create a Docker image - using the offical Dockerfile - named 'superset-local' and tag it as 'latest'.
 log-step "Building the stock Superset Docker image from the current Git checkout"
 cd $HOME/superset

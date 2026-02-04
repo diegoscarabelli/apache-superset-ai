@@ -138,7 +138,7 @@ class AnthropicLlm(BaseLlm):
         logger.info(f"Generated SQL: {sql}")
         return sql
 
-    
+
     def get_context_size(self) -> int:
         """
         Count the number of tokens in the prompt using the Anthropic SDK.
@@ -196,4 +196,3 @@ class AnthropicLlm(BaseLlm):
         # Cache the size until cache_expiry changes or is reached
         self.cached_context_size = total_tokens
         return self.cached_context_size
-

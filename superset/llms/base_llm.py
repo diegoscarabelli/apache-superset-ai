@@ -58,7 +58,7 @@ class BaseLlm():
         Return a list of available models for the LLM.
         """
         raise NotImplementedError
-    
+
     def get_context_size(self) -> int:
         """
         Return the size of the context in tokens.

@@ -104,7 +104,7 @@ class OpenAiLlm(BaseLlm):
         if not llm_model:
             logger.error(f"Model not set for database {self.pk}.")
             return
-        
+
         logger.info(f"Using API key {llm_api_key} and model {llm_model} for database {self.pk}")
 
         user_instructions = db.llm_context_options.instructions
@@ -135,7 +135,7 @@ class OpenAiLlm(BaseLlm):
         if not response or not response.choices or len(response.choices) < 1:
             logger.error("No response from OpenAI API.")
             return "-- Failed to generate SQL: No response from OpenAI API."
-        
+
         reply = response.choices[0].message.content.strip()
         sql = self._trim_markdown(reply)
         if not sql:
@@ -144,7 +144,7 @@ class OpenAiLlm(BaseLlm):
         logger.info(f"Generated SQL: {sql}")
         return sql
 
-    
+
     def get_context_size(self) -> int:
         """
         Count the number of tokens in a prompt using the OpenAI SDK.

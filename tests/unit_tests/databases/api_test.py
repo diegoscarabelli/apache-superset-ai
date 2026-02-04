@@ -309,6 +309,8 @@ def test_database_connection(
             "server_cert": None,
             "sqlalchemy_uri": "gsheets://",
             "uuid": "02feae18-2dd6-4bb4-a9c0-49e9d4f29d58",
+            "llm_connection": None,
+            "llm_context_options": None,
         },
     }
 
@@ -338,6 +340,8 @@ def test_database_connection(
             "impersonate_user": False,
             "is_managed_externally": False,
             "uuid": "02feae18-2dd6-4bb4-a9c0-49e9d4f29d58",
+            "llm_connection": None,
+            "llm_context_options": None,
         },
     }
 

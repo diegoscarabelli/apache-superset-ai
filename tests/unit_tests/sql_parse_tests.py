@@ -281,7 +281,7 @@ def test_extract_tables_illdefined() -> None:
         extract_tables('SELECT * FROM "tbname')
     assert (
         str(excinfo.value)
-        == "You may have an error in your SQL statement. Unable to tokenize script"
+        == "You may have an error in your SQL statement. Unable to parse script"
     )
 
     # odd edge case that works
@@ -620,7 +620,7 @@ FROM (
     UNION ALL SELECT lets_go_deeper
     FROM f
     WHERE 1=1
-    WHERE 2=2
+    AND 2=2
     GROUP BY last_col
     LIMIT 50000
 )

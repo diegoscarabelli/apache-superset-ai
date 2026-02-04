@@ -2917,7 +2917,7 @@ FROM query_to_xml('SELECT * from some_table WHERE id = 42')
             "postgresql",
             True,
         ),
-        ("Table | limit 10", "kustokql", False),
+        ("Table | limit 10", "kustokql", True),
     ],
 )
 def test_check_functions_present(sql: str, engine: str, expected: bool) -> None:
