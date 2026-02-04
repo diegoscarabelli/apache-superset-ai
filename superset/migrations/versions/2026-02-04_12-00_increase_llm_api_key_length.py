@@ -21,8 +21,9 @@ Revises: a1b2c3d4e5f6
 Create Date: 2026-02-04 12:00:00.000000
 
 This migration increases the api_key column length in the llm_connection table
-from VARCHAR(100) to TEXT to accommodate longer API keys from providers like
-Anthropic and OpenAI, which often exceed 100 characters.
+from VARCHAR(100) to TEXT and sets nullable=True to accommodate longer API keys
+from providers like Anthropic and OpenAI, which often exceed 100 characters, and
+to align the database schema with the model definition.
 
 """
 
@@ -30,29 +31,45 @@ Anthropic and OpenAI, which often exceed 100 characters.
 revision = "b1c2d3e4f5g6"
 down_revision = "a1b2c3d4e5f6"
 
-import sqlalchemy as sa
-from alembic import op
-from sqlalchemy.dialects import mysql
+import sqlalchemy as sa  # noqa: E402
+from alembic import op  # noqa: E402
+from sqlalchemy.dialects import mysql  # noqa: E402
 
 
 def upgrade():
-    # Change api_key column from VARCHAR(100) to TEXT
+    # Change api_key column from VARCHAR(100) to TEXT and fix nullable constraint
     with op.batch_alter_table("llm_connection") as batch_op:
+        # First, change the column type while preserving the current NOT NULL constraint
         batch_op.alter_column(
             "api_key",
             existing_type=sa.VARCHAR(length=100),
             type_=sa.Text().with_variant(mysql.TEXT(), "mysql"),
             existing_nullable=False,
         )
+        # Then, update the nullable constraint to match the model definition (nullable=True)
+        batch_op.alter_column(
+            "api_key",
+            existing_type=sa.Text().with_variant(mysql.TEXT(), "mysql"),
+            nullable=True,
+            existing_nullable=False,
+        )
 
 
 def downgrade():
-    # Revert api_key column from TEXT back to VARCHAR(100)
+    # Revert api_key column from TEXT back to VARCHAR(100) and restore NOT NULL
     # WARNING: This may truncate data if any keys are longer than 100 characters
     with op.batch_alter_table("llm_connection") as batch_op:
+        # First, restore the NOT NULL constraint that existed before this migration
         batch_op.alter_column(
             "api_key",
-            existing_type=sa.Text(),
+            existing_type=sa.Text().with_variant(mysql.TEXT(), "mysql"),
+            nullable=False,
+            existing_nullable=True,
+        )
+        # Then, change the column type back to VARCHAR(100) while keeping NOT NULL
+        batch_op.alter_column(
+            "api_key",
+            existing_type=sa.Text().with_variant(mysql.TEXT(), "mysql"),
             type_=sa.VARCHAR(length=100),
             existing_nullable=False,
         )
