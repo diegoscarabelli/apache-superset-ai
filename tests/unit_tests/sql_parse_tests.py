@@ -620,7 +620,7 @@ FROM (
     UNION ALL SELECT lets_go_deeper
     FROM f
     WHERE 1=1
-    WHERE 2=2
+    AND 2=2
     GROUP BY last_col
     LIMIT 50000
 )
