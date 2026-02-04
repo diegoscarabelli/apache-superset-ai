@@ -898,7 +898,7 @@ class DatabaseRestApi(BaseSupersetModelRestApi):
           command = TablesDatabaseCommand(pk, catalog_name, schema_name, force)
         elif type(schema_name) == list:
           command = BulkSchemaTablesDatabaseCommand(pk, catalog_name, schema_name, force)
-        
+
         payload = command.run()
         return self.response(200, **payload)
 
@@ -1087,39 +1087,39 @@ class DatabaseRestApi(BaseSupersetModelRestApi):
         # Construct a JSON representation of the schema for the entire database and put it in this format:
         # {[
         #     {
-        #         schema_name  = 
-        #         schema_description = 
+        #         schema_name  =
+        #         schema_description =
         #         relations = [
         #             {
-        #                 rel_name = 
-        #                 rel_kind = 
-        #                 rel_description = 
+        #                 rel_name =
+        #                 rel_kind =
+        #                 rel_description =
         #                 indexes = [
         #                     {
-        #                         index_name = 
-        #                         is_unique = 
-        #                         column_names = 
-        #                         index_definition = 
+        #                         index_name =
+        #                         is_unique =
+        #                         column_names =
+        #                         index_definition =
         #                     },
-                            
+
         #                 ]
         #                 foregin_keys = [
         #                     {
-        #                         constraint_name = 
-        #                         column_name = 
-        #                         referenced_column = 
+        #                         constraint_name =
+        #                         column_name =
+        #                         referenced_column =
         #                     },
-                            
+
         #                 ]
         #                 columns = [
         #                     {
-        #                         column_name = 
-        #                         data_type = 
-        #                         is_nullable = 
-        #                         column_description = 
-        #                         most_common_values = 
+        #                         column_name =
+        #                         data_type =
+        #                         is_nullable =
+        #                         column_description =
+        #                         most_common_values =
         #                     },
-                            
+
         #                 ]
         #             },
         #         ]
@@ -1131,7 +1131,7 @@ class DatabaseRestApi(BaseSupersetModelRestApi):
             parameters = QualifiedSchemaSchema().load(request.args)
         except ValidationError as ex:
             raise InvalidPayloadSchemaError(ex) from ex
-        
+
         database = DatabaseDAO.find_by_id(pk)
         if not database:
             return self.response_404()

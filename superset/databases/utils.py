@@ -244,7 +244,7 @@ def get_table_relation_metadata(
     for col in columns:
         dtype = get_col_type(col)
         dtype = dtype.split("(")[0] if "(" in dtype else dtype
-        
+
         top_k_values = None
         if dtype in ["CHAR", "VARCHAR", "TEXT", "STRING", "NVARCHAR"]:
             top_k_values = get_column_top_k_values(database, table, col["column_name"], table.schema, top_k=top_k, top_k_limit=top_k_limit)
@@ -270,7 +270,7 @@ def get_table_relation_metadata(
     if include_indexes:
         result["indexes"] = indexes
 
-    return result 
+    return result
 
 def get_column_top_k_values(
     database: Any,
@@ -372,7 +372,7 @@ class Index(BaseModel):
     """
     Contains information about an index.
     """
-    
+
     index_name: str = Field(
         description="Name of the index."
     )
@@ -391,7 +391,7 @@ class Column(BaseModel):
     """
     Contains information about a column.
     """
-    
+
     column_name: str = Field(
         description="Name of the column."
     )

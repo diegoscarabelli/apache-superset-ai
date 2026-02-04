@@ -77,7 +77,7 @@ logger = logging.getLogger(__name__)
 def update_sent_state(sender=None, headers=None, **kwargs):
     task = celery_app.tasks.get(sender)
     backend = task.backend if task else celery_app.backend
- 
+
     # For context worker tasks, set a special state so that we can tell the difference between
     # tasks that might run and tasks that don't exist anymore.
     logger.info(f"headers: {headers}")
